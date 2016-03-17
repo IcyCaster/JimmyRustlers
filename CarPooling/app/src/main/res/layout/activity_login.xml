@@ -65,5 +65,13 @@
             android:gravity="center"
             android:textSize="16dip"/>
 
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/fb_login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/link_signup"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp" />
+
     </LinearLayout>
 </ScrollView>

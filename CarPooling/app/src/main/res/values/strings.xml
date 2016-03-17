@@ -7,4 +7,6 @@
     <string name="action_sign_in">Login:</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+
+    <string name="facebook_app_id">1044291042280619</string>
 </resources>
