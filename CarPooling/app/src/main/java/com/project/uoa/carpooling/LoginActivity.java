@@ -1,14 +1,17 @@
 package com.project.uoa.carpooling;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import com.facebook.FacebookSdk;
 
@@ -32,7 +35,14 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-
+        // This is temporary until we figure out how to store users and complete a signup/login process
+        Button loginButton = (Button)findViewById(R.id.btn_login);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(LoginActivity.this, CarPoolsActivity.class));
+            }
+        });
 
 
     }
