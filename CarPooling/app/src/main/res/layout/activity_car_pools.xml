@@ -20,6 +20,10 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_car_pools"
-        app:menu="@menu/activity_car_pools_drawer" />
+        app:menu="@menu/activity_car_pools_drawer"
+
+
+        />
+
 
 </android.support.v4.widget.DrawerLayout>

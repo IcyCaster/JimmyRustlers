@@ -1,8 +1,10 @@
 package com.project.uoa.carpooling;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,8 +17,11 @@ import android.view.MenuItem;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.login.LoginManager;
+import com.facebook.login.widget.LoginButton;
 
-public class CurrentPoolActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
@@ -96,6 +101,14 @@ public class CurrentPoolActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_send) {
 
+            Log.d("Test First Name:", "BEFORE");
+            Profile profile = Profile.getCurrentProfile();
+            Log.d("Test First Name:", profile.getFirstName());
+
+        }else if (id == R.id.logout) {
+            LoginManager.getInstance().logOut();
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            finish();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
