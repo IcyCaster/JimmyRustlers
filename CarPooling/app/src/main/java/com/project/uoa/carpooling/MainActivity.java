@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -15,11 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
-import com.facebook.login.widget.LoginButton;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -28,7 +27,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_car_pools);
+        setContentView(R.layout.nav_drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -86,30 +85,48 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+
+        Fragment fragment = null;
+        Class fragmentClass = null;
+
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_car_pools) {
+            fragmentClass = CarPools.class;
+        } else if (id == R.id.nav_archived_pools) {
+            fragmentClass = ArchivedPools.class;
+        } else if (id == R.id.nav_friend_groups) {
+            fragmentClass = FriendGroups.class;
+        } else if (id == R.id.nav_settings) {
+            // TEMP FOR TESTING OUT EVENT DISPLAYS
 
-        } else if (id == R.id.nav_slideshow) {
+            fragmentClass = CarPoolEvent.class;
+        } else if (id == R.id.nav_help) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+            // TEMP FOR TESTING NAME RETRIEVAL
             Log.d("Test First Name:", "BEFORE");
             Profile profile = Profile.getCurrentProfile();
             Log.d("Test First Name:", profile.getFirstName());
 
-        }else if (id == R.id.logout) {
+        }else if (id == R.id.nav_logout) {
             LoginManager.getInstance().logOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }
+
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+// Insert the fragment by replacing any existing fragment
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
