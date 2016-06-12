@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +30,8 @@ public class CarPools extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private RecyclerView rv;
 
     public CarPools() {
         // Required empty public constructor
@@ -64,7 +68,12 @@ public class CarPools extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_car_pools, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_car_pools, container, false);
+        rv = (RecyclerView) view.findViewById(R.id.rv);
+        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -83,6 +92,8 @@ public class CarPools extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+
+
     }
 
     @Override
