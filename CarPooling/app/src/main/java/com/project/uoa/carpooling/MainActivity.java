@@ -1,11 +1,13 @@
 package com.project.uoa.carpooling;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,7 +23,7 @@ import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, CarPools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEvent.OnFragmentInteractionListener  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        displayView(R.id.nav_car_pools);
     }
 
     @Override
@@ -86,50 +90,106 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        Fragment fragment = null;
-        Class fragmentClass = null;
+        displayView(item.getItemId());
+
+//        Fragment fragment = null;
+//        Class fragmentClass = null;
+//
+//
+//
+        return true;
+    }
+
+    public void displayView(int viewId) {
 
 
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+//        int id = item.getItemId();
+//
+//        if (id == R.id.nav_car_pools) {
+//            fragmentClass = CarPools.class;
+//
+//            CarPools testFrag = new CarPools();
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            fragmentManager.beginTransaction().replace(R.id.contentFragment, testFrag).commit();
+//
+//        } else if (id == R.id.nav_archived_pools) {
+//            fragmentClass = ArchivedPools.class;
+//        } else if (id == R.id.nav_friend_groups) {
+//            fragmentClass = FriendGroups.class;
+//        } else if (id == R.id.nav_settings) {
+//            // TEMP FOR TESTING OUT EVENT DISPLAYS
+//
+//            fragmentClass = CarPoolEvent.class;
+//        } else if (id == R.id.nav_help) {
+//
+//            // TEMP FOR TESTING NAME RETRIEVAL
+//            Log.d("Test First Name:", "BEFORE");
+//            Profile profile = Profile.getCurrentProfile();
+//            Log.d("Test First Name:", profile.getFirstName());
+//
+//        }else if (id == R.id.nav_logout) {
+//            LoginManager.getInstance().logOut();
+//            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+//            finish();
+//        }
 
-        if (id == R.id.nav_car_pools) {
-            fragmentClass = CarPools.class;
-        } else if (id == R.id.nav_archived_pools) {
-            fragmentClass = ArchivedPools.class;
-        } else if (id == R.id.nav_friend_groups) {
-            fragmentClass = FriendGroups.class;
-        } else if (id == R.id.nav_settings) {
-            // TEMP FOR TESTING OUT EVENT DISPLAYS
 
-            fragmentClass = CarPoolEvent.class;
-        } else if (id == R.id.nav_help) {
+        Fragment fragment = null;
+        String title = getString(R.string.app_name);
 
-            // TEMP FOR TESTING NAME RETRIEVAL
-            Log.d("Test First Name:", "BEFORE");
-            Profile profile = Profile.getCurrentProfile();
-            Log.d("Test First Name:", profile.getFirstName());
+        switch (viewId) {
+            case R.id.nav_car_pools:
+                fragment = new CarPools();
+                title = "Car Pools";
+                break;
 
-        }else if (id == R.id.nav_logout) {
-            LoginManager.getInstance().logOut();
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            finish();
+            case R.id.nav_archived_pools:
+                fragment = new ArchivedPools();
+                title = "Archived Pools";
+                break;
+
+            case R.id.nav_friend_groups:
+                fragment = new FriendGroups();
+                title = "Friend Groups";
+                break;
+
+            case R.id.nav_settings:
+                fragment = new CarPoolEvent();
+                title = "TEMP CAR POOL EVENT";
+                break;
+
+            case R.id.nav_help:
+                // TEMP FOR TESTING NAME RETRIEVAL
+                Log.d("Test First Name:", "BEFORE");
+                Profile profile = Profile.getCurrentProfile();
+                Log.d("Test First Name:", profile.getFirstName());
+                title = "Hello, " + profile.getFirstName() + "!";
+                break;
+
+            case R.id.nav_logout:
+                LoginManager.getInstance().logOut();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                finish();
         }
 
-        try {
-            fragment = (Fragment) fragmentClass.newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (fragment != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.contentFragment, fragment);
+            ft.commit();
         }
 
-// Insert the fragment by replacing any existing fragment
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
-
+        // Set the toolbar title
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return true;
+
+    }
+
+    public void onFragmentInteraction(Uri uri) {
+        // Kept Empty
     }
 }

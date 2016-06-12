@@ -12,4 +12,11 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_car_pools">
 
+
+    <FrameLayout
+        android:id="@+id/contentFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+
+
 </RelativeLayout>
