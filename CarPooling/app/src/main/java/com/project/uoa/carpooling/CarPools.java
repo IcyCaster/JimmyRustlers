@@ -2,13 +2,24 @@ package com.project.uoa.carpooling;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
+import com.project.uoa.carpooling.entities.CarPoolEventEntity;
+
+import java.util.ArrayList;
 
 
 /**
@@ -28,6 +39,10 @@ public class CarPools extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+private View view;
+
+    private ArrayList<CarPoolEventEntity> listCarPoolEvents = new ArrayList<CarPoolEventEntity>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -69,9 +84,18 @@ public class CarPools extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_car_pools, container, false);
+        view = inflater.inflate(R.layout.fragment_car_pools, container, false);
         rv = (RecyclerView) view.findViewById(R.id.rv);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+
+
+
+        GetEventData();
+
+
+
+
 
         return view;
     }
@@ -116,4 +140,31 @@ public class CarPools extends Fragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
+
+    void GetEventData() {
+
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me/events",
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        TextView test = (TextView)view.findViewById(R.id.test_json);
+
+
+
+                        test.setText(response.toString());
+                    }
+                });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id");
+        parameters.putString("since", Long.toString(unixTime));
+        request.setParameters(parameters);
+        request.executeAsync();
+    }
 }
+
+

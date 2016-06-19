@@ -45,7 +45,7 @@ public class EventToCardAdapter extends RecyclerView.Adapter {
 
     @Override
     public EventToCard onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.card_car_pool_event, parent, false);
+        View view = layoutInflater.inflate(R.layout.card_car_pool_event_test_two, parent, false);
         EventToCard viewHolder = new EventToCard(view);
         return viewHolder;
     }
@@ -58,7 +58,7 @@ public class EventToCardAdapter extends RecyclerView.Adapter {
         //7:31
 
         //..... before i can do this i need to make a JSON parser for carpool events.
-
+        // For the mean time I might just make a list of created data to see if it works
 
 
     }

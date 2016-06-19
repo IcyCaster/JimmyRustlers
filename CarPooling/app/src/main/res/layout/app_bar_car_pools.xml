@@ -21,7 +21,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_car_pools" />
+    <include layout="@layout/app_content" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
