@@ -9,15 +9,17 @@ import java.util.Date;
  */
 public class CarPoolEventEntity {
 
-    private long id;
-    private Image eventImage;
-    private String eventName;
-    private Date startDate;
+    public long id;
+    public int eventImageId;
+    public String eventName;
+    public String startDate;
 
-    public CarPoolEventEntity(long id, Image eventImage, String eventName, Date startDate) {
+    public CarPoolEventEntity(long id, int eventImageId, String eventName, String startDate) {
         this.id = id;
-        this.eventImage = eventImage;
+        this.eventImageId = eventImageId;
         this.eventName = eventName;
         this.startDate = startDate;
     }
+
+
 }

@@ -11,15 +11,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
+import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
-import com.facebook.Profile;
+import com.project.uoa.carpooling.adapters.EventToCardAdapter;
 import com.project.uoa.carpooling.entities.CarPoolEventEntity;
+import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
+import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -40,9 +45,13 @@ public class CarPools extends Fragment {
     private String mParam1;
     private String mParam2;
 
-private View view;
+    private View view;
 
     private ArrayList<CarPoolEventEntity> listCarPoolEvents = new ArrayList<CarPoolEventEntity>();
+
+private AccessToken accessToken = AccessToken.getCurrentAccessToken();
+
+    private ArrayList<String> listOfEvents;
 
     private OnFragmentInteractionListener mListener;
 
@@ -84,17 +93,24 @@ private View view;
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+
+
+//        List<CarPoolEventEntity> data = fill_with_data();
+
+
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
         rv = (RecyclerView) view.findViewById(R.id.rv);
+        GetEventIds();
+        List<CarPoolEventEntity> carPoolEventEntities = GetEventDetails();
+        EventToCardAdapter adapter = new EventToCardAdapter(carPoolEventEntities, getActivity());
+        rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
 
 
-        GetEventData();
 
-
-
+//        testBatch();
 
 
         return view;
@@ -141,21 +157,21 @@ private View view;
         void onFragmentInteraction(Uri uri);
     }
 
-    void GetEventData() {
+    // This will eventually be a firebase call
+    void GetEventIds() {
 
         long unixTime = System.currentTimeMillis() / 1000L;
 
         GraphRequest request = GraphRequest.newGraphPathRequest(
-                AccessToken.getCurrentAccessToken(),
+                accessToken,
                 "/me/events",
                 new GraphRequest.Callback() {
                     @Override
                     public void onCompleted(GraphResponse response) {
-                        TextView test = (TextView)view.findViewById(R.id.test_json);
 
+                        //This parses the events the users has "subscribed" to. (Currently it just parses upcoming facebook events
+                        listOfEvents = Facebook_Id_Response.parse(response.getJSONObject());
 
-
-                        test.setText(response.toString());
                     }
                 });
 
@@ -164,7 +180,55 @@ private View view;
         parameters.putString("since", Long.toString(unixTime));
         request.setParameters(parameters);
         request.executeAsync();
+
     }
+
+    List<CarPoolEventEntity> GetEventDetails() {
+
+        final ArrayList<CarPoolEventEntity> carPoolEventEntities = new ArrayList<CarPoolEventEntity>();
+
+        for (String s : listOfEvents) {
+
+            GraphRequest request = GraphRequest.newGraphPathRequest(
+                    accessToken,
+                    "/" + s,
+                    new GraphRequest.Callback() {
+                        @Override
+                        public void onCompleted(GraphResponse response) {
+
+                            carPoolEventEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+
+
+                        }
+                    });
+
+            request.executeAsync();
+
+        }
+
+
+        return carPoolEventEntities;
+    }
+
+
+    public List<CarPoolEventEntity> fill_with_data() {
+
+        List<CarPoolEventEntity> data = new ArrayList<>();
+
+        data.add(new CarPoolEventEntity(1, R.drawable.test_bbq, "TEST ONE", "1-Sept-16 8:00pm"));
+        data.add(new CarPoolEventEntity(2, R.drawable.test_church, "TEST TWO", "2-Sept-16 8:00pm"));
+        data.add(new CarPoolEventEntity(3, R.drawable.test_work, "TEST THREE", "3-Sept-16 8:00pm"));
+        data.add(new CarPoolEventEntity(4, R.drawable.test_bbq, "TEST FOUR", "4-Sept-16 8:00pm"));
+        data.add(new CarPoolEventEntity(5, R.drawable.test_church, "TEST FIVE", "5-Sept-16 8:00pm"));
+        data.add(new CarPoolEventEntity(6, R.drawable.test_work, "TEST SIX", "6-Sept-16 8:00pm"));
+        data.add(new CarPoolEventEntity(7, R.drawable.test, "TEST SEVEN", "7-Sept-16 11:00pm"));
+
+        return data;
+    }
+
 }
+
+
+
 
 
