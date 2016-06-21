@@ -19,8 +19,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.project.uoa.carpooling.entities.CarPoolEventEntity;
+import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, CarPools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEvent.OnFragmentInteractionListener  {
@@ -45,7 +52,7 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -91,48 +98,10 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
 
         displayView(item.getItemId());
-
-//        Fragment fragment = null;
-//        Class fragmentClass = null;
-//
-//
-//
         return true;
     }
 
     public void displayView(int viewId) {
-
-
-        // Handle navigation view item clicks here.
-//        int id = item.getItemId();
-//
-//        if (id == R.id.nav_car_pools) {
-//            fragmentClass = CarPools.class;
-//
-//            CarPools testFrag = new CarPools();
-//            FragmentManager fragmentManager = getSupportFragmentManager();
-//            fragmentManager.beginTransaction().replace(R.id.contentFragment, testFrag).commit();
-//
-//        } else if (id == R.id.nav_archived_pools) {
-//            fragmentClass = ArchivedPools.class;
-//        } else if (id == R.id.nav_friend_groups) {
-//            fragmentClass = FriendGroups.class;
-//        } else if (id == R.id.nav_settings) {
-//            // TEMP FOR TESTING OUT EVENT DISPLAYS
-//
-//            fragmentClass = CarPoolEvent.class;
-//        } else if (id == R.id.nav_help) {
-//
-//            // TEMP FOR TESTING NAME RETRIEVAL
-//            Log.d("Test First Name:", "BEFORE");
-//            Profile profile = Profile.getCurrentProfile();
-//            Log.d("Test First Name:", profile.getFirstName());
-//
-//        }else if (id == R.id.nav_logout) {
-//            LoginManager.getInstance().logOut();
-//            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-//            finish();
-//        }
 
 
         Fragment fragment = null;

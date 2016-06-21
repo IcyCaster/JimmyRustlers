@@ -21,5 +21,8 @@ public class CarPoolEventEntity {
         this.startDate = startDate;
     }
 
-
+    @Override
+    public String toString() {
+        return eventName + " is here!";
+    }
 }

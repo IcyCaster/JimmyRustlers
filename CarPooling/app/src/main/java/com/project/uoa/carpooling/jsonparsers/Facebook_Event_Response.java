@@ -1,5 +1,7 @@
 package com.project.uoa.carpooling.jsonparsers;
 
+import android.util.Log;
+
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.entities.CarPoolEventEntity;
 
@@ -16,17 +18,14 @@ public class Facebook_Event_Response {
 
     public static CarPoolEventEntity parse(JSONObject response) {
 
-   JSONArray jarray = null;
+
         try {
-            jarray = response.getJSONArray("data");
 
-            CarPoolEventEntity entity = null;
 
-            for (int i = 0; i < jarray.length(); i++) {
-                JSONObject oneAlbum = jarray.getJSONObject(i);
-                //get your values
-                entity = new CarPoolEventEntity(Long.parseLong(oneAlbum.getString("id")), R.drawable.test, oneAlbum.getString("name"), oneAlbum.getString("start_time"));
-            }
+            CarPoolEventEntity entity = new CarPoolEventEntity(Long.parseLong(response.getString("id")), R.drawable.test, response.getString("name"), response.getString("start_time"));
+
+            Log.d("FB", entity.toString());
+
 
             return entity;
 

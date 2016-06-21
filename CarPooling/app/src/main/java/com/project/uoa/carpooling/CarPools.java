@@ -48,14 +48,16 @@ public class CarPools extends Fragment {
     private View view;
 
     private ArrayList<CarPoolEventEntity> listCarPoolEvents = new ArrayList<CarPoolEventEntity>();
+    private ArrayList<CarPoolEventEntity> carPoolEventEntities = new ArrayList<CarPoolEventEntity>();
 
-private AccessToken accessToken = AccessToken.getCurrentAccessToken();
+    private AccessToken accessToken;
 
     private ArrayList<String> listOfEvents;
 
     private OnFragmentInteractionListener mListener;
 
     private RecyclerView rv;
+
 
     public CarPools() {
         // Required empty public constructor
@@ -94,20 +96,19 @@ private AccessToken accessToken = AccessToken.getCurrentAccessToken();
         // Inflate the layout for this fragment
 
 
+        GetEventIds();
+//        GetEventDetails();
 
-//        List<CarPoolEventEntity> data = fill_with_data();
-
+        List<CarPoolEventEntity> data = fill_with_data();
 
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
         rv = (RecyclerView) view.findViewById(R.id.rv);
-        GetEventIds();
-        List<CarPoolEventEntity> carPoolEventEntities = GetEventDetails();
-        EventToCardAdapter adapter = new EventToCardAdapter(carPoolEventEntities, getActivity());
-        rv.setAdapter(adapter);
-        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
-
+//
+//        EventToCardAdapter adapter = new EventToCardAdapter(data, getActivity());
+//        rv.setAdapter(adapter);
+//        rv.setLayoutManager(new LinearLayoutManager(getActivity()));
 
 
 //        testBatch();
@@ -157,47 +158,31 @@ private AccessToken accessToken = AccessToken.getCurrentAccessToken();
         void onFragmentInteraction(Uri uri);
     }
 
-    // This will eventually be a firebase call
-    void GetEventIds() {
+    public void GetEventDetails() {
 
-        long unixTime = System.currentTimeMillis() / 1000L;
-
-        GraphRequest request = GraphRequest.newGraphPathRequest(
-                accessToken,
-                "/me/events",
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-
-                        //This parses the events the users has "subscribed" to. (Currently it just parses upcoming facebook events
-                        listOfEvents = Facebook_Id_Response.parse(response.getJSONObject());
-
-                    }
-                });
-
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id");
-        parameters.putString("since", Long.toString(unixTime));
-        request.setParameters(parameters);
-        request.executeAsync();
-
-    }
-
-    List<CarPoolEventEntity> GetEventDetails() {
-
-        final ArrayList<CarPoolEventEntity> carPoolEventEntities = new ArrayList<CarPoolEventEntity>();
+        carPoolEventEntities = new ArrayList<CarPoolEventEntity>();
 
         for (String s : listOfEvents) {
 
             GraphRequest request = GraphRequest.newGraphPathRequest(
-                    accessToken,
+                    AccessToken.getCurrentAccessToken(),
                     "/" + s,
                     new GraphRequest.Callback() {
                         @Override
                         public void onCompleted(GraphResponse response) {
 
+
+                            Log.d("FB", "Event details" + response.toString());
                             carPoolEventEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
 
+                            EventToCardAdapter adapter = new EventToCardAdapter(carPoolEventEntities, getActivity());
+                            rv.setAdapter(adapter);
+                            rv.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+                            Log.d("FB", "Array-" + carPoolEventEntities.toString());
+                            for (CarPoolEventEntity c : carPoolEventEntities) {
+                                Log.d("FB", "Event:" + c.toString());
+                            }
 
                         }
                     });
@@ -205,9 +190,6 @@ private AccessToken accessToken = AccessToken.getCurrentAccessToken();
             request.executeAsync();
 
         }
-
-
-        return carPoolEventEntities;
     }
 
 
@@ -224,6 +206,37 @@ private AccessToken accessToken = AccessToken.getCurrentAccessToken();
         data.add(new CarPoolEventEntity(7, R.drawable.test, "TEST SEVEN", "7-Sept-16 11:00pm"));
 
         return data;
+    }
+
+
+    public void GetEventIds() {
+        long unixTime = System.currentTimeMillis() / 1000L;
+
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/me/events",
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+
+
+                        Log.d("FB", "Event ids");
+
+                        //This parses the events the users has "subscribed" to. (Currently it just parses upcoming facebook events
+                        listOfEvents = Facebook_Id_Response.parse(response.getJSONObject());
+                        GetEventDetails();
+
+
+                    }
+                });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id");
+        parameters.putString("since", Long.toString(unixTime));
+        request.setParameters(parameters);
+        request.executeAsync();
+
+
     }
 
 }
