@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Converts a Facebook EventIDs Response (JSON) object to a list of EventID strings.
+ * This will be changed in the future to
+ *
+ * https://developers.facebook.com/docs/facebook-login/permissions#reference-user_events
+ *
  * Created by Chester on 21/06/2016.
  */
 public class Facebook_Id_Response {

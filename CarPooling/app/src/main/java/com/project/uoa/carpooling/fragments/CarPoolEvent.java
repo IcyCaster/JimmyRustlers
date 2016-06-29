@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling;
+package com.project.uoa.carpooling.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,16 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.project.uoa.carpooling.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FriendGroups.OnFragmentInteractionListener} interface
+ * {@link CarPoolEvent.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FriendGroups#newInstance} factory method to
+ * Use the {@link CarPoolEvent#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FriendGroups extends Fragment {
+public class CarPoolEvent extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,7 +31,7 @@ public class FriendGroups extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FriendGroups() {
+    public CarPoolEvent() {
         // Required empty public constructor
     }
 
@@ -39,11 +41,11 @@ public class FriendGroups extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FriendGroups.
+     * @return A new instance of fragment CarPoolEvent.
      */
     // TODO: Rename and change types and number of parameters
-    public static FriendGroups newInstance(String param1, String param2) {
-        FriendGroups fragment = new FriendGroups();
+    public static CarPoolEvent newInstance(String param1, String param2) {
+        CarPoolEvent fragment = new CarPoolEvent();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,7 +66,7 @@ public class FriendGroups extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_friend_groups, container, false);
+        return inflater.inflate(R.layout.fragment_car_pool_event, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

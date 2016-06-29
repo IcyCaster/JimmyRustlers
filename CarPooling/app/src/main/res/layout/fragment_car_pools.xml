@@ -2,11 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.project.uoa.carpooling.CarPools">
+    tools:context=".fragments.SubscribedCarpools">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/join_carpool_button"
         android:id="@+id/rv"
         />
 
@@ -24,7 +25,20 @@
         <!--layout="@layout/card_car_pool_event"-->
         <!--/>-->
 
+    <Button
+        android:id="@+id/join_carpool_button"
+        android:layout_width="fill_parent"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Join a Carpool"
+        android:textSize="20sp"
+        android:background="@color/colorPrimary"
+        android:textColor="#ffffff"
+        xmlns:android="http://schemas.android.com/apk/res/android" />
 
-        />
+
 
 </RelativeLayout>
+
+

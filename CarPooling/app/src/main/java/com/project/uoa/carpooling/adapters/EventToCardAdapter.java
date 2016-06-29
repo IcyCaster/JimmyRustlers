@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.entities.CarPoolEventEntity;
+import com.project.uoa.carpooling.entities.EventCardEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class EventToCardAdapter extends RecyclerView.Adapter<View_Holder> {
 
-    List<CarPoolEventEntity> list = Collections.emptyList();
+    List<EventCardEntity> list = Collections.emptyList();
     Context context;
 
 
@@ -30,14 +30,13 @@ public class EventToCardAdapter extends RecyclerView.Adapter<View_Holder> {
     }
 
 
-    public EventToCardAdapter(List<CarPoolEventEntity> list, Context context) {
+    public EventToCardAdapter(List<EventCardEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
     @Override
     public View_Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-//        View view = layoutInflater.inflate(R.layout.card_car_pool_event, parent, false);    ...old one
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_car_pool_event, parent, false);
         View_Holder viewHolder = new View_Holder(view);
         return viewHolder;
@@ -61,13 +60,13 @@ public class EventToCardAdapter extends RecyclerView.Adapter<View_Holder> {
     }
 
     // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, CarPoolEventEntity data) {
+    public void insert(int position, EventCardEntity data) {
         list.add(position, data);
         notifyItemInserted(position);
     }
 
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(CarPoolEventEntity data) {
+    public void remove(EventCardEntity data) {
         int position = list.indexOf(data);
         list.remove(position);
         notifyItemRemoved(position);

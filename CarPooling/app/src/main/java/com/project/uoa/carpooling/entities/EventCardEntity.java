@@ -7,14 +7,14 @@ import java.util.Date;
 /**
  * Created by Chester on 13/06/2016.
  */
-public class CarPoolEventEntity {
+public class EventCardEntity {
 
     public long id;
     public int eventImageId;
     public String eventName;
     public String startDate;
 
-    public CarPoolEventEntity(long id, int eventImageId, String eventName, String startDate) {
+    public EventCardEntity(long id, int eventImageId, String eventName, String startDate) {
         this.id = id;
         this.eventImageId = eventImageId;
         this.eventName = eventName;

@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling;
+package com.project.uoa.carpooling.activities;
 
 import android.content.Intent;
 import android.os.Handler;
@@ -18,6 +18,7 @@ import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.project.uoa.carpooling.R;
 
 public class LoginActivity extends AppCompatActivity {
 
