@@ -1,6 +1,7 @@
 package com.project.uoa.carpooling.adapters;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,7 @@ public class EventToCardAdapter extends RecyclerView.Adapter<View_Holder> {
 
     @Override
     public void onBindViewHolder(View_Holder holder, int position) {
+        holder.eventId = Long.toString(list.get(position).id);
         holder.eventName.setText(list.get(position).eventName);
         holder.eventStartDate.setText(list.get(position).startDate);
         holder.eventThumbnail.setImageResource(list.get(position).eventImageId);
@@ -76,6 +78,7 @@ public class EventToCardAdapter extends RecyclerView.Adapter<View_Holder> {
 
 
 class View_Holder extends RecyclerView.ViewHolder {
+    public String eventId;
     public ImageView eventThumbnail;
     public TextView eventName;
     public TextView eventStartDate;
@@ -86,6 +89,15 @@ class View_Holder extends RecyclerView.ViewHolder {
         eventThumbnail = (ImageView) itemView.findViewById(R.id.event_photo);
         eventName = (TextView) itemView.findViewById(R.id.event_name);
         eventStartDate = (TextView) itemView.findViewById(R.id.event_start_date);
+
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override public void onClick(View v) {
+                if(eventId == null) {
+                    eventId = "0";
+                }
+                Snackbar.make(v, eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
+            }
+        });
     }
 
 

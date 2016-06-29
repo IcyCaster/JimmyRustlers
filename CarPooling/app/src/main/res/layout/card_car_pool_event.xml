@@ -13,7 +13,6 @@
         card_view:cardCornerRadius="8dp"
         card_view:cardBackgroundColor="@android:color/white"
         android:focusable="true"
-        android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground">
 
         <RelativeLayout

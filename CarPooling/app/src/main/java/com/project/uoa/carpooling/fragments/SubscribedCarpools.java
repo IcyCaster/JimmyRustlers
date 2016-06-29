@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.EventToCardAdapter;
+import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
@@ -108,7 +110,7 @@ public class SubscribedCarpools extends Fragment {
 
         // TODO: This will retrieve a list of all events the users is subscribed to. This list will be stored on firebase and will need to be parsed once retrieved.
         // TODO: For now, it just fetches all current events a user is subscribed to.
-//        PopulateViewWithSubscribedEvents();
+        PopulateViewWithSubscribedEvents();
 
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
         popupView = inflater.inflate(R.layout.popup_sub_to_events, container, false);
@@ -120,7 +122,17 @@ public class SubscribedCarpools extends Fragment {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PopulateViewWithSubscribedEvents();
+
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
+
+                // Create and show the dialog.
+                DialogFragment newFragment = EventPopup.newInstance(0);
+                newFragment.show(ft, "dialog");
             }
 
 
@@ -221,10 +233,6 @@ public class SubscribedCarpools extends Fragment {
                             EventToCardAdapter adapter = new EventToCardAdapter(listOfEventCardEntities, getActivity());
                             recyclerView.setAdapter(adapter);
                             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-                            // This is awkward and I hope I remember which RecyclerView is the correct one to use
-                            popUpRecyclerView.setAdapter(adapter);
-                            popUpRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
                             Log.d("FB", "Array-" + listOfEventCardEntities.toString());
                             for (EventCardEntity c : listOfEventCardEntities) {
