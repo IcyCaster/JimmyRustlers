@@ -14,12 +14,12 @@ import com.project.uoa.carpooling.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CarPoolEvent.OnFragmentInteractionListener} interface
+ * {@link CarPoolEventAngels.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link CarPoolEvent#newInstance} factory method to
+ * Use the {@link CarPoolEventAngels#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CarPoolEvent extends Fragment {
+public class CarPoolEventAngels extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,7 +31,7 @@ public class CarPoolEvent extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public CarPoolEvent() {
+    public CarPoolEventAngels() {
         // Required empty public constructor
     }
 
@@ -41,11 +41,11 @@ public class CarPoolEvent extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment CarPoolEvent.
+     * @return A new instance of fragment CarPoolEventAngels.
      */
     // TODO: Rename and change types and number of parameters
-    public static CarPoolEvent newInstance(String param1, String param2) {
-        CarPoolEvent fragment = new CarPoolEvent();
+    public static CarPoolEventAngels newInstance(String param1, String param2) {
+        CarPoolEventAngels fragment = new CarPoolEventAngels();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -66,7 +66,7 @@ public class CarPoolEvent extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_car_pool_event, container, false);
+        return inflater.inflate(R.layout.fragment_car_pool_event_angels, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

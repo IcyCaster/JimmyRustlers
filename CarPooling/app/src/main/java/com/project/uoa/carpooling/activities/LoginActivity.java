@@ -63,9 +63,9 @@ public class LoginActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+
+
         facebookSDKInitialize();
-
-
 
         if (isLoggedIn()) {
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
@@ -73,8 +73,10 @@ public class LoginActivity extends AppCompatActivity {
         }
 
 
+
+
         setContentView(R.layout.activity_login);
-        updateWithToken(AccessToken.getCurrentAccessToken());
+//        updateWithToken(AccessToken.getCurrentAccessToken());
 
         LoginButton fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
         fbLoginButton.setReadPermissions("email");

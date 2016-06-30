@@ -18,13 +18,14 @@ import android.view.MenuItem;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.project.uoa.carpooling.fragments.ArchivedPools;
-import com.project.uoa.carpooling.fragments.CarPoolEvent;
+import com.project.uoa.carpooling.fragments.CarPoolEventAngels;
+import com.project.uoa.carpooling.fragments.CarPoolEventChesters;
 import com.project.uoa.carpooling.fragments.FriendGroups;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEvent.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, CarPoolEventChesters.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+//        }
+//            else if (getFragmentManager().getBackStackEntryCount() > 0) {
+//                getFragmentManager().popBackStack();
         } else {
             super.onBackPressed();
         }
@@ -118,7 +122,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_settings:
-                fragment = new CarPoolEvent();
+                fragment = new CarPoolEventAngels();
                 title = "TEMP CAR POOL EVENT";
                 break;
 
@@ -155,4 +159,6 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
         // Kept Empty
     }
+
+
 }

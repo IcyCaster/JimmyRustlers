@@ -2,6 +2,8 @@ package com.project.uoa.carpooling.adapters;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.entities.EventCardEntity;
+import com.project.uoa.carpooling.fragments.CarPoolEventAngels;
+import com.project.uoa.carpooling.fragments.CarPoolEventChesters;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,12 +44,13 @@ public class EventToCardAdapter extends RecyclerView.Adapter<View_Holder> {
     @Override
     public View_Holder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_car_pool_event, parent, false);
-        View_Holder viewHolder = new View_Holder(view);
+        View_Holder viewHolder = new View_Holder(view, context);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(View_Holder holder, int position) {
+
         holder.eventId = Long.toString(list.get(position).id);
         holder.eventName.setText(list.get(position).eventName);
         holder.eventStartDate.setText(list.get(position).startDate);
@@ -84,17 +90,27 @@ class View_Holder extends RecyclerView.ViewHolder {
     public TextView eventStartDate;
 
 
-    public View_Holder(View itemView) {
+    public View_Holder(View itemView, Context context) {
         super(itemView);
+        final MainActivity mainActivity = (MainActivity)context;
+
         eventThumbnail = (ImageView) itemView.findViewById(R.id.event_photo);
         eventName = (TextView) itemView.findViewById(R.id.event_name);
         eventStartDate = (TextView) itemView.findViewById(R.id.event_start_date);
 
+
+
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
-                if(eventId == null) {
-                    eventId = "0";
-                }
+
+                Fragment fragment = new CarPoolEventChesters();
+                String title = eventId;
+
+                FragmentTransaction ft = mainActivity.getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.contentFragment, fragment);
+                ft.addToBackStack(null);
+                ft.commit();
+
                 Snackbar.make(v, eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
         });

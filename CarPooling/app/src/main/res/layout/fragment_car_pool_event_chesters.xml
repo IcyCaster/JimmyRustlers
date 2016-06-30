@@ -2,12 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.CarPoolEvent">
+    tools:context=".fragments.CarPoolEventChesters">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="CarPoolEvent" />
+        android:text="Chesters CarPoolEvent" />
 
 </FrameLayout>
