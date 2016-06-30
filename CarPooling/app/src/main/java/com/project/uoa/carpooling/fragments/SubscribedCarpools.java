@@ -7,12 +7,14 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -36,7 +38,10 @@ import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
 
+import org.json.JSONArray;
+
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -60,7 +65,6 @@ public class SubscribedCarpools extends Fragment {
     private String mParam2;
 
     private View view;
-    private View popupView;
 
     // This is the list of cards which will be displayed on the recyclerView
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
@@ -69,8 +73,10 @@ public class SubscribedCarpools extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private RecyclerView recyclerView; //temp
-    private RecyclerView popUpRecyclerView; //actual
+    private RecyclerView recyclerView;
+    private EventToCardAdapter adapter;
+
+    private SwipeRefreshLayout swipeContainer;
 
 
     public SubscribedCarpools() {
@@ -113,10 +119,25 @@ public class SubscribedCarpools extends Fragment {
         PopulateViewWithSubscribedEvents();
 
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
-        popupView = inflater.inflate(R.layout.popup_sub_to_events, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        popUpRecyclerView = (RecyclerView) popupView.findViewById(R.id.popup_fb_event_recycler);
+
+
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                fetchTimelineAsync();
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
 
         Button addButton = (Button) view.findViewById(R.id.join_carpool_button);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -142,6 +163,24 @@ public class SubscribedCarpools extends Fragment {
 
         return view;
     }
+
+    public void fetchTimelineAsync() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        // Send the network request to fetch the updated data
+        // `client` here is an instance of Android Async HTTP
+        Handler h = new Handler();
+//later to update UI
+        h.post(new Runnable() {
+            @Override
+            public void run() {
+                PopulateViewWithSubscribedEvents();
+                swipeContainer.setRefreshing(false);
+            }
+
+
+        });
+    }
+
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
@@ -230,7 +269,7 @@ public class SubscribedCarpools extends Fragment {
                             listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
                             listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
 
-                            EventToCardAdapter adapter = new EventToCardAdapter(listOfEventCardEntities, getActivity());
+                            adapter = new EventToCardAdapter(listOfEventCardEntities, getActivity());
                             recyclerView.setAdapter(adapter);
                             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 

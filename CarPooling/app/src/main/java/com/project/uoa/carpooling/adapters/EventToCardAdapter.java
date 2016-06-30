@@ -115,8 +115,5 @@ class View_Holder extends RecyclerView.ViewHolder {
             }
         });
     }
-
-
-
 }
 
