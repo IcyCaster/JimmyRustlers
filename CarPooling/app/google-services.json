@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "969309440728",
+    "firebase_url": "https://carpoolingdb.firebaseio.com",
+    "project_id": "carpoolingdb",
+    "storage_bucket": "carpoolingdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:969309440728:android:3222d20b1c3e80a4",
+        "android_client_info": {
+          "package_name": "com.project.uoa.carpooling"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "969309440728-dbnrtfurmr82v0gvncr2lcm06scgf626.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_w-d0qoel-DisOehrKKHkn7R-Gs0AwYk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
