@@ -20,12 +20,15 @@ import com.facebook.login.LoginManager;
 import com.project.uoa.carpooling.fragments.ArchivedPools;
 import com.project.uoa.carpooling.fragments.CarPoolEventAngels;
 import com.project.uoa.carpooling.fragments.CarPoolEventChesters;
+import com.project.uoa.carpooling.fragments.Event_Carpool;
+import com.project.uoa.carpooling.fragments.Event_Details;
+import com.project.uoa.carpooling.fragments.Event_Map;
 import com.project.uoa.carpooling.fragments.FriendGroups;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, CarPoolEventChesters.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, CarPoolEventChesters.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Carpool.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

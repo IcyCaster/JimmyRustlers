@@ -3,27 +3,22 @@ package com.project.uoa.carpooling.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.adapters.FixedTabsPagerAdapter;
-
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link CarPoolEventChesters.OnFragmentInteractionListener} interface
+ * {@link Event_Details.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link CarPoolEventChesters#newInstance} factory method to
+ * Use the {@link Event_Details#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CarPoolEventChesters extends Fragment {
+public class Event_Details extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -35,7 +30,7 @@ public class CarPoolEventChesters extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public CarPoolEventChesters() {
+    public Event_Details() {
         // Required empty public constructor
     }
 
@@ -45,11 +40,11 @@ public class CarPoolEventChesters extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment CarPoolEventAngels.
+     * @return A new instance of fragment Event_Details.
      */
     // TODO: Rename and change types and number of parameters
-    public static CarPoolEventChesters newInstance(String param1, String param2) {
-        CarPoolEventChesters fragment = new CarPoolEventChesters();
+    public static Event_Details newInstance(String param1, String param2) {
+        Event_Details fragment = new Event_Details();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -70,20 +65,7 @@ public class CarPoolEventChesters extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
-        View view = inflater.inflate(R.layout.fragment_car_pool_event_chesters, container, false);
-
-
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        PagerAdapter pagerAdapter =  new FixedTabsPagerAdapter(getActivity().getSupportFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
-
-        TabLayout tabLayout =(TabLayout) view.findViewById(R.id.tab_layout);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-
-        return view;
+        return inflater.inflate(R.layout.fragment_event__details, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
