@@ -19,7 +19,6 @@ public class DBItemModel {
 
     private String text;
     private String name;
-    private String photoUrl;
 
     public DBItemModel() {
     }

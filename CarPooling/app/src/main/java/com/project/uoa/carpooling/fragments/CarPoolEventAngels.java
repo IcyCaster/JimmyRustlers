@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,14 +34,16 @@ import com.project.uoa.carpooling.firebaseModels.DBItemModel;
 public class CarPoolEventAngels extends Fragment {
 
     //TODO Will move later.
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
+    // Class for defining the ViewHolder of the RecyclerView.
+    // Specifies the contents of an item in the RecyclerView.
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
         public TextView messageTextView;
-        public TextView messengerTextView;
+        public TextView userTextView;
 
-        public MessageViewHolder(View v) {
+        public ItemViewHolder(View v) {
             super(v);
             messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-            messengerTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+            userTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
         }
     }
 
@@ -66,7 +67,7 @@ public class CarPoolEventAngels extends Fragment {
 
     // Firebase Instance Variables
     private DatabaseReference mFirebaseDatabaseReference;
-    private FirebaseRecyclerAdapter<DBItemModel, MessageViewHolder>
+    private FirebaseRecyclerAdapter<DBItemModel, ItemViewHolder>
             mFirebaseAdapter;
 
     public CarPoolEventAngels() {
@@ -107,27 +108,33 @@ public class CarPoolEventAngels extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_car_pool_event_angels, container, false);
 
         // Initialize ProgressBar and RecyclerView.
+        // For more info on a RecyclerView: https://developer.android.com/training/material/lists-cards.html
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        // New child entries
+        // Get child entries in Database and Populate UI
+
+        // Get Reference to Firebase Database
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+
+        // Set up Adapter for RecyclerView
+        // Note that the adapter requires the new DBItemModel and ItemViewHolder classes.
         mFirebaseAdapter = new FirebaseRecyclerAdapter<DBItemModel,
-                MessageViewHolder>(
+                ItemViewHolder>(
                 DBItemModel.class,
                 R.layout.item_message,
-                MessageViewHolder.class,
+                ItemViewHolder.class,
                 mFirebaseDatabaseReference.child("messages")) {
 
             @Override
-            protected void populateViewHolder(MessageViewHolder viewHolder,
+            protected void populateViewHolder(ItemViewHolder viewHolder,
                                               DBItemModel DBItemModel, int position) {
                 mProgressBar.setVisibility(ProgressBar.INVISIBLE);
                 viewHolder.messageTextView.setText(DBItemModel.getText());
-                viewHolder.messengerTextView.setText(DBItemModel.getName());
+                viewHolder.userTextView.setText(DBItemModel.getName());
             }
         };
 
@@ -136,7 +143,7 @@ public class CarPoolEventAngels extends Fragment {
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
 
-                // All below is kind of optional.
+                // All code below is kind of optional, just for convenience.
                 int friendlyMessageCount = mFirebaseAdapter.getItemCount();
                 int lastVisiblePosition =
                         mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
@@ -151,9 +158,11 @@ public class CarPoolEventAngels extends Fragment {
             }
         });
 
+        // Set up RecyclerView with LayoutManager and Adapter
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
         mMessageRecyclerView.setAdapter(mFirebaseAdapter);
 
+        // Add some listeners to the edit text field.
         mMessageEditText = (EditText) rootView.findViewById(R.id.messageEditText);
         mMessageEditText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -174,6 +183,7 @@ public class CarPoolEventAngels extends Fragment {
             }
         });
 
+        //Add on click listener for send button.
         mSendButton = (Button) rootView.findViewById(R.id.sendButton);
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
