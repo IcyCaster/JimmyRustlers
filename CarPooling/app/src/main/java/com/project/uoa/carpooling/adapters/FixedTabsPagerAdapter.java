@@ -29,6 +29,8 @@ public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
                 return new Event_Map();
             case 2:
                 return new Event_Carpool();
+//            case 3:
+//                return new Event_Map();
             default:
                 return null;
         }
@@ -49,8 +51,12 @@ public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
                 return "Map";
             case 2:
                 return "Carpool";
+//            case 3:
+//                return "TEMP";
             default:
                 return null;
         }
     }
+
+
 }

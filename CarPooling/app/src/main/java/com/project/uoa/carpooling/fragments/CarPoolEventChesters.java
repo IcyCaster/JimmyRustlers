@@ -75,7 +75,7 @@ public class CarPoolEventChesters extends Fragment {
 
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        PagerAdapter pagerAdapter =  new FixedTabsPagerAdapter(getActivity().getSupportFragmentManager());
+        PagerAdapter pagerAdapter =  new FixedTabsPagerAdapter(getChildFragmentManager());
         viewPager.setAdapter(pagerAdapter);
 
         TabLayout tabLayout =(TabLayout) view.findViewById(R.id.tab_layout);
