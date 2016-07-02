@@ -303,7 +303,6 @@ public class SubscribedCarpools extends Fragment {
 //        request.setParameters(parameters);
 //        request.executeAsync();
 
-
 //        listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
 //        GetEventDetails();
 
