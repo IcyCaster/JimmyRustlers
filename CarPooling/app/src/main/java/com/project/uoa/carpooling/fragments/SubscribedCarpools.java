@@ -180,7 +180,7 @@ public class SubscribedCarpools extends Fragment {
 
         mMessageRecyclerView = (RecyclerView) view.findViewById(R.id.messageRecyclerView);
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-        mFirebaseDatabaseReference.setValue("Hello, World!");
+
 
         // Set up Adapter for RecyclerView
         // Note that the adapter requires the new DBItemModel and ItemViewHolder classes.

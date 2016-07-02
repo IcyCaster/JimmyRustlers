@@ -139,7 +139,8 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_logout:
                 LoginManager.getInstance().logOut();
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(i);
                 finish();
         }
 
