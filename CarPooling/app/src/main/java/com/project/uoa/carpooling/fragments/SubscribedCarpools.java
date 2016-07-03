@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,32 +12,29 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.adapters.AddFacebookEventAdapter;
 import com.project.uoa.carpooling.adapters.SubscribedFacebookEventAdapter;
 import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
-import com.project.uoa.carpooling.firebaseModels.DBItemModel;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
-import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
 
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -141,7 +137,7 @@ public class SubscribedCarpools extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
+                swipeContainer.setRefreshing(false);
                 fetchTimelineAsync();
             }
         });
@@ -158,8 +154,6 @@ public class SubscribedCarpools extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
-
 
 
         Button addButton = (Button) view.findViewById(R.id.join_carpool_button);
@@ -183,15 +177,11 @@ public class SubscribedCarpools extends Fragment {
         });
 
 
-
         return view;
     }
 
 
-
-
     public void fetchTimelineAsync() {
-
 
 
         // Send the network request to fetch the updated data
@@ -232,21 +222,6 @@ public class SubscribedCarpools extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
     public void PopulateViewWithSubscribedEvents() {
 
 
@@ -259,16 +234,14 @@ public class SubscribedCarpools extends Fragment {
 
                 Log.d("firebase - listsnapshot", snapshot.toString());
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if(!child.getKey().toString().equals("Name")) {
+                    if (!child.getKey().toString().equals("Name")) {
                         Log.d("firebase - list event", child.toString());
                         listOfSubscribedEvents.add(child.getKey().toString());
-                    }
-                    else {
+                    } else {
                         Log.d("firebase - list name", child.toString());
                     }
                 }
                 GetEventDetails();
-
 
 
 //                // If it exists, everything is sweet
@@ -282,6 +255,7 @@ public class SubscribedCarpools extends Fragment {
 //                    Log.d("firebase - user created", userId);
 //                }
             }
+
             @Override
             public void onCancelled(DatabaseError firebaseError) {
                 Log.e("firebase - error", firebaseError.getMessage());
@@ -289,18 +263,22 @@ public class SubscribedCarpools extends Fragment {
         });
 
 
-
-
-
     }
 
     public void GetEventDetails() {
 
 
-
-
         listOfEventCardEntities = new ArrayList<EventCardEntity>();
-        {
+
+        if (listOfSubscribedEvents.size() == 0) {
+            Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
+                    Toast.LENGTH_SHORT);
+            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+            if( v != null) v.setGravity(Gravity.CENTER);
+            toast.show();
+
+        } else {
+
             subbedEvents = listOfSubscribedEvents.size();
             for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
 
@@ -334,13 +312,28 @@ public class SubscribedCarpools extends Fragment {
         }
     }
 
-
-        public synchronized void callback() {
-            subbedEvents--;
-            if(subbedEvents == 0) {
-                swipeContainer.setRefreshing(false);
-            }
+    public synchronized void callback() {
+        subbedEvents--;
+        if (subbedEvents == 0) {
+            swipeContainer.setRefreshing(false);
         }
+    }
+
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
 
 }
 
