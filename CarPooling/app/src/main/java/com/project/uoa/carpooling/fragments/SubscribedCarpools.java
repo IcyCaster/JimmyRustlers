@@ -17,24 +17,32 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.EventToCardAdapter;
 import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
+import com.project.uoa.carpooling.firebaseModels.DBItemModel;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
 
@@ -78,6 +86,13 @@ public class SubscribedCarpools extends Fragment {
 
     private SwipeRefreshLayout swipeContainer;
 
+    //Firebase things
+    private DatabaseReference mFirebaseDatabaseReference;
+    private RecyclerView mMessageRecyclerView;
+
+    private FirebaseRecyclerAdapter<DBItemModel, ItemViewHolder>
+            mFirebaseAdapter;
+
 
     public SubscribedCarpools() {
         // Required empty public constructor
@@ -120,7 +135,7 @@ public class SubscribedCarpools extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+//        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
 
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
@@ -160,16 +175,57 @@ public class SubscribedCarpools extends Fragment {
         });
 
 
+        //-------------------
+
+
+        mMessageRecyclerView = (RecyclerView) view.findViewById(R.id.messageRecyclerView);
+        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
+        mFirebaseDatabaseReference.setValue("Hello, World!");
+
+        // Set up Adapter for RecyclerView
+        // Note that the adapter requires the new DBItemModel and ItemViewHolder classes.
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<DBItemModel,
+                ItemViewHolder>(
+                DBItemModel.class,
+                R.layout.item_message,
+                ItemViewHolder.class,
+                mFirebaseDatabaseReference.child("messages")) {
+
+            @Override
+            protected void populateViewHolder(ItemViewHolder viewHolder,
+                                              DBItemModel DBItemModel, int position) {
+                viewHolder.messageTextView.setText(DBItemModel.getText());
+                viewHolder.userTextView.setText(DBItemModel.getName());
+            }
+        };
+
+
+        // Set up RecyclerView with LayoutManager and Adapter
+        mMessageRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
 
         return view;
     }
 
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
+        public TextView messageTextView;
+        public TextView userTextView;
+
+        public ItemViewHolder(View v) {
+            super(v);
+            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
+            userTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
+        }
+    }
+
+
+
+    //-------------------------------------------------------
     public void fetchTimelineAsync() {
-        final CountDownLatch latch = new CountDownLatch(1);
         // Send the network request to fetch the updated data
         // `client` here is an instance of Android Async HTTP
         Handler h = new Handler();
-//later to update UI
+        //later to update UI
         h.post(new Runnable() {
             @Override
             public void run() {
@@ -222,30 +278,36 @@ public class SubscribedCarpools extends Fragment {
     }
 
     public void PopulateViewWithSubscribedEvents() {
-        long unixTime = System.currentTimeMillis() / 1000L;
+
+        // Old method which got Facebook events. This is now getting subscribed FireBase Events.
+//        long unixTime = System.currentTimeMillis() / 1000L;
+//        GraphRequest request = GraphRequest.newGraphPathRequest(
+//                AccessToken.getCurrentAccessToken(),
+//                "/me/events",
+//                new GraphRequest.Callback() {
+//                    @Override
+//                    public void onCompleted(GraphResponse response) {
+//
+//                        Log.d("FB", "Event ids");
+//                        // This parses the events the users has subscribed to. (Currently it just parses upcoming facebook events
+//                        listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
+//                        GetEventDetails();
+//
+//
+//                    }
+//                });
+//
+//        Bundle parameters = new Bundle();
+//        parameters.putString("fields", "id");
+//        parameters.putString("since", Long.toString(unixTime));
+//        request.setParameters(parameters);
+//        request.executeAsync();
 
 
-        GraphRequest request = GraphRequest.newGraphPathRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/me/events",
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-
-                        Log.d("FB", "Event ids");
-                        // This parses the events the users has subscribed to. (Currently it just parses upcoming facebook events
-                        listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
-                        GetEventDetails();
+//        listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
+//        GetEventDetails();
 
 
-                    }
-                });
-
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id");
-        parameters.putString("since", Long.toString(unixTime));
-        request.setParameters(parameters);
-        request.executeAsync();
     }
 
     public void GetEventDetails() {
@@ -285,7 +347,6 @@ public class SubscribedCarpools extends Fragment {
 
         }
     }
-
 
 
     // OLD METHOD TO TEST OUT THE RECYCLER
