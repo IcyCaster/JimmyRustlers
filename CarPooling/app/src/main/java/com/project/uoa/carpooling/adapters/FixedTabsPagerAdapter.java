@@ -32,8 +32,6 @@ public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
             case 2:
                 Event_Carpool ec = new Event_Carpool();
                 return ec;
-//            case 3:
-//                return new Event_Map();
             default:
                 return null;
         }
