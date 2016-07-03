@@ -24,11 +24,14 @@ public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new Event_Details();
+                Event_Details ed = new Event_Details();
+                return ed;
             case 1:
-                return new Event_Map();
+                Event_Map em = new Event_Map();
+                return em;
             case 2:
-                return new Event_Carpool();
+                Event_Carpool ec = new Event_Carpool();
+                return ec;
 //            case 3:
 //                return new Event_Map();
             default:

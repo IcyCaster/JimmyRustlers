@@ -188,13 +188,15 @@ public class LoginActivity extends AppCompatActivity {
                         } catch (JSONException e) {
                             Log.e("facebook - JSON-error", e.getMessage());
                         }
+
+                        Log.d("login", "Logged in through callback");
+                        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(i);
+                        finish();
                     }
                 });
         request.executeAsync();
 
-        Log.d("login", "Logged in through callback");
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i);
-        finish();
+
     }
 }

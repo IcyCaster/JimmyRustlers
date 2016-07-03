@@ -227,7 +227,7 @@ public class SubscribedCarpools extends Fragment {
 
         listOfSubscribedEvents.clear();
 
-
+        Log.d("firebase - currentId", userId);
         fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
