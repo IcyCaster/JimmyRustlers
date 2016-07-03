@@ -63,6 +63,8 @@ public class SubscribedCarpools extends Fragment {
 
     private View view;
 
+    private int subbedEvents;
+
     // This is the list of cards which will be displayed on the recyclerView
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
 
@@ -294,39 +296,55 @@ public class SubscribedCarpools extends Fragment {
 
     public void GetEventDetails() {
 
+
+
+
         listOfEventCardEntities = new ArrayList<EventCardEntity>();
+        {
+            subbedEvents = listOfSubscribedEvents.size();
+            for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
 
-        for (String s : listOfSubscribedEvents) {
 
-            GraphRequest request = GraphRequest.newGraphPathRequest(
-                    AccessToken.getCurrentAccessToken(),
-                    "/" + s,
-                    new GraphRequest.Callback() {
-                        @Override
-                        public void onCompleted(GraphResponse response) {
+                GraphRequest request = GraphRequest.newGraphPathRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        "/" + listOfSubscribedEvents.get(i),
+                        new GraphRequest.Callback() {
+                            @Override
+                            public void onCompleted(GraphResponse response) {
 
-                            Log.d("FB", "Event details" + response.toString());
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                Log.d("FB", "Event details" + response.toString());
+                                listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
 
-                            adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
-                            recyclerView.setAdapter(adapter);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
+                                recyclerView.setAdapter(adapter);
+                                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-                            Log.d("FB", "Array-" + listOfEventCardEntities.toString());
-                            for (EventCardEntity c : listOfEventCardEntities) {
-                                Log.d("FB", "Event:" + c.toString());
+                                Log.d("FB", "Array-" + listOfEventCardEntities.toString());
+                                for (EventCardEntity c : listOfEventCardEntities) {
+                                    Log.d("FB", "Event:" + c.toString());
+                                }
+
+                                callback();
                             }
+                        });
 
-                            swipeContainer.setRefreshing(false);
+                request.executeAsync();
 
-                        }
-                    });
-
-            request.executeAsync();
-
+            }
         }
     }
+
+
+        public synchronized void callback() {
+            subbedEvents--;
+            if(subbedEvents == 0) {
+                swipeContainer.setRefreshing(false);
+            }
+        }
+
 }
+
+
 
 
 
