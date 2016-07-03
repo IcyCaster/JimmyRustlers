@@ -13,7 +13,7 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.adapters.EventToCardAdapter;
+import com.project.uoa.carpooling.adapters.AddFacebookEventAdapter;
 import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
@@ -28,7 +28,7 @@ public class EventPopup extends DialogFragment {
 
     private ArrayList<String> listOfSubscribedEvents;
     private RecyclerView popUpRecyclerView;
-    private EventToCardAdapter adapter;
+    private AddFacebookEventAdapter adapter;
     // this method create view for your Dialog
 
     /**
@@ -102,12 +102,7 @@ public class EventPopup extends DialogFragment {
                             Log.d("FB", "Event details" + response.toString());
                             listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
 
-
-                            //TODO: REMOVE, only added two more times to test RecyclerView
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
-
-                            adapter = new EventToCardAdapter(listOfEventCardEntities, getActivity());
+                            adapter = new AddFacebookEventAdapter(listOfEventCardEntities, getActivity());
 
                             popUpRecyclerView.setAdapter(adapter);
                             popUpRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

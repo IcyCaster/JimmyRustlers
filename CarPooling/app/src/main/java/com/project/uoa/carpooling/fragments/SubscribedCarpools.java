@@ -1,52 +1,41 @@
 package com.project.uoa.carpooling.fragments;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.adapters.EventToCardAdapter;
+import com.project.uoa.carpooling.adapters.AddFacebookEventAdapter;
+import com.project.uoa.carpooling.adapters.SubscribedFacebookEventAdapter;
 import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.firebaseModels.DBItemModel;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
-
-import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
@@ -82,17 +71,15 @@ public class SubscribedCarpools extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private RecyclerView recyclerView;
-    private EventToCardAdapter adapter;
+    private SubscribedFacebookEventAdapter adapter;
 
     private SwipeRefreshLayout swipeContainer;
 
     //Firebase things
-    private DatabaseReference mFirebaseDatabaseReference;
-    private RecyclerView mMessageRecyclerView;
+    private DatabaseReference fireBaseReference;
 
-    private FirebaseRecyclerAdapter<DBItemModel, ItemViewHolder>
-            mFirebaseAdapter;
-
+    private SharedPreferences sharedPreferences;
+    private String userId;
 
     public SubscribedCarpools() {
         // Required empty public constructor
@@ -129,29 +116,48 @@ public class SubscribedCarpools extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+        sharedPreferences = getActivity().getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
+
+        listOfSubscribedEvents = new ArrayList<>();
+
         // TODO: This will retrieve a list of all events the users is subscribed to. This list will be stored on firebase and will need to be parsed once retrieved.
         // TODO: For now, it just fetches all current events a user is subscribed to.
         PopulateViewWithSubscribedEvents();
 
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
 
-//        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
 
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
+
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
+
                 fetchTimelineAsync();
             }
         });
+
+//        swipeContainer.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                swipeContainer.setRefreshing(true);
+//            }
+//        });
+
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
+
+
 
 
         Button addButton = (Button) view.findViewById(R.id.join_carpool_button);
@@ -175,53 +181,17 @@ public class SubscribedCarpools extends Fragment {
         });
 
 
-        //-------------------
-
-
-        mMessageRecyclerView = (RecyclerView) view.findViewById(R.id.messageRecyclerView);
-        mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
-
-
-        // Set up Adapter for RecyclerView
-        // Note that the adapter requires the new DBItemModel and ItemViewHolder classes.
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<DBItemModel,
-                ItemViewHolder>(
-                DBItemModel.class,
-                R.layout.item_message,
-                ItemViewHolder.class,
-                mFirebaseDatabaseReference.child("messages")) {
-
-            @Override
-            protected void populateViewHolder(ItemViewHolder viewHolder,
-                                              DBItemModel DBItemModel, int position) {
-                viewHolder.messageTextView.setText(DBItemModel.getText());
-                viewHolder.userTextView.setText(DBItemModel.getName());
-            }
-        };
-
-
-        // Set up RecyclerView with LayoutManager and Adapter
-        mMessageRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mMessageRecyclerView.setAdapter(mFirebaseAdapter);
 
         return view;
     }
 
-    public static class ItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView messageTextView;
-        public TextView userTextView;
-
-        public ItemViewHolder(View v) {
-            super(v);
-            messageTextView = (TextView) itemView.findViewById(R.id.messageTextView);
-            userTextView = (TextView) itemView.findViewById(R.id.messengerTextView);
-        }
-    }
 
 
 
-    //-------------------------------------------------------
     public void fetchTimelineAsync() {
+
+
+
         // Send the network request to fetch the updated data
         // `client` here is an instance of Android Async HTTP
         Handler h = new Handler();
@@ -230,10 +200,8 @@ public class SubscribedCarpools extends Fragment {
             @Override
             public void run() {
                 PopulateViewWithSubscribedEvents();
-                swipeContainer.setRefreshing(false);
+
             }
-
-
         });
     }
 
@@ -279,32 +247,47 @@ public class SubscribedCarpools extends Fragment {
 
     public void PopulateViewWithSubscribedEvents() {
 
-        // Old method which got Facebook events. This is now getting subscribed FireBase Events.
-//        long unixTime = System.currentTimeMillis() / 1000L;
-//        GraphRequest request = GraphRequest.newGraphPathRequest(
-//                AccessToken.getCurrentAccessToken(),
-//                "/me/events",
-//                new GraphRequest.Callback() {
-//                    @Override
-//                    public void onCompleted(GraphResponse response) {
-//
-//                        Log.d("FB", "Event ids");
-//                        // This parses the events the users has subscribed to. (Currently it just parses upcoming facebook events
-//                        listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
-//                        GetEventDetails();
-//
-//
-//                    }
-//                });
-//
-//        Bundle parameters = new Bundle();
-//        parameters.putString("fields", "id");
-//        parameters.putString("since", Long.toString(unixTime));
-//        request.setParameters(parameters);
-//        request.executeAsync();
 
-//        listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
-//        GetEventDetails();
+        listOfSubscribedEvents.clear();
+
+
+        fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                Log.d("firebase - listsnapshot", snapshot.toString());
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if(!child.getKey().toString().equals("Name")) {
+                        Log.d("firebase - list event", child.toString());
+                        listOfSubscribedEvents.add(child.getKey().toString());
+                    }
+                    else {
+                        Log.d("firebase - list name", child.toString());
+                    }
+                }
+                GetEventDetails();
+
+
+
+//                // If it exists, everything is sweet
+//                if (snapshot.exists()) {
+//                    Log.d("firebase - user found", snapshot.toString());
+//                }
+//                // If it doesn't, create the user in the Firebase database
+//                else {
+//                    fireBaseReference.child("users").child(userId).push();
+//                    fireBaseReference.child("users").child(userId).child("Name").setValue(userName);
+//                    Log.d("firebase - user created", userId);
+//                }
+            }
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+                Log.e("firebase - error", firebaseError.getMessage());
+            }
+        });
+
+
+
 
 
     }
@@ -325,12 +308,7 @@ public class SubscribedCarpools extends Fragment {
                             Log.d("FB", "Event details" + response.toString());
                             listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
 
-
-                            //TODO: REMOVE, only added two more times to test RecyclerView
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
-
-                            adapter = new EventToCardAdapter(listOfEventCardEntities, getActivity());
+                            adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
                             recyclerView.setAdapter(adapter);
                             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -339,6 +317,8 @@ public class SubscribedCarpools extends Fragment {
                                 Log.d("FB", "Event:" + c.toString());
                             }
 
+                            swipeContainer.setRefreshing(false);
+
                         }
                     });
 
@@ -346,24 +326,6 @@ public class SubscribedCarpools extends Fragment {
 
         }
     }
-
-
-    // OLD METHOD TO TEST OUT THE RECYCLER
-//    public List<EventCardEntity> fill_with_data() {
-//
-//        List<EventCardEntity> data = new ArrayList<>();
-//
-//        data.add(new EventCardEntity(1, R.drawable.test_bbq, "TEST ONE", "1-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(2, R.drawable.test_church, "TEST TWO", "2-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(3, R.drawable.test_work, "TEST THREE", "3-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(4, R.drawable.test_bbq, "TEST FOUR", "4-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(5, R.drawable.test_church, "TEST FIVE", "5-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(6, R.drawable.test_work, "TEST SIX", "6-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(7, R.drawable.test, "TEST SEVEN", "7-Sept-16 11:00pm"));
-//
-//        return data;
-//    }
-
 }
 
 

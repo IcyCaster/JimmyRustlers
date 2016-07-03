@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -57,9 +56,18 @@ public class LoginActivity extends AppCompatActivity {
 
         // Check if the user is already logged on
         if (isLoggedIn()) {
+            Log.d("login", "Logged in through isLoggedIn()");
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         }
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
+                updateWithToken(newAccessToken);
+                Profile.fetchProfileForCurrentAccessToken();
+            }
+        };
 
         // JUNK BUTTON. ONLY HERE FOR IF WE IMPLEMENT OUR OWN LOGIN
         Button loginButton = (Button) findViewById(R.id.btn_login);
@@ -81,13 +89,7 @@ public class LoginActivity extends AppCompatActivity {
     // Initialize the Facebook components and tracks the current user's access token.
     protected void initializeFacebookSDK() {
         FacebookSdk.sdkInitialize(getApplicationContext());
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
-                updateWithToken(newAccessToken);
-                Profile.fetchProfileForCurrentAccessToken();
-            }
-        };
+
 
     }
 
@@ -114,16 +116,17 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void updateWithToken(AccessToken currentAccessToken) {
-        if (currentAccessToken != null) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(i);
-                    finish();
-                }
-            }, 0);
-        }
+//        if (currentAccessToken != null) {
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Log.d("login", "Logged in through handler");
+//                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
+//                    startActivity(i);
+//                    finish();
+//                }
+//            }, 0);
+//        }
     }
 
     // This occurs on a successful Facebook Login
@@ -176,6 +179,7 @@ public class LoginActivity extends AppCompatActivity {
                                         Log.d("firebase - user created", userId);
                                     }
                                 }
+
                                 @Override
                                 public void onCancelled(DatabaseError firebaseError) {
                                     Log.e("firebase - error", firebaseError.getMessage());
@@ -187,5 +191,10 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         request.executeAsync();
+
+        Log.d("login", "Logged in through callback");
+        Intent i = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(i);
+        finish();
     }
 }
