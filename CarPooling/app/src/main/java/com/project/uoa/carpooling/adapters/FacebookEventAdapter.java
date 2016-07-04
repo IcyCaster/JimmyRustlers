@@ -29,20 +29,13 @@ import java.util.List;
 /**
  * Created by Chester on 13/06/2016.
  */
-public class AddFacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
+public class FacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
 
     List<EventCardEntity> list = Collections.emptyList();
     Context context;
 
-
-    // Not sure if used
-    private LayoutInflater layoutInflater;
-    AddFacebookEventAdapter(Context context) {
-        layoutInflater = LayoutInflater.from(context);
-    }
-
-
-    public AddFacebookEventAdapter(List<EventCardEntity> list, Context context) {
+    // Constructor, pass in a list of Facebook Card Events and the applications context
+    public FacebookEventAdapter(List<EventCardEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -56,11 +49,9 @@ public class AddFacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder>
 
     @Override
     public void onBindViewHolder(AddViewHolder holder, int position) {
-
         holder.eventId = Long.toString(list.get(position).id);
         holder.eventName.setText(list.get(position).eventName);
         holder.eventStartDate.setText(list.get(position).startDate);
-//        holder.eventThumbnail.setImageResource(list.get(position).eventImageId);
     }
 
     @Override
@@ -91,7 +82,6 @@ public class AddFacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder>
 
 class AddViewHolder extends RecyclerView.ViewHolder {
     public String eventId;
-//    public ImageView eventThumbnail;
     public TextView eventName;
     public TextView eventStartDate;
     private DatabaseReference fireBaseReference; // Root Firebase Reference

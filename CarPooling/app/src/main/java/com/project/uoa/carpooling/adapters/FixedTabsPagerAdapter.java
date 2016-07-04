@@ -52,8 +52,6 @@ public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
                 return "Map";
             case 2:
                 return "Carpool";
-//            case 3:
-//                return "TEMP";
             default:
                 return null;
         }

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -43,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Initialise FbSDK before setContentView, as the view uses Facebook components
-        initializeFacebookSDK();
+        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
         // Initialise shared preferences
@@ -64,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         accessTokenTracker = new AccessTokenTracker() {
             @Override
             protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken newAccessToken) {
-                updateWithToken(newAccessToken);
+//                updateWithToken(newAccessToken);
                 Profile.fetchProfileForCurrentAccessToken();
             }
         };
@@ -84,13 +85,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         // Don't actually know what this does, Facebook tutorials told me to add it. ¯\_(ツ)_/¯
         facebookConnector.getCallbackManager().onActivityResult(requestCode, resultCode, data);
-    }
-
-    // Initialize the Facebook components and tracks the current user's access token.
-    protected void initializeFacebookSDK() {
-        FacebookSdk.sdkInitialize(getApplicationContext());
-
-
     }
 
     /*
@@ -113,20 +107,6 @@ public class LoginActivity extends AppCompatActivity {
         else {
             return true;
         }
-    }
-
-    private void updateWithToken(AccessToken currentAccessToken) {
-//        if (currentAccessToken != null) {
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Log.d("login", "Logged in through handler");
-//                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
-//                    startActivity(i);
-//                    finish();
-//                }
-//            }, 0);
-//        }
     }
 
     // This occurs on a successful Facebook Login
@@ -152,6 +132,7 @@ public class LoginActivity extends AppCompatActivity {
         GraphRequest request = GraphRequest.newMeRequest(
                 AccessToken.getCurrentAccessToken(),
                 new GraphRequest.GraphJSONObjectCallback() {
+
                     @Override
                     public void onCompleted(JSONObject object, GraphResponse response) {
                         try {
@@ -179,16 +160,17 @@ public class LoginActivity extends AppCompatActivity {
                                         Log.d("firebase - user created", userId);
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(DatabaseError firebaseError) {
                                     Log.e("firebase - error", firebaseError.getMessage());
                                 }
                             });
+
                         } catch (JSONException e) {
                             Log.e("facebook - JSON-error", e.getMessage());
                         }
 
+                        // Once successfully logged in and userId added to Firebase, launch the MainActivity
                         Log.d("login", "Logged in through callback");
                         Intent i = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(i);
@@ -196,7 +178,20 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         request.executeAsync();
+    }
 
-
+    // Currently not used, maybe revisit token tracking at a later date.
+    private void updateWithToken(AccessToken currentAccessToken) {
+        if (currentAccessToken != null) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("login", "Logged in through handler");
+                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(i);
+                    finish();
+                }
+            }, 0);
+        }
     }
 }

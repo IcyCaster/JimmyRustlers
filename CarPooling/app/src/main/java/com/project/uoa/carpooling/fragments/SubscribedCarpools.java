@@ -34,6 +34,10 @@ import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 
@@ -243,17 +247,6 @@ public class SubscribedCarpools extends Fragment {
                 }
                 GetEventDetails();
 
-
-//                // If it exists, everything is sweet
-//                if (snapshot.exists()) {
-//                    Log.d("firebase - user found", snapshot.toString());
-//                }
-//                // If it doesn't, create the user in the Firebase database
-//                else {
-//                    fireBaseReference.child("users").child(userId).push();
-//                    fireBaseReference.child("users").child(userId).child("Name").setValue(userName);
-//                    Log.d("firebase - user created", userId);
-//                }
             }
 
             @Override
@@ -274,7 +267,7 @@ public class SubscribedCarpools extends Fragment {
             Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
                     Toast.LENGTH_SHORT);
             TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-            if( v != null) v.setGravity(Gravity.CENTER);
+            if (v != null) v.setGravity(Gravity.CENTER);
             toast.show();
 
         } else {
@@ -289,20 +282,63 @@ public class SubscribedCarpools extends Fragment {
                         new GraphRequest.Callback() {
                             @Override
                             public void onCompleted(GraphResponse response) {
+                                try {
 
-                                Log.d("FB", "Event details" + response.toString());
-                                listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                    listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                    final String id = response.getJSONObject().getString("id");
 
-                                adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
-                                recyclerView.setAdapter(adapter);
-                                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                    GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
+                                            AccessToken.getCurrentAccessToken(),
+                                            "/" + id + "/picture",
+                                            new GraphRequest.Callback() {
 
-                                Log.d("FB", "Array-" + listOfEventCardEntities.toString());
-                                for (EventCardEntity c : listOfEventCardEntities) {
-                                    Log.d("FB", "Event:" + c.toString());
+                                                @Override
+                                                public void onCompleted(GraphResponse response) {
+                                                    Log.d("FB", "Event details" + response.toString());
+
+
+                                                    try {
+
+
+                                                        String url = "";
+
+                                                        url = response.getJSONObject().getJSONObject("data").getString("url");
+
+                                                        Log.d("FB Picture", "url-" + url);
+
+
+
+                                                        for (EventCardEntity e : listOfEventCardEntities) {
+                                                            if (e.id == (Long.parseLong(id))) {
+                                                                listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
+                                                            }
+                                                        }
+
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+
+
+                                                    adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
+                                                    recyclerView.setAdapter(adapter);
+                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+                                                    Log.d("FB", "Array-" + listOfEventCardEntities.toString());
+
+                                                    callback();
+                                                }
+                                            });
+
+
+                                    Bundle parameters = new Bundle();
+                                    parameters.putString("type", "large");
+                                    parameters.putBoolean("redirect", false);
+                                    innerRequest.setParameters(parameters);
+                                    innerRequest.executeAsync();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
-
-                                callback();
                             }
                         });
 
