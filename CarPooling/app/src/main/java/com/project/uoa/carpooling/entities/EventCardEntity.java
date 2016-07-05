@@ -10,19 +10,23 @@ import java.util.Date;
 public class EventCardEntity {
 
     public long id;
-    public int eventImageId;
+    public String eventImageURL;
     public String eventName;
     public String startDate;
 
-    public EventCardEntity(long id, int eventImageId, String eventName, String startDate) {
+    public EventCardEntity(long id, String eventImageURL, String eventName, String startDate) {
         this.id = id;
-        this.eventImageId = eventImageId;
+        this.eventImageURL = eventImageURL;
         this.eventName = eventName;
         this.startDate = startDate;
     }
 
     @Override
     public String toString() {
-        return eventName + " is here!";
+        return "id:" + id;
+    }
+
+    public void setImage(String url) {
+        this.eventImageURL = url;
     }
 }

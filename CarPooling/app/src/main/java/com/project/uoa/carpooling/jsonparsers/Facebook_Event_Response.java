@@ -24,7 +24,7 @@ public class Facebook_Event_Response {
             // EventID, EventImage, EventName, StartTime
             // TODO: Swap R.drawable.test with the actual event image.
             // TODO: Format how the startTime is displayed
-            EventCardEntity entity = new EventCardEntity(Long.parseLong(response.getString("id")), R.drawable.test, response.getString("name"), response.getString("start_time"));
+            EventCardEntity entity = new EventCardEntity(Long.parseLong(response.getString("id")), "TEMP", response.getString("name"), response.getString("start_time"));
 
             Log.d("JSON->Entity:", entity.toString());
 

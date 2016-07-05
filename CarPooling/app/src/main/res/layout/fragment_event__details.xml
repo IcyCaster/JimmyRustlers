@@ -10,4 +10,11 @@
         android:layout_height="match_parent"
         android:text="Hello Details Fragment" />
 
+    <Button
+        android:layout_gravity="center"
+        android:id="@+id/event_leave_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Leave Carpool" />
+
 </FrameLayout>

@@ -1,18 +1,12 @@
 package com.project.uoa.carpooling.fragments;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,25 +17,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.adapters.EventToCardAdapter;
+import com.project.uoa.carpooling.adapters.SubscribedFacebookEventAdapter;
 import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
-import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -66,6 +63,8 @@ public class SubscribedCarpools extends Fragment {
 
     private View view;
 
+    private int subbedEvents;
+
     // This is the list of cards which will be displayed on the recyclerView
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
 
@@ -74,10 +73,15 @@ public class SubscribedCarpools extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private RecyclerView recyclerView;
-    private EventToCardAdapter adapter;
+    private SubscribedFacebookEventAdapter adapter;
 
     private SwipeRefreshLayout swipeContainer;
 
+    //Firebase things
+    private DatabaseReference fireBaseReference;
+
+    private SharedPreferences sharedPreferences;
+    private String userId;
 
     public SubscribedCarpools() {
         // Required empty public constructor
@@ -114,6 +118,15 @@ public class SubscribedCarpools extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+        sharedPreferences = getActivity().getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
+
+        listOfSubscribedEvents = new ArrayList<>();
+
         // TODO: This will retrieve a list of all events the users is subscribed to. This list will be stored on firebase and will need to be parsed once retrieved.
         // TODO: For now, it just fetches all current events a user is subscribed to.
         PopulateViewWithSubscribedEvents();
@@ -124,14 +137,22 @@ public class SubscribedCarpools extends Fragment {
 
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-        // Setup refresh listener which triggers new data loading
+
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                // Your code to refresh the list here.
+                swipeContainer.setRefreshing(false);
                 fetchTimelineAsync();
             }
         });
+
+//        swipeContainer.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                swipeContainer.setRefreshing(true);
+//            }
+//        });
+
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -160,24 +181,23 @@ public class SubscribedCarpools extends Fragment {
         });
 
 
-
         return view;
     }
 
+
     public void fetchTimelineAsync() {
-        final CountDownLatch latch = new CountDownLatch(1);
+
+
         // Send the network request to fetch the updated data
         // `client` here is an instance of Android Async HTTP
         Handler h = new Handler();
-//later to update UI
+        //later to update UI
         h.post(new Runnable() {
             @Override
             public void run() {
                 PopulateViewWithSubscribedEvents();
-                swipeContainer.setRefreshing(false);
+
             }
-
-
         });
     }
 
@@ -206,6 +226,136 @@ public class SubscribedCarpools extends Fragment {
         mListener = null;
     }
 
+    public void PopulateViewWithSubscribedEvents() {
+
+
+        listOfSubscribedEvents.clear();
+
+        Log.d("firebase - currentId", userId);
+        fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                Log.d("firebase - listsnapshot", snapshot.toString());
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if (!child.getKey().toString().equals("Name")) {
+                        Log.d("firebase - list event", child.toString());
+                        listOfSubscribedEvents.add(child.getKey().toString());
+                    } else {
+                        Log.d("firebase - list name", child.toString());
+                    }
+                }
+                GetEventDetails();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+                Log.e("firebase - error", firebaseError.getMessage());
+            }
+        });
+
+
+    }
+
+    public void GetEventDetails() {
+
+
+        listOfEventCardEntities = new ArrayList<EventCardEntity>();
+
+        if (listOfSubscribedEvents.size() == 0) {
+            Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
+                    Toast.LENGTH_SHORT);
+            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+            if (v != null) v.setGravity(Gravity.CENTER);
+            toast.show();
+
+        } else {
+
+            subbedEvents = listOfSubscribedEvents.size();
+            for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
+
+
+                GraphRequest request = GraphRequest.newGraphPathRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        "/" + listOfSubscribedEvents.get(i),
+                        new GraphRequest.Callback() {
+                            @Override
+                            public void onCompleted(GraphResponse response) {
+                                try {
+
+                                    listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                    final String id = response.getJSONObject().getString("id");
+
+                                    GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
+                                            AccessToken.getCurrentAccessToken(),
+                                            "/" + id + "/picture",
+                                            new GraphRequest.Callback() {
+
+                                                @Override
+                                                public void onCompleted(GraphResponse response) {
+                                                    Log.d("FB", "Event details" + response.toString());
+
+
+                                                    try {
+
+
+                                                        String url = "";
+
+                                                        url = response.getJSONObject().getJSONObject("data").getString("url");
+
+                                                        Log.d("FB Picture", "url-" + url);
+
+
+
+                                                        for (EventCardEntity e : listOfEventCardEntities) {
+                                                            if (e.id == (Long.parseLong(id))) {
+                                                                listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
+                                                            }
+                                                        }
+
+                                                    } catch (JSONException e) {
+                                                        e.printStackTrace();
+                                                    }
+
+
+                                                    adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
+                                                    recyclerView.setAdapter(adapter);
+                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+                                                    Log.d("FB", "Array-" + listOfEventCardEntities.toString());
+
+                                                    callback();
+                                                }
+                                            });
+
+
+                                    Bundle parameters = new Bundle();
+                                    parameters.putString("type", "large");
+                                    parameters.putBoolean("redirect", false);
+                                    innerRequest.setParameters(parameters);
+                                    innerRequest.executeAsync();
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                request.executeAsync();
+
+            }
+        }
+    }
+
+    public synchronized void callback() {
+        subbedEvents--;
+        if (subbedEvents == 0) {
+            swipeContainer.setRefreshing(false);
+        }
+    }
+
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -221,90 +371,9 @@ public class SubscribedCarpools extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void PopulateViewWithSubscribedEvents() {
-        long unixTime = System.currentTimeMillis() / 1000L;
-
-
-        GraphRequest request = GraphRequest.newGraphPathRequest(
-                AccessToken.getCurrentAccessToken(),
-                "/me/events",
-                new GraphRequest.Callback() {
-                    @Override
-                    public void onCompleted(GraphResponse response) {
-
-                        Log.d("FB", "Event ids");
-                        // This parses the events the users has subscribed to. (Currently it just parses upcoming facebook events
-                        listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
-                        GetEventDetails();
-
-
-                    }
-                });
-
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id");
-        parameters.putString("since", Long.toString(unixTime));
-        request.setParameters(parameters);
-        request.executeAsync();
-    }
-
-    public void GetEventDetails() {
-
-        listOfEventCardEntities = new ArrayList<EventCardEntity>();
-
-        for (String s : listOfSubscribedEvents) {
-
-            GraphRequest request = GraphRequest.newGraphPathRequest(
-                    AccessToken.getCurrentAccessToken(),
-                    "/" + s,
-                    new GraphRequest.Callback() {
-                        @Override
-                        public void onCompleted(GraphResponse response) {
-
-                            Log.d("FB", "Event details" + response.toString());
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
-
-
-                            //TODO: REMOVE, only added two more times to test RecyclerView
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
-
-                            adapter = new EventToCardAdapter(listOfEventCardEntities, getActivity());
-                            recyclerView.setAdapter(adapter);
-                            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
-                            Log.d("FB", "Array-" + listOfEventCardEntities.toString());
-                            for (EventCardEntity c : listOfEventCardEntities) {
-                                Log.d("FB", "Event:" + c.toString());
-                            }
-
-                        }
-                    });
-
-            request.executeAsync();
-
-        }
-    }
-
-
-
-    // OLD METHOD TO TEST OUT THE RECYCLER
-//    public List<EventCardEntity> fill_with_data() {
-//
-//        List<EventCardEntity> data = new ArrayList<>();
-//
-//        data.add(new EventCardEntity(1, R.drawable.test_bbq, "TEST ONE", "1-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(2, R.drawable.test_church, "TEST TWO", "2-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(3, R.drawable.test_work, "TEST THREE", "3-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(4, R.drawable.test_bbq, "TEST FOUR", "4-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(5, R.drawable.test_church, "TEST FIVE", "5-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(6, R.drawable.test_work, "TEST SIX", "6-Sept-16 8:00pm"));
-//        data.add(new EventCardEntity(7, R.drawable.test, "TEST SEVEN", "7-Sept-16 11:00pm"));
-//
-//        return data;
-//    }
-
 }
+
+
 
 
 
