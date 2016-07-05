@@ -173,7 +173,7 @@ public class SubscribedCarpools extends Fragment {
                 ft.addToBackStack(null);
 
                 // Create and show the dialog.
-                DialogFragment newFragment = EventPopup.newInstance(0);
+                DialogFragment newFragment = EventPopup.newInstance();
                 newFragment.show(ft, "dialog");
             }
 
@@ -319,11 +319,7 @@ public class SubscribedCarpools extends Fragment {
                                                     }
 
 
-                                                    adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
-                                                    recyclerView.setAdapter(adapter);
-                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-                                                    Log.d("FB", "Array-" + listOfEventCardEntities.toString());
 
                                                     callback();
                                                 }
@@ -352,6 +348,11 @@ public class SubscribedCarpools extends Fragment {
         subbedEvents--;
         if (subbedEvents == 0) {
             swipeContainer.setRefreshing(false);
+            adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+            Log.d("FB", "Array-" + listOfEventCardEntities.toString());
         }
     }
 

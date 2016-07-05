@@ -1,6 +1,8 @@
 package com.project.uoa.carpooling.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -19,7 +21,7 @@ import com.facebook.login.LoginManager;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.fragments.ArchivedPools;
 import com.project.uoa.carpooling.fragments.CarPoolEventAngels;
-import com.project.uoa.carpooling.fragments.CarPoolEventChesters;
+import com.project.uoa.carpooling.fragments.CarpoolEvent;
 import com.project.uoa.carpooling.fragments.Event_Carpool;
 import com.project.uoa.carpooling.fragments.Event_Details;
 import com.project.uoa.carpooling.fragments.Event_Map;
@@ -27,11 +29,22 @@ import com.project.uoa.carpooling.fragments.FriendGroups;
 import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, CarPoolEventChesters.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Carpool.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, CarpoolEvent.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Carpool.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+
+    private String userId;
+
+    public String getUserId() {
+        return userId;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(
+                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+
+        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
 
         setContentView(R.layout.nav_drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
