@@ -81,7 +81,6 @@ class AddViewHolder extends RecyclerView.ViewHolder {
     public TextView eventName;
     public TextView eventStartDate;
     private DatabaseReference fireBaseReference; // Root Firebase Reference
-    private SharedPreferences sharedPreferences; // Access to SharedPreferences
     private String userId;
 
     public AddViewHolder(View itemView, Context context) {
@@ -96,8 +95,7 @@ class AddViewHolder extends RecyclerView.ViewHolder {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Initialise shared preferences
-        sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
+        userId = ((MainActivity) context).getUserId();
 
 
         itemView.setOnClickListener(new View.OnClickListener() {

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.CarpoolEventPagerAdapter;
 
 
@@ -69,12 +70,36 @@ public class CarpoolEvent extends Fragment {
 
         Log.d("EventId1", Long.toString(eventId));
 
-        PagerAdapter pagerAdapter =  new CarpoolEventPagerAdapter(getChildFragmentManager(), eventId);
+        final PagerAdapter pagerAdapter =  new CarpoolEventPagerAdapter(getChildFragmentManager(), eventId, (MainActivity)getActivity());
         viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int index) {
+                if(index==2)
+                    pagerAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
 
         TabLayout tabLayout =(TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
+
+
 
 
         return view;
