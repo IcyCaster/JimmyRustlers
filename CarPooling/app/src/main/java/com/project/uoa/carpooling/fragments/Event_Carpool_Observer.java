@@ -3,20 +3,17 @@ package com.project.uoa.carpooling.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.text.Layout;
-import android.util.Log;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.activities.MainActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +34,14 @@ public class Event_Carpool_Observer extends Fragment {
 private View view;
     private LayoutInflater inflater;
     private ViewGroup container;
+
+
+    private ViewPager viewPager;
+private YourPagerAdapter pagerAdapter;
+    private TabLayout tabLayout;
+
+
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -104,6 +109,55 @@ private View view;
 //        });
 
 
+        viewPager = (ViewPager) view.findViewById(R.id.view_pager1);
+
+        pagerAdapter = new YourPagerAdapter(getActivity().getSupportFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int index) {
+                    pagerAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+                // TODO Auto-generated method stub
+
+            }
+        });
+
+        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout1);
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
+
+        //Notice how The Tab Layout adn View Pager object are linked
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
 
         return view;
     }
@@ -133,5 +187,41 @@ private View view;
      */
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+    }
+}
+
+class YourPagerAdapter extends FragmentStatePagerAdapter {
+
+    public YourPagerAdapter(FragmentManager fm) {
+        super(fm);
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+        switch (position) {
+            case 0:
+                return Event_Details.newInstance(new Long(1));
+            case 1:
+                return Event_Map.newInstance(new Long(1));
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public int getCount() {
+        return 2;
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "Offers";
+            case 1:
+                return "Requests";
+            default:
+                return null;
+        }
     }
 }

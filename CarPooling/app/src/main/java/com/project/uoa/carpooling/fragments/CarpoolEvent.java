@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +29,9 @@ public class CarpoolEvent extends Fragment {
     private static final String EVENT_ID = "param1";
 
     private Long eventId;
+    private ViewPager viewPager;
+    private CarpoolEventPagerAdapter pagerAdapter;
+    private View view;
 
 
     private OnFragmentInteractionListener mListener;
@@ -63,43 +65,56 @@ public class CarpoolEvent extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_car_pool_event_chesters, container, false);
+        view = inflater.inflate(R.layout.fragment_car_pool_event_chesters, container, false);
+
+        pagerAdapter = new CarpoolEventPagerAdapter(getActivity().getSupportFragmentManager(), eventId, (MainActivity) getActivity());
+
+        viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+
+//        Log.d("EventId1", Long.toString(eventId));
 
 
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-
-        Log.d("EventId1", Long.toString(eventId));
-
-        final PagerAdapter pagerAdapter =  new CarpoolEventPagerAdapter(getChildFragmentManager(), eventId, (MainActivity)getActivity());
         viewPager.setAdapter(pagerAdapter);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//
+//                @Override
+//                public void onPageSelected(int index) {
+//                        pagerAdapter.notifyDataSetChanged();
+//                }
+//
+//                @Override
+//                public void onPageScrolled(int arg0, float arg1, int arg2) {
+//                    // TODO Auto-generated method stub
+//
+//                }
+//
+//                @Override
+//                public void onPageScrollStateChanged(int arg0) {
+//                    // TODO Auto-generated method stub
+//
+//                }
+//            });
+        TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-            @Override
-            public void onPageSelected(int index) {
-                if(index==2)
-                    pagerAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onPageScrolled(int arg0, float arg1, int arg2) {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
-                // TODO Auto-generated method stub
-
-            }
-        });
-
-        TabLayout tabLayout =(TabLayout) view.findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-
-
-
+//        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                viewPager.setCurrentItem(tab.getPosition());
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//
+//            }
+//        });
 
 
         return view;

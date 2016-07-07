@@ -31,6 +31,9 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
 
     public CarpoolEventPagerAdapter(FragmentManager fm, Long eventId, MainActivity mainActivity) {
         super(fm);
+
+        status = "";
+
         this.eventId = eventId;
 
         // Connect to Firebase
@@ -65,6 +68,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     return Event_Carpool_Driver.newInstance(eventId);
                 }
                 else {
+                    Log.e("Error", "Status failed to load");
                     return Event_Carpool_Observer.newInstance(eventId);
                 }
 

@@ -1,0 +1,261 @@
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent"--><!--tools:context=".fragments.Event_Carpool_Observer">-->
+
+<!--<ScrollView--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent">-->
+
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_width="match_parent"--><!--android:layout_height="match_parent">-->
+
+<!--<TextView--><!--android:id="@+id/status_text"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:layout_marginBottom="50sp"--><!--android:layout_marginTop="50sp"--><!--android:background="#ffffff"--><!--android:gravity="center"--><!--android:text="Status: Observer"--><!--android:textAllCaps="true"--><!--android:textColor="@color/colorPrimary"--><!--android:textSize="20sp" />-->
+
+
+<!--<Button xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:id="@+id/switch_status_button"--><!--android:layout_width="fill_parent"--><!--android:layout_height="wrap_content"--><!--android:layout_below="@+id/status_text"--><!--android:background="@color/colorPrimary"--><!--android:text="Change status"--><!--android:textColor="#ffffff"--><!--android:textSize="20sp" />-->
+
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--xmlns:app="http://schemas.android.com/apk/res-auto"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:orientation="vertical">-->
+
+<!--<android.support.v4.view.ViewPager--><!--android:id="@+id/view_pager"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:background="@android:color/white" />-->
+
+<!--<android.support.design.widget.TabLayout--><!--android:id="@+id/tab_layout"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:background="@android:color/holo_blue_dark"/>-->
+
+<!--</LinearLayout>-->
+
+
+<!--</RelativeLayout>--><!--</ScrollView>-->
+
+<!--</RelativeLayout>-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="10sp"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:text="Status: Observer"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp" />
+
+
+        <Button xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/switch_status_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/status_text"
+            android:background="@color/colorPrimary"
+            android:text="Change status"
+            android:textColor="#ffffff"
+            android:textSize="20sp" />
+
+
+    </RelativeLayout>
+
+
+    <ScrollView
+        android:id="@+id/scrollableContents"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/header"
+        android:background="#005">
+
+        <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content">-->
+
+            <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+                <!--android:id="@+id/details"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content">-->
+
+                <!--<android.support.v7.widget.CardView-->
+                    <!--android:id="@+id/card_view"-->
+                    <!--android:layout_width="fill_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center_horizontal"-->
+                    <!--cardview:cardCornerRadius="5dp"-->
+                    <!--cardview:cardElevation="4dp">-->
+
+                    <!--<LinearLayout-->
+                        <!--android:layout_width="fill_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:orientation="vertical"-->
+                        <!--android:padding="8dp">-->
+
+                        <!--<LinearLayout-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="50dp"-->
+                            <!--android:gravity="center_vertical"-->
+                            <!--android:paddingLeft="25dp">-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Headline"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Your information" />-->
+
+                        <!--</LinearLayout>-->
+
+                        <!--<LinearLayout-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:orientation="vertical"-->
+                            <!--android:paddingBottom="10dp"-->
+                            <!--android:paddingLeft="30dp">-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Pickup Location: 82 John Gill Road, Howick, Auckland, New Zealand" />-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Passenger Count: 2" />-->
+
+                        <!--</LinearLayout>-->
+
+
+                        <!--<View-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="2dp"-->
+                            <!--android:background="@android:color/darker_gray" />-->
+
+                        <!--<LinearLayout-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="50dp"-->
+                            <!--android:gravity="center_vertical"-->
+                            <!--android:paddingLeft="25dp">-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Headline"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Driver Information" />-->
+
+                        <!--</LinearLayout>-->
+
+                        <!--<LinearLayout-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:orientation="vertical"-->
+                            <!--android:paddingBottom="10dp"-->
+                            <!--android:paddingLeft="30dp">-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Driver: John Smith" />-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Estimated Pickup Time: 6:00pm" />-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Estimated Arrival Time: 6:30pm" />-->
+
+                        <!--</LinearLayout>-->
+
+                        <!--<View-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="2dp"-->
+                            <!--android:background="@android:color/darker_gray" />-->
+
+                        <!--<LinearLayout-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="50dp"-->
+                            <!--android:gravity="center_vertical"-->
+                            <!--android:paddingLeft="25dp">-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Headline"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Event Information" />-->
+
+                        <!--</LinearLayout>-->
+
+                        <!--<LinearLayout-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:orientation="vertical"-->
+                            <!--android:paddingBottom="10dp"-->
+                            <!--android:paddingLeft="30dp">-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Name: Sally's Birthday" />-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Location: Sally's house" />-->
+
+                            <!--<TextView-->
+                                <!--style="@style/Base.TextAppearance.AppCompat.Body1"-->
+                                <!--android:layout_width="fill_parent"-->
+                                <!--android:layout_height="wrap_content"-->
+                                <!--android:text="Start Time: 6:30pm" />-->
+
+                        <!--</LinearLayout>-->
+
+                        <!--<View-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="2dp"-->
+                            <!--android:background="@android:color/darker_gray" />-->
+
+
+                    <!--</LinearLayout>-->
+
+                <!--</android.support.v7.widget.CardView>-->
+
+            <!--</RelativeLayout>-->
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <!--android:layout_below="@+id/details">-->
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tab_layout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/holo_blue_dark" />
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/view_pager2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/white" />
+
+
+            <!--</RelativeLayout>-->
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>

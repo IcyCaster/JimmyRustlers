@@ -78,7 +78,7 @@ public class Event_Details extends Fragment {
         final DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
 
-        Button leaveButton = (Button) view.findViewById(R.id.event_leave_button);
+        Button leaveButton = (Button) view.findViewById(R.id.leave_carpool_button);
         leaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
