@@ -119,8 +119,6 @@ public class SubscribedCarpools extends Fragment {
                              Bundle savedInstanceState) {
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
-
         sharedPreferences = getActivity().getSharedPreferences(
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");

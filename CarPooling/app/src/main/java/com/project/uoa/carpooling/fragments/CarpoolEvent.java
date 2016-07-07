@@ -66,10 +66,10 @@ public class CarpoolEvent extends Fragment {
         // Inflate the layout for this fragment
 
         view = inflater.inflate(R.layout.fragment_car_pool_event_chesters, container, false);
-
-        pagerAdapter = new CarpoolEventPagerAdapter(getActivity().getSupportFragmentManager(), eventId, (MainActivity) getActivity());
-
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        pagerAdapter = new CarpoolEventPagerAdapter(getChildFragmentManager(), eventId, (MainActivity) getActivity());
+
+
 
 //        Log.d("EventId1", Long.toString(eventId));
 
@@ -95,7 +95,7 @@ public class CarpoolEvent extends Fragment {
 //                }
 //            });
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.tab_layout);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+//        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
