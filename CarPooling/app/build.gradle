@@ -35,6 +35,9 @@ dependencies {
 
     // Firebase UI
     compile 'com.firebaseui:firebase-ui-database:0.4.0'
+
+
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

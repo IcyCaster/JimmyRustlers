@@ -28,6 +28,8 @@ public class Event_Details extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private String eventId;
+
     private OnFragmentInteractionListener mListener;
 
     public Event_Details() {
@@ -105,5 +107,9 @@ public class Event_Details extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 }
