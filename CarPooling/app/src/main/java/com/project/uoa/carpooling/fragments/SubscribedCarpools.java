@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.SubscribedFacebookEventAdapter;
 import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
@@ -119,11 +120,7 @@ public class SubscribedCarpools extends Fragment {
                              Bundle savedInstanceState) {
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
-
-        sharedPreferences = getActivity().getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
+        userId = ((MainActivity) getActivity()).getUserId();
 
         listOfSubscribedEvents = new ArrayList<>();
 
@@ -173,7 +170,7 @@ public class SubscribedCarpools extends Fragment {
                 ft.addToBackStack(null);
 
                 // Create and show the dialog.
-                DialogFragment newFragment = EventPopup.newInstance(0);
+                DialogFragment newFragment = EventPopup.newInstance();
                 newFragment.show(ft, "dialog");
             }
 
@@ -319,11 +316,7 @@ public class SubscribedCarpools extends Fragment {
                                                     }
 
 
-                                                    adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
-                                                    recyclerView.setAdapter(adapter);
-                                                    recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-                                                    Log.d("FB", "Array-" + listOfEventCardEntities.toString());
 
                                                     callback();
                                                 }
@@ -352,6 +345,11 @@ public class SubscribedCarpools extends Fragment {
         subbedEvents--;
         if (subbedEvents == 0) {
             swipeContainer.setRefreshing(false);
+            adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
+            recyclerView.setAdapter(adapter);
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+            Log.d("FB", "Array-" + listOfEventCardEntities.toString());
         }
     }
 

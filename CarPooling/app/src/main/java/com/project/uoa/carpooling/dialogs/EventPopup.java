@@ -32,40 +32,34 @@ import java.util.ArrayList;
  * Created by Chester on 30/06/2016.
  */
 public class EventPopup extends DialogFragment {
+
+    private View view;
+    private RecyclerView popupRecyclerView;
+
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
-
     private ArrayList<String> listOfSubscribedEvents;
-    private RecyclerView popUpRecyclerView;
+
     private FacebookEventAdapter adapter;
-
-
     private DatabaseReference fireBaseReference;
 
     private SharedPreferences sharedPreferences;
     private String userId;
-    // this method create view for your Dialog
 
     /**
-     * Create a new instance of MyDialogFragment, providing "num"
-     * as an argument.
+     * Create a new instance of Fragment
      */
-    public static EventPopup newInstance(int num) {
+    public static EventPopup newInstance() {
         EventPopup f = new EventPopup();
-
-        // Supply num input as an argument.
-        Bundle args = new Bundle();
-        args.putInt("num", num);
-        f.setArguments(args);
-
         return f;
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //inflate layout with recycler view
-        View v = inflater.inflate(R.layout.popup_sub_to_events, container, false);
-        popUpRecyclerView = (RecyclerView) v.findViewById(R.id.popup_fb_event_recycler);
+        super.onCreate(savedInstanceState);
+
+        view = inflater.inflate(R.layout.popup_sub_to_events, container, false);
+        popupRecyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -75,13 +69,12 @@ public class EventPopup extends DialogFragment {
 
         PopulateViewWithSubscribedEvents();
 
-        return v;
+        return view;
     }
 
-
     public void PopulateViewWithSubscribedEvents() {
-        long unixTime = System.currentTimeMillis() / 1000L;
 
+        long unixTime = System.currentTimeMillis() / 1000L;
 
         GraphRequest request = GraphRequest.newGraphPathRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -151,8 +144,8 @@ public class EventPopup extends DialogFragment {
 
                             adapter = new FacebookEventAdapter(listOfEventCardEntities, getActivity());
 
-                            popUpRecyclerView.setAdapter(adapter);
-                            popUpRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                            popupRecyclerView.setAdapter(adapter);
+                            popupRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
                             Log.d("FB", "Array-" + listOfEventCardEntities.toString());
                             for (EventCardEntity c : listOfEventCardEntities) {

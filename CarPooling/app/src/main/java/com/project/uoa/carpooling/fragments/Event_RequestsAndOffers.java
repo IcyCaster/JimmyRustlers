@@ -3,59 +3,60 @@ package com.project.uoa.carpooling.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.database.DatabaseReference;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.adapters.RequestsAndOffersPagerAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link Event_Map.OnFragmentInteractionListener} interface
+ * {@link Event_RequestsAndOffers.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link Event_Map#newInstance} factory method to
+ * Use the {@link Event_RequestsAndOffers#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Event_Map extends Fragment {
+public class Event_RequestsAndOffers extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String EVENT_ID = "param1";
-
+    private static final String EVENT_STATUS = "param2";
 
     // TODO: Rename and change types of parameters
-    private Long eventId; // NOT USED!
+    private Long eventId;
+    private String status;
+    private String NOTUSEDstatus;
+    private DatabaseReference fireBaseReference; // Root Firebase Reference
+    private String userId;
+    private View view;
 
 
-
-
-    private String eventID;
-    private String userID;
-    private String eventStatus;
-
+    private ViewPager viewPager;
+    private RequestsAndOffersPagerAdapter pagerAdapter;
+    private TabLayout tabLayout;
 
 
     private OnFragmentInteractionListener mListener;
 
-    public Event_Map() {
+    public Event_RequestsAndOffers() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
+    public static Event_RequestsAndOffers newInstance(Long eventId, String status) {
+        Event_RequestsAndOffers fragment = new Event_RequestsAndOffers();
 
-     * @return A new instance of fragment Event_Map.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Event_Map newInstance(Long eventId) {
-        Event_Map fragment = new Event_Map();
         Bundle args = new Bundle();
         args.putLong(EVENT_ID, eventId);
+        args.putString(EVENT_STATUS, status);
         fragment.setArguments(args);
+
         return fragment;
     }
 
@@ -64,46 +65,38 @@ public class Event_Map extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventId = getArguments().getLong(EVENT_ID);
+            NOTUSEDstatus = getArguments().getString(EVENT_STATUS);
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
 
-        View view = inflater.inflate(R.layout.fragment_event__map, container, false);
+        status = ((CarpoolEventActivity)getActivity()).getEventStatus();
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
+        view = inflater.inflate(R.layout.fragment_event_requests_and_offers, container, false);
 
-
+        Snackbar.make(container, "Test get status " + status, Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
 
 
+        viewPager = (ViewPager) view.findViewById(R.id.view_pager1);
+
+        pagerAdapter = new RequestsAndOffersPagerAdapter(getChildFragmentManager(), status);
+        viewPager.setAdapter(pagerAdapter);
 
 
-        // Do stuff here!
+        tabLayout = (TabLayout) view.findViewById(R.id.tab_layout1);
 
 
-
-
-
-
-
-
+        //Notice how The Tab Layout adn View Pager object are linked
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 
         return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -128,13 +121,10 @@ public class Event_Map extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
+
+

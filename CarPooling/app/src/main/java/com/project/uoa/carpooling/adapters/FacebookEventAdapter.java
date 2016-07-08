@@ -3,14 +3,11 @@ package com.project.uoa.carpooling.adapters;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -21,7 +18,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.entities.EventCardEntity;
-import com.project.uoa.carpooling.fragments.CarPoolEventChesters;
 
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +27,8 @@ import java.util.List;
  */
 public class FacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
 
-    List<EventCardEntity> list = Collections.emptyList();
-    Context context;
+    private List<EventCardEntity> list = Collections.emptyList();
+    private Context context;
 
     // Constructor, pass in a list of Facebook Card Events and the applications context
     public FacebookEventAdapter(List<EventCardEntity> list, Context context) {
@@ -85,7 +81,6 @@ class AddViewHolder extends RecyclerView.ViewHolder {
     public TextView eventName;
     public TextView eventStartDate;
     private DatabaseReference fireBaseReference; // Root Firebase Reference
-    private SharedPreferences sharedPreferences; // Access to SharedPreferences
     private String userId;
 
     public AddViewHolder(View itemView, Context context) {
@@ -100,14 +95,12 @@ class AddViewHolder extends RecyclerView.ViewHolder {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Initialise shared preferences
-        sharedPreferences = context.getSharedPreferences(context.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
+        userId = ((MainActivity) context).getUserId();
 
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
 
-//                Snackbar.make(v, eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 Snackbar.make(v, "Subcribed to " + eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
                 // Checks DB/users/{user-id}
@@ -122,7 +115,8 @@ class AddViewHolder extends RecyclerView.ViewHolder {
                         // If it doesn't, create the user in the Firebase database
                         else {
                             fireBaseReference.child("users").child(userId).child(eventId).push();
-                            fireBaseReference.child("users").child(userId).child(eventId).child("Content").setValue("This is event content");
+                            fireBaseReference.child("users").child(userId).child(eventId).child("Status").setValue("Observer");
+                            fireBaseReference.child("users").child(userId).child(eventId).child("isPublic").setValue("False");
                             Log.d("firebase - event", "Subscribed to: " + eventId);
                         }
                     }

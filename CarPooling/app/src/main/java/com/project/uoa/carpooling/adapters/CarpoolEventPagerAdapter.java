@@ -2,36 +2,39 @@ package com.project.uoa.carpooling.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.fragments.Event_Carpool;
+import com.project.uoa.carpooling.fragments.Event_RequestsAndOffers;
 import com.project.uoa.carpooling.fragments.Event_Details;
 import com.project.uoa.carpooling.fragments.Event_Map;
 
 /**
  * Created by Chester on 1/07/2016.
  */
-public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
+public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
 
-
-    public FixedTabsPagerAdapter(FragmentManager fm) {
+    public CarpoolEventPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
+//    private String userId;
+//    private String eventId;
+//    private String status;
+//
+//    public CarpoolEventPagerAdapter(FragmentManager fm, String eventId, String userId, String status) {
+//        super(fm);
+//    }
 
     @Override
     public Fragment getItem(int position) {
+
         switch (position) {
             case 0:
-                Event_Details ed = new Event_Details();
-                return ed;
+                return new Event_Details();
             case 1:
-                Event_Map em = new Event_Map();
-                return em;
+                return new Event_Map();
             case 2:
-                Event_Carpool ec = new Event_Carpool();
-                return ec;
+                return new Event_RequestsAndOffers();
             default:
                 return null;
         }
@@ -46,6 +49,7 @@ public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
+                // TODO: Get rid of hardcoded strings
 //                return getString(R.string.someStringReferenceHere);
                 return "Details";
             case 1:
@@ -56,6 +60,4 @@ public class FixedTabsPagerAdapter extends FragmentPagerAdapter {
                 return null;
         }
     }
-
-
 }
