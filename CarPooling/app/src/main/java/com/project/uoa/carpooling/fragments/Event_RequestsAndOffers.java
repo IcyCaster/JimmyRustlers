@@ -76,7 +76,7 @@ public class Event_RequestsAndOffers extends Fragment {
 
         status = ((CarpoolEventActivity)getActivity()).getEventStatus();
 
-        view = inflater.inflate(R.layout.fragment_event_carpool_observer, container, false);
+        view = inflater.inflate(R.layout.fragment_event_requests_and_offers, container, false);
 
         Snackbar.make(container, "Test get status " + status, Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
