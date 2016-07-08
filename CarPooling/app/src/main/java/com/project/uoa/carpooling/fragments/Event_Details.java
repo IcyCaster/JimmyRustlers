@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
 
 /**
@@ -72,7 +73,7 @@ public class Event_Details extends Fragment {
         View view = inflater.inflate(R.layout.fragment_event__details, container, false);
 
 
-        final String userId = ((MainActivity) getActivity()).getUserId();
+        final String userId = ((CarpoolEventActivity) getActivity()).getUserId();
 
 
         final DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();

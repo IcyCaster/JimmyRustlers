@@ -22,16 +22,16 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.fragments.ArchivedPools;
 import com.project.uoa.carpooling.fragments.CarPoolEventAngels;
 import com.project.uoa.carpooling.fragments.CarpoolEvent;
-import com.project.uoa.carpooling.fragments.Event_Carpool_Driver;
 import com.project.uoa.carpooling.fragments.Event_Carpool_Observer;
-import com.project.uoa.carpooling.fragments.Event_Carpool_Passenger;
 import com.project.uoa.carpooling.fragments.Event_Details;
 import com.project.uoa.carpooling.fragments.Event_Map;
+import com.project.uoa.carpooling.fragments.Event_Offers;
+import com.project.uoa.carpooling.fragments.Event_Requests;
 import com.project.uoa.carpooling.fragments.FriendGroups;
 import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, CarpoolEvent.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Carpool_Observer.OnFragmentInteractionListener, Event_Carpool_Driver.OnFragmentInteractionListener, Event_Carpool_Passenger.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, CarpoolEvent.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Carpool_Observer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Event_Requests.OnFragmentInteractionListener, Event_Offers.OnFragmentInteractionListener {
 
     private String userId;
 

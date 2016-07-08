@@ -18,17 +18,17 @@ import com.project.uoa.carpooling.fragments.Event_Map;
 /**
  * Created by Chester on 1/07/2016.
  */
-public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
+public class CarpoolEventPagerAdapterFORACTIVITY extends FragmentStatePagerAdapter {
 
     private DatabaseReference fireBaseReference; // Root Firebase Reference
     private String userId;
     private Long eventId;
     private String status;
 
-    public CarpoolEventPagerAdapter(FragmentManager fm, Long eventId, MainActivity mainActivity) {
+    public CarpoolEventPagerAdapterFORACTIVITY(FragmentManager fm, Long eventId, String userId, String status) {
         super(fm);
 
-        status = "Nothing";
+        this.status = status;
 
         // Splash screen saying "FETCHING STATUS?"
 
@@ -38,10 +38,10 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Initialise shared preferences
-        userId = mainActivity.getUserId();
+        this.userId = userId;
 
 
-        fetchStatus();
+
 
     }
 
@@ -49,7 +49,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
 
 
-        fetchStatus();
+
         Log.d("status", "You're an: " + status);
         switch (position) {
             case 0:
@@ -83,41 +83,8 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
-    public String getStatus(){
-        return status;
-    }
-
-    public void fetchStatus() {
 
 
-        // Checks DB/users/{user-id}
-        fireBaseReference.child("users").child(userId).child(Long.toString(eventId)).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-
-                // If it exists, everything is sweet
-                if (snapshot.child("Status").getValue().equals("Observer")) {
-                    Log.d("firebase - event", "You're an: Observer");
-                    status = "O";
-                }
-                // If it doesn't, create the user in the Firebase database
-                else if (snapshot.child("Status").getValue().equals("Driver")) {
-                    Log.d("firebase - event", "You're a: Driver");
-                    status = "D";
-                } else if (snapshot.child("Status").getValue().equals("Passenger")) {
-                    Log.d("firebase - event", "You're a: Passenger");
-                    status = "P";
-                } else {
-                    Log.d("firebase - event", "Did not find it ");
-                    status = "P";
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
-        });
-    }
 
 
 }

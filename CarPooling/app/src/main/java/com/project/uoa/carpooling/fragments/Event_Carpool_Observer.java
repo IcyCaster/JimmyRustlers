@@ -3,6 +3,7 @@ package com.project.uoa.carpooling.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,9 +28,11 @@ import com.project.uoa.carpooling.R;
 public class Event_Carpool_Observer extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     private static final String EVENT_ID = "param1";
+    private static final String EVENT_STATUS = "param2";
 
     // TODO: Rename and change types of parameters
     private Long eventId;
+    private String status;
     private DatabaseReference fireBaseReference; // Root Firebase Reference
     private String userId;
 private View view;
@@ -48,11 +51,12 @@ private YourPagerAdapter pagerAdapter;
         // Required empty public constructor
     }
 
-    public static Event_Carpool_Observer newInstance(Long eventId) {
+    public static Event_Carpool_Observer newInstance(Long eventId, String status) {
         Event_Carpool_Observer fragment = new Event_Carpool_Observer();
 
         Bundle args = new Bundle();
         args.putLong(EVENT_ID, eventId);
+        args.putString(EVENT_STATUS, status);
         fragment.setArguments(args);
 
         return fragment;
@@ -63,6 +67,7 @@ private YourPagerAdapter pagerAdapter;
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             eventId = getArguments().getLong(EVENT_ID);
+            status = getArguments().getString(EVENT_STATUS);
         }
     }
 
@@ -74,6 +79,8 @@ private YourPagerAdapter pagerAdapter;
 
 
        view = inflater.inflate(R.layout.fragment_event_carpool_observer, container, false);
+
+        Snackbar.make(container, "Test get status " + status, Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
 //        // Connect to Firebase
 //        fireBaseReference = FirebaseDatabase.getInstance().getReference();
@@ -198,9 +205,9 @@ class YourPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return Event_Details.newInstance(new Long(1));
+                return new Event_Offers();
             case 1:
-                return Event_Map.newInstance(new Long(1));
+                return new Event_Requests();
             default:
                 return null;
         }
