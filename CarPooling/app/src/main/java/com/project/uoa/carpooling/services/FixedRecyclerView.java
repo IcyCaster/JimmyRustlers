@@ -6,6 +6,8 @@ import android.util.AttributeSet;
 
 /**
  * http://stackoverflow.com/questions/25178329/recyclerview-and-swiperefreshlayout
+ *
+ * This is used for the RecyclerView layout
  */
 public class FixedRecyclerView extends RecyclerView {
     public FixedRecyclerView(Context context) {

@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +26,15 @@ public class Event_Map extends Fragment {
 
 
     // TODO: Rename and change types of parameters
-    private Long eventId;
+    private Long eventId; // NOT USED!
+
+
+
+
+    private String eventID;
+    private String userID;
+    private String eventStatus;
+
 
 
     private OnFragmentInteractionListener mListener;
@@ -62,7 +71,32 @@ public class Event_Map extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_event__map, container, false);
+
+
+        View view = inflater.inflate(R.layout.fragment_event__map, container, false);
+
+        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
+        userID = ((CarpoolEventActivity)getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
+
+
+
+
+
+
+
+        // Do stuff here!
+
+
+
+
+
+
+
+
+
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

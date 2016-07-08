@@ -142,18 +142,18 @@ class SubscribedViewHolder extends RecyclerView.ViewHolder {
                         // If it exists, everything is sweet
                         if (snapshot.child("Status").getValue().equals("Observer")) {
                             Log.d("firebase - event", "You're an: Observer");
-                            status = "O";
+                            status = "Observer";
                         }
                         // If it doesn't, create the user in the Firebase database
                         else if (snapshot.child("Status").getValue().equals("Driver")) {
                             Log.d("firebase - event", "You're a: Driver");
-                            status = "D";
+                            status = "Driver";
                         } else if (snapshot.child("Status").getValue().equals("Passenger")) {
                             Log.d("firebase - event", "You're a: Passenger");
-                            status = "P";
+                            status = "Passenger";
                         } else {
                             Log.d("firebase - event", "Did not find it ");
-                            status = "P";
+                            status = "Error";
                         }
 
                         Intent i = new Intent(mainActivity, CarpoolEventActivity.class);

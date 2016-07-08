@@ -20,7 +20,7 @@ public class RequestsAndOffersPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         this.status = status;
 
-        if (status.equals("D")) {
+        if (status.equals("Driver")) {
             tabCount = 3;
         } else {
             tabCount = 2;
@@ -30,7 +30,7 @@ public class RequestsAndOffersPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if (status.equals("D")) {
+        if (status.equals("Driver")) {
             switch (position) {
                 case 0:
                     return new Event_Specifics_Offers();
@@ -61,7 +61,7 @@ public class RequestsAndOffersPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
 
-        if (status.equals("D")) {
+        if (status.equals("Driver")) {
             switch (position) {
                 case 0:
                     //TODO: Same as other adapter
