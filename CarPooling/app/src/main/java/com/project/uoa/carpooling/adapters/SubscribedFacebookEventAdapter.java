@@ -161,7 +161,7 @@ class SubscribedViewHolder extends RecyclerView.ViewHolder {
                         Bundle b = new Bundle();
                         b.putString("userID", mainActivity.getUserId());
                         b.putLong("eventID", l);
-                        b.putString("status", status);
+                        b.putString("eventStatus", status);
                         i.putExtras(b);
                         mainActivity.startActivity(i);
 

@@ -101,7 +101,6 @@ class AddViewHolder extends RecyclerView.ViewHolder {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
 
-//                Snackbar.make(v, eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 Snackbar.make(v, "Subcribed to " + eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
 
                 // Checks DB/users/{user-id}

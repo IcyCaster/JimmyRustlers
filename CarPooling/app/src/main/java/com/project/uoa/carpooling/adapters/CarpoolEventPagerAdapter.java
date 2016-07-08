@@ -3,15 +3,8 @@ package com.project.uoa.carpooling.adapters;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.util.Log;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.project.uoa.carpooling.activities.MainActivity;
-import com.project.uoa.carpooling.fragments.Event_Carpool_Observer;
+import com.project.uoa.carpooling.fragments.Event_RequestsAndOffers;
 import com.project.uoa.carpooling.fragments.Event_Details;
 import com.project.uoa.carpooling.fragments.Event_Map;
 
@@ -20,44 +13,28 @@ import com.project.uoa.carpooling.fragments.Event_Map;
  */
 public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
 
-    private DatabaseReference fireBaseReference; // Root Firebase Reference
-    private String userId;
-    private Long eventId;
-    private String status;
-
-    public CarpoolEventPagerAdapter(FragmentManager fm, Long eventId, MainActivity mainActivity) {
+    public CarpoolEventPagerAdapter(FragmentManager fm) {
         super(fm);
-
-        status = "Nothing";
-
-        // Splash screen saying "FETCHING STATUS?"
-
-        this.eventId = eventId;
-
-        // Connect to Firebase
-        fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
-        // Initialise shared preferences
-        userId = mainActivity.getUserId();
-
-
-        fetchStatus();
-
     }
+
+//    private String userId;
+//    private String eventId;
+//    private String status;
+//
+//    public CarpoolEventPagerAdapter(FragmentManager fm, String eventId, String userId, String status) {
+//        super(fm);
+//    }
 
     @Override
     public Fragment getItem(int position) {
 
-
-        fetchStatus();
-        Log.d("status", "You're an: " + status);
         switch (position) {
             case 0:
-                return Event_Details.newInstance(eventId);
+                return new Event_Details();
             case 1:
-                return Event_Map.newInstance(eventId);
+                return new Event_Map();
             case 2:
-                    return Event_Carpool_Observer.newInstance(eventId,status);
+                return new Event_RequestsAndOffers();
             default:
                 return null;
         }
@@ -72,6 +49,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
+                // TODO: Get rid of hardcoded strings
 //                return getString(R.string.someStringReferenceHere);
                 return "Details";
             case 1:
@@ -82,42 +60,4 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                 return null;
         }
     }
-
-    public String getStatus(){
-        return status;
-    }
-
-    public void fetchStatus() {
-
-
-        // Checks DB/users/{user-id}
-        fireBaseReference.child("users").child(userId).child(Long.toString(eventId)).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-
-                // If it exists, everything is sweet
-                if (snapshot.child("Status").getValue().equals("Observer")) {
-                    Log.d("firebase - event", "You're an: Observer");
-                    status = "O";
-                }
-                // If it doesn't, create the user in the Firebase database
-                else if (snapshot.child("Status").getValue().equals("Driver")) {
-                    Log.d("firebase - event", "You're a: Driver");
-                    status = "D";
-                } else if (snapshot.child("Status").getValue().equals("Passenger")) {
-                    Log.d("firebase - event", "You're a: Passenger");
-                    status = "P";
-                } else {
-                    Log.d("firebase - event", "Did not find it ");
-                    status = "P";
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
-        });
-    }
-
-
 }
