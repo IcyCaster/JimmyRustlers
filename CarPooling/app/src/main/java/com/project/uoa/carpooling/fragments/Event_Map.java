@@ -1,12 +1,14 @@
 package com.project.uoa.carpooling.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
@@ -24,20 +26,19 @@ public class Event_Map extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String EVENT_ID = "param1";
 
-
     // TODO: Rename and change types of parameters
     private Long eventId; // NOT USED!
-
-
-
 
     private String eventID;
     private String userID;
     private String eventStatus;
 
-
+    //TODO Update string with actual address dynamically.
+    private String mSelectedAddress = "University Of Auckland";
 
     private OnFragmentInteractionListener mListener;
+
+    private Button btnStartNav;
 
     public Event_Map() {
         // Required empty public constructor
@@ -70,8 +71,6 @@ public class Event_Map extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
 
         View view = inflater.inflate(R.layout.fragment_event__map, container, false);
 
@@ -79,22 +78,17 @@ public class Event_Map extends Fragment {
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
 
+        btnStartNav = (Button) view.findViewById(R.id.btn_start_nav);
 
-
-
-
-
-
-        // Do stuff here!
-
-
-
-
-
-
-
-
-
+        btnStartNav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mSelectedAddress != null) {
+                    // Start Intent
+                    launchGoogleMapsNavigationIntent(mSelectedAddress);
+                }
+            }
+        });
 
         return view;
     }
@@ -136,5 +130,14 @@ public class Event_Map extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void launchGoogleMapsNavigationIntent(String address) {
+        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + address.replaceAll(" ", "+"));
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setPackage("com.google.android.apps.maps");
+        if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(mapIntent);
+        }
     }
 }
