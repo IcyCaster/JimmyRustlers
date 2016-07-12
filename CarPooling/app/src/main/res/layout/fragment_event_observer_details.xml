@@ -142,22 +142,18 @@
                                 android:text="Description: -Description of event-" />
 
                             <TextView
+                                android:id="@+id/event_start_datetime"
                                 style="@style/Base.TextAppearance.AppCompat.Body1"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Start Time: -start date/time-" />
 
                             <TextView
+                                android:id="@+id/event_location"
                                 style="@style/Base.TextAppearance.AppCompat.Body1"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Location: -location-" />
-
-                            <TextView
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="RSVP Status: -status-" />
 
                         </LinearLayout>
 

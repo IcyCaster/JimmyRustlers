@@ -22,6 +22,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 
+import org.json.JSONException;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -81,65 +83,93 @@ public class Event_Details extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_event_driver_details, container, false);
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        if(eventStatus.equals("Observer")) {
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + eventID,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+
+                        TextView name = (TextView) view.findViewById(R.id.event_name);
+                        TextView description = (TextView) view.findViewById(R.id.event_description);
+                        TextView starttime = (TextView) view.findViewById(R.id.event_start_datetime);
+                        TextView location = (TextView) view.findViewById(R.id.event_location);
+
+                        try {
+                            name.setText("Name: " + response.getJSONObject().getString("name"));
+                            starttime.setText("Start Time: " + response.getJSONObject().getString("start_time"));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            description.setText("Description: " + response.getJSONObject().getString("description"));
+                        } catch (JSONException e) {
+                            description.setText("Description: " + "NO DESCRIPTION");
+                        }
+                        try {
+                            location.setText("Location: " + response.getJSONObject().getJSONObject("place").getString("name"));
+                        } catch (JSONException e) {
+                            location.setText("Location: " + "NO LOCATION");
+                        }
+
+                    }
+                });
+
+        request.executeAsync();
+
+
+
+        if (eventStatus.equals("Observer")) {
             view = inflater.inflate(R.layout.fragment_event_observer_details, container, false);
 
-            GraphRequest request = GraphRequest.newGraphPathRequest(
-                    AccessToken.getCurrentAccessToken(),
-                    "/" + eventID,
-                    new GraphRequest.Callback() {
-                        @Override
-                        public void onCompleted(GraphResponse response) {
-                            // Insert your code here
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        }
-                    });
-
-            request.executeAsync();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        } else if(eventStatus.equals("Driver")) {
+        } else if (eventStatus.equals("Driver")) {
             view = inflater.inflate(R.layout.fragment_event_driver_details, container, false);
 
-        } else if(eventStatus.equals("Passenger")) {
+        } else if (eventStatus.equals("Passenger")) {
             view = inflater.inflate(R.layout.fragment_event_passenger_details, container, false);
 
         }
 
 
+        Button statusButton = (Button) view.findViewById(R.id.change_status_button);
+        statusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+
+                        if (snapshot.exists()) {
+                            //remove from users
+                            fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
+                            //remove from events
+                            fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
+                            Log.d("firebase - event", "Unsubscribed: " + eventId);
+                        }
+                        // If it doesn't, create the user in the Firebase database
+                        else {
+                            Log.d("firebase - event", "Can't find: " + eventId);
+                        }
+
+                        getActivity().finish();
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError firebaseError) {
+                        Log.e("firebase - error", firebaseError.getMessage());
+                    }
+                });
+            }
+        });
 
         Button leaveButton = (Button) view.findViewById(R.id.leave_carpool_button);
         leaveButton.setOnClickListener(new View.OnClickListener() {
@@ -167,6 +197,7 @@ public class Event_Details extends Fragment {
                         getActivity().finish();
 
                     }
+
                     @Override
                     public void onCancelled(DatabaseError firebaseError) {
                         Log.e("firebase - error", firebaseError.getMessage());
@@ -174,11 +205,6 @@ public class Event_Details extends Fragment {
                 });
             }
         });
-
-
-
-
-
 
 
         return view;

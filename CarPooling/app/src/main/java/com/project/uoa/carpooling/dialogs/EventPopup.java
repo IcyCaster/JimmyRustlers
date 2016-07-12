@@ -62,8 +62,9 @@ public class EventPopup extends DialogFragment {
     @Override
     public void onDismiss(final DialogInterface dialog) {
         super.onDismiss(dialog);
-        SubscribedCarpools subscribedCarpools = (SubscribedCarpools) getActivity().getSupportFragmentManager().findFragmentById(R.id.contentFragment);
-        subscribedCarpools.PopulateViewWithSubscribedEvents();
+//        SubscribedCarpools subscribedCarpools = (SubscribedCarpools) getActivity().getSupportFragmentManager().findFragmentById(R.id.contentFragment);
+//        subscribedCarpools.PopulateViewWithSubscribedEvents();
+        getActivity().recreate();
     }
 
 
