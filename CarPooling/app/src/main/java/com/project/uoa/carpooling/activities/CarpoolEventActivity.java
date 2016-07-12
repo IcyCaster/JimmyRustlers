@@ -42,7 +42,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements Event_Spe
         // Get everything necessary from the MainActivity
         Bundle bundle = getIntent().getExtras();
         userID = bundle.getString("userID");
-        eventID = bundle.getString("eventID");
+        eventID = bundle.getString("eventID"); //TODO ClassCastException from long to string caused.
         eventStatus = bundle.getString("eventStatus");
 
         // Set up the pageviewer with the adapter
