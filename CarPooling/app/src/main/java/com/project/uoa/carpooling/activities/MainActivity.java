@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity
 
         userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
 
-        setContentView(R.layout.nav_drawer_layout);
+        setContentView(R.layout.nav__drawer_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.car_pools, menu);
+        getMenuInflater().inflate(R.menu.nav__menu_items, menu);
         return true;
     }
 
@@ -155,4 +155,6 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
         // Kept Empty
     }
+
+
 }

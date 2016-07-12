@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     tools:context=".fragments.SubscribedCarpools">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_above="@+id/join_carpool_button"
         android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -14,63 +14,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-    <com.project.uoa.carpooling.services.FixedRecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/join_carpool_button"
-        android:id="@+id/rv"
-        />
+
+            <com.project.uoa.carpooling.services.FixedRecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
         </ScrollView>
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
 
-    <!-- TODO: Update blank fragment layout -->
-    <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/messageRecyclerView"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_above="@+id/linearLayout"/>-->
-
-    <!--<LinearLayout-->
-        <!--android:id="@+id/linearLayout"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentLeft="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:orientation="horizontal">-->
-
-
-    <!--</LinearLayout>-->
-
-
-    <!--<TextView-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:id="@+id/test_json"-->
-        <!--/>-->
-
-    <!--<include-->
-        <!--android:id="@+id/card0"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--layout="@layout/card_car_pool_event"-->
-        <!--/>-->
-
-    <Button
+    <Button xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/join_carpool_button"
         android:layout_width="fill_parent"
-        android:layout_weight="1"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:text="Join a Carpool"
-        android:textSize="20sp"
+        android:layout_weight="1"
         android:background="@color/colorPrimary"
+        android:text="Join a Carpool"
         android:textColor="#ffffff"
-        xmlns:android="http://schemas.android.com/apk/res/android" />
-
+        android:textSize="20sp" />
 
 
 </RelativeLayout>

@@ -43,13 +43,15 @@ public class SubscribedFacebookEventAdapter extends RecyclerView.Adapter<Subscri
 
     @Override
     public SubscribedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_car_pool_event, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__car_pool_instance, parent, false);
         SubscribedViewHolder viewHolder = new SubscribedViewHolder(view, context, this);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(SubscribedViewHolder holder, int position) {
+    public void onBindViewHolder(final SubscribedViewHolder holder, final int position) {
+
+        final DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // This is used to load the image
         if (list.get(position).eventImageURL != null) {
@@ -64,10 +66,41 @@ public class SubscribedFacebookEventAdapter extends RecyclerView.Adapter<Subscri
             holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.placeholder_image));
         }
 
-        holder.eventId = Long.toString(list.get(position).id);
-        holder.eventName.setText(list.get(position).eventName);
-        holder.eventStartDate.setText(list.get(position).startDate);
-        holder.eventStatusImage.setImageResource(R.drawable.indicator);
+        // Checks DB/users/{user-id}
+        fireBaseReference.child("users").child(((MainActivity)context).getUserId()).child("events").child(Long.toString(list.get(position).id)).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                // If it exists, everything is sweet
+                if (snapshot.getValue().equals("Observer")) {
+                    Log.d("firebase - event", "You're an: Observer");
+                    holder.eventStatusImage.setImageResource(R.drawable.observer_icon);
+                }
+                // If it doesn't, create the user in the Firebase database
+                else if (snapshot.getValue().equals("Driver")) {
+                    Log.d("firebase - event", "You're a: Driver");
+                    holder.eventStatusImage.setImageResource(R.drawable.driver_icon);
+                } else if (snapshot.getValue().equals("Passenger")) {
+                    Log.d("firebase - event", "You're a: Passenger");
+                    holder.eventStatusImage.setImageResource(R.drawable.passenger_icon);
+                } else {
+                    Log.d("firebase - event", "Did not find it ");
+                    holder.eventStatusImage.setImageResource(R.drawable.indicator);
+
+                }
+
+                holder.eventId = Long.toString(list.get(position).id);
+                holder.eventName.setText(list.get(position).eventName);
+                holder.eventStartDate.setText(list.get(position).startDate);
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError firebaseError) {
+                Log.e("firebase - error", firebaseError.getMessage());
+            }
+        });
     }
 
     @Override
@@ -121,34 +154,27 @@ class SubscribedViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
 
-                final long l = eventAdapter.list.get(getAdapterPosition()).id;
+                final String eventID = Long.toString(eventAdapter.list.get(getAdapterPosition()).id);
 
 
-                Log.d("Event id:", Long.toString(l));
-
-//                Fragment fragment = CarpoolEvent.newInstance(l);
-//
-//                FragmentTransaction ft = mainActivity.getSupportFragmentManager().beginTransaction();
-//                ft.replace(R.id.contentFragment, fragment);
-//                ft.addToBackStack(null);
-//                ft.commit();
+                Log.d("Event id:", eventID);
 
 
                 // Checks DB/users/{user-id}
-                fireBaseReference.child("users").child(mainActivity.getUserId()).child(Long.toString(l)).addListenerForSingleValueEvent(new ValueEventListener() {
+                fireBaseReference.child("users").child(mainActivity.getUserId()).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
 
                         // If it exists, everything is sweet
-                        if (snapshot.child("Status").getValue().equals("Observer")) {
+                        if (snapshot.getValue().equals("Observer")) {
                             Log.d("firebase - event", "You're an: Observer");
                             status = "Observer";
                         }
                         // If it doesn't, create the user in the Firebase database
-                        else if (snapshot.child("Status").getValue().equals("Driver")) {
+                        else if (snapshot.getValue().equals("Driver")) {
                             Log.d("firebase - event", "You're a: Driver");
                             status = "Driver";
-                        } else if (snapshot.child("Status").getValue().equals("Passenger")) {
+                        } else if (snapshot.getValue().equals("Passenger")) {
                             Log.d("firebase - event", "You're a: Passenger");
                             status = "Passenger";
                         } else {
@@ -160,7 +186,7 @@ class SubscribedViewHolder extends RecyclerView.ViewHolder {
 
                         Bundle b = new Bundle();
                         b.putString("userID", mainActivity.getUserId());
-                        b.putLong("eventID", l);
+                        b.putString("eventID", eventID);
                         b.putString("eventStatus", status);
                         i.putExtras(b);
                         mainActivity.startActivity(i);
@@ -173,11 +199,6 @@ class SubscribedViewHolder extends RecyclerView.ViewHolder {
                     }
                 });
 
-
-
-
-
-//                Snackbar.make(v, "Go to " + eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
             }
 
 

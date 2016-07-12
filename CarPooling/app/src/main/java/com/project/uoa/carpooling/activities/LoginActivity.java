@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialise FbSDK before setContentView, as the view uses Facebook components
         FacebookSdk.sdkInitialize(getApplicationContext());
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity__login);
 
         // Initialise shared preferences
         sharedPreferences = getApplicationContext().getSharedPreferences(

@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -35,40 +34,18 @@ import com.project.uoa.carpooling.dialogs.EventPopup;
 import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SubscribedCarpools.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SubscribedCarpools#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class SubscribedCarpools extends Fragment {
-
-    // These ARG PARAMS are used if we have arguments that must be provided to the fragment.
-
-    // TODO: Rename parameter arguments, choose names that match
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private View view;
 
     private int subbedEvents;
 
-    // This is the list of cards which will be displayed on the recyclerView
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
-
     private ArrayList<String> listOfSubscribedEvents;
 
     private OnFragmentInteractionListener mListener;
@@ -78,41 +55,17 @@ public class SubscribedCarpools extends Fragment {
 
     private SwipeRefreshLayout swipeContainer;
 
-    //Firebase things
     private DatabaseReference fireBaseReference;
 
-    private SharedPreferences sharedPreferences;
     private String userId;
 
     public SubscribedCarpools() {
         // Required empty public constructor
     }
 
-    /**
-     * This factory method will create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SubscribedCarpools.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SubscribedCarpools newInstance(String param1, String param2) {
-        SubscribedCarpools fragment = new SubscribedCarpools();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -143,13 +96,6 @@ public class SubscribedCarpools extends Fragment {
             }
         });
 
-//        swipeContainer.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                swipeContainer.setRefreshing(true);
-//            }
-//        });
-
         // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
@@ -170,7 +116,7 @@ public class SubscribedCarpools extends Fragment {
                 ft.addToBackStack(null);
 
                 // Create and show the dialog.
-                DialogFragment newFragment = EventPopup.newInstance();
+                EventPopup newFragment = new EventPopup();
                 newFragment.show(ft, "dialog");
             }
 
@@ -223,24 +169,25 @@ public class SubscribedCarpools extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
     public void PopulateViewWithSubscribedEvents() {
 
 
         listOfSubscribedEvents.clear();
 
         Log.d("firebase - currentId", userId);
-        fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
                 Log.d("firebase - listsnapshot", snapshot.toString());
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (!child.getKey().toString().equals("Name")) {
-                        Log.d("firebase - list event", child.toString());
-                        listOfSubscribedEvents.add(child.getKey().toString());
-                    } else {
-                        Log.d("firebase - list name", child.toString());
-                    }
+                    Log.d("firebase - list event", child.toString());
+                    listOfSubscribedEvents.add(child.getKey().toString());
                 }
                 GetEventDetails();
 
@@ -267,7 +214,11 @@ public class SubscribedCarpools extends Fragment {
             if (v != null) v.setGravity(Gravity.CENTER);
             toast.show();
 
+            recyclerView.setVisibility(View.GONE);
+
         } else {
+
+            recyclerView.setVisibility(View.VISIBLE);
 
             subbedEvents = listOfSubscribedEvents.size();
             for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
@@ -304,7 +255,6 @@ public class SubscribedCarpools extends Fragment {
                                                         Log.d("FB Picture", "url-" + url);
 
 
-
                                                         for (EventCardEntity e : listOfEventCardEntities) {
                                                             if (e.id == (Long.parseLong(id))) {
                                                                 listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
@@ -314,8 +264,6 @@ public class SubscribedCarpools extends Fragment {
                                                     } catch (JSONException e) {
                                                         e.printStackTrace();
                                                     }
-
-
 
 
                                                     callback();

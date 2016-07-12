@@ -1,0 +1,271 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.project.uoa.carpooling.fragments.Event_Details">
+
+    <!-- Header aligned to top -->
+
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10sp"
+            android:text="Status: Passenger"
+            android:textAllCaps="true"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+    <!-- Footer aligned to bottom -->
+
+    <RelativeLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/change_details_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Change Details" />
+
+            <Button
+                android:id="@+id/change_status_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Change Status" />
+
+            <Button
+                android:id="@+id/leave_carpool_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Leave Carpool" />
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <!-- Content below header and above footer -->
+
+    <ScrollView
+        android:id="@+id/scrollableContents"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@id/footer"
+        android:layout_below="@id/header">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.CardView
+                    android:id="@+id/card_view"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    cardview:cardCornerRadius="5dp"
+                    cardview:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="25dp">
+
+                            <TextView
+                                style="@style/Base.TextAppearance.AppCompat.Headline"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Event Information" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="10dp"
+                            android:paddingLeft="30dp">
+
+                            <TextView
+                                android:id="@+id/event_name"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Name: -Name of event-" />
+
+                            <TextView
+                                android:id="@+id/event_description"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Description: -Description of event-" />
+
+                            <TextView
+                                android:id="@+id/event_start_datetime"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Start Time: -start date/time-" />
+
+                            <TextView
+                                android:id="@+id/event_location"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Location: -location-" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:background="@android:color/darker_gray" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="25dp">
+
+                            <TextView
+                                style="@style/Base.TextAppearance.AppCompat.Headline"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Carpool Overview" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="10dp"
+                            android:paddingLeft="30dp">
+
+                            <TextView
+                                android:id="@+id/driver_name"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Driver: -driver-" />
+
+                            <TextView
+                                android:id="@+id/driver_pickup"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Estimated Pickup Time: -time-" />
+
+                            <TextView
+                                android:id="@+id/driver_arrival"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Estimated Arrival Time: -time-" />
+
+                        </LinearLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:background="@android:color/darker_gray" />
+
+                        <LinearLayout
+                            android:id="@+id/first_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:gravity="center_vertical"
+                            android:paddingLeft="25dp">
+
+                            <TextView
+                                style="@style/Base.TextAppearance.AppCompat.Headline"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Your Information" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingBottom="10dp"
+                            android:paddingLeft="30dp">
+
+                            <TextView
+                                android:id="@+id/information_location"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Pickup Location: -location-" />
+
+                            <TextView
+                                android:id="@+id/information_count"
+                                style="@style/Base.TextAppearance.AppCompat.Body1"
+                                android:layout_width="fill_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Passenger Count: -number-" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </ScrollView>
+
+</RelativeLayout>
+
+
+
+
+
+
+
+
+
