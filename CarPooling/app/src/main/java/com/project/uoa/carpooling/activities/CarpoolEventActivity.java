@@ -1,6 +1,7 @@
 package com.project.uoa.carpooling.activities;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -45,15 +46,17 @@ public class CarpoolEventActivity extends AppCompatActivity implements Event_Spe
         eventID = bundle.getString("eventID");
         eventStatus = bundle.getString("eventStatus");
 
-        // Set up the pageviewer with the adapter
-        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        // Set up the pageViewer with the adapter
         CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager());
+        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(pagerAdapter);
 
-        // Add tabs to the pageviewer
+        // Add tabs to the pageViewer
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
     }
 
     public void onFragmentInteraction(Uri uri) {

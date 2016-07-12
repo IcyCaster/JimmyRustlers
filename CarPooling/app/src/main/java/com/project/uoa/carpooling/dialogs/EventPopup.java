@@ -1,6 +1,7 @@
 package com.project.uoa.carpooling.dialogs;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -23,8 +24,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.FacebookEventAdapter;
 import com.project.uoa.carpooling.entities.EventCardEntity;
+import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
+
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
@@ -45,12 +49,21 @@ public class EventPopup extends DialogFragment {
     private SharedPreferences sharedPreferences;
     private String userId;
 
+    private int subbedEvents;
+
     /**
      * Create a new instance of Fragment
      */
     public static EventPopup newInstance() {
         EventPopup f = new EventPopup();
         return f;
+    }
+
+    @Override
+    public void onDismiss(final DialogInterface dialog) {
+        super.onDismiss(dialog);
+        SubscribedCarpools subscribedCarpools = (SubscribedCarpools) getActivity().getSupportFragmentManager().findFragmentById(R.id.contentFragment);
+        subscribedCarpools.PopulateViewWithSubscribedEvents();
     }
 
 
@@ -87,25 +100,23 @@ public class EventPopup extends DialogFragment {
                         // This parses the events the users has subscribed to. (Currently it just parses upcoming facebook events
                         listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
 
-                        fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
                                 for (DataSnapshot child : snapshot.getChildren()) {
-                                    if (!child.getKey().toString().equals("Name")) {
-
-                                        listOfSubscribedEvents.remove(child.getKey().toString());
-                                        Log.d("firebase", "Event removed: " + child.getKey().toString() + " listSize: " + Integer.toString(listOfSubscribedEvents.size()));
 
 
-                                    }
+                                    listOfSubscribedEvents.remove(child.getKey().toString());
+                                    Log.d("firebase", "Event removed: " + child.getKey().toString() + " listSize: " + Integer.toString(listOfSubscribedEvents.size()));
+
+
                                 }
-                                if(listOfSubscribedEvents.size()==0) {
+                                if (listOfSubscribedEvents.size() == 0) {
                                     Log.d("firebase", "List Size: " + Integer.toString(listOfSubscribedEvents.size()));
                                     Toast.makeText(getActivity().getApplicationContext(), "No Facebook event left to join :(",
                                             Toast.LENGTH_SHORT).show();
-                                }
-                                else{
+                                } else {
                                     GetEventDetails();
                                 }
 
@@ -130,27 +141,67 @@ public class EventPopup extends DialogFragment {
 
         listOfEventCardEntities = new ArrayList<EventCardEntity>();
 
-        for (String s : listOfSubscribedEvents) {
+        subbedEvents = listOfSubscribedEvents.size();
+        for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
 
             GraphRequest request = GraphRequest.newGraphPathRequest(
                     AccessToken.getCurrentAccessToken(),
-                    "/" + s,
+                    "/" + listOfSubscribedEvents.get(i),
                     new GraphRequest.Callback() {
                         @Override
                         public void onCompleted(GraphResponse response) {
+                            try {
 
-                            Log.d("FB", "Event details" + response.toString());
-                            listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                Log.d("FB", "Event details1" + response.toString());
+                                listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
 
-                            adapter = new FacebookEventAdapter(listOfEventCardEntities, getActivity());
 
-                            popupRecyclerView.setAdapter(adapter);
-                            popupRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                                final String id = response.getJSONObject().getString("id");
+                                Log.d("FB", id);
 
-                            Log.d("FB", "Array-" + listOfEventCardEntities.toString());
-                            for (EventCardEntity c : listOfEventCardEntities) {
-                                Log.d("FB", "Event:" + c.toString());
+                                GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
+                                        AccessToken.getCurrentAccessToken(),
+                                        "/" + id + "/picture",
+                                        new GraphRequest.Callback() {
+
+                                            @Override
+                                            public void onCompleted(GraphResponse response) {
+                                                Log.d("FB", "Event details2" + response.toString());
+
+
+                                                try {
+
+
+                                                    String url = "";
+
+                                                    url = response.getJSONObject().getJSONObject("data").getString("url");
+
+                                                    Log.d("FB Picture", "url-" + url);
+
+
+                                                    for (EventCardEntity e : listOfEventCardEntities) {
+                                                        if (e.id == (Long.parseLong(id))) {
+                                                            listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
+                                                        }
+                                                    }
+
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+
+
+                                                callback();
+                                            }
+                                        });
+                                Bundle parameters = new Bundle();
+                                parameters.putString("type", "large");
+                                parameters.putBoolean("redirect", false);
+                                innerRequest.setParameters(parameters);
+                                innerRequest.executeAsync();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
+
 
                         }
                     });
@@ -158,5 +209,24 @@ public class EventPopup extends DialogFragment {
             request.executeAsync();
 
         }
+
+
     }
+
+    public synchronized void callback() {
+        subbedEvents--;
+        if (subbedEvents == 0) {
+
+
+            adapter = new FacebookEventAdapter(listOfEventCardEntities, getActivity());
+
+            popupRecyclerView.setAdapter(adapter);
+            popupRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        }
+    }
+
 }
+
+
+

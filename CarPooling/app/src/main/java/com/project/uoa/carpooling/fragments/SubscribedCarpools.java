@@ -1,6 +1,8 @@
 package com.project.uoa.carpooling.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -170,7 +172,7 @@ public class SubscribedCarpools extends Fragment {
                 ft.addToBackStack(null);
 
                 // Create and show the dialog.
-                DialogFragment newFragment = EventPopup.newInstance();
+                EventPopup newFragment = new EventPopup();
                 newFragment.show(ft, "dialog");
             }
 
@@ -223,24 +225,26 @@ public class SubscribedCarpools extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        PopulateViewWithSubscribedEvents();
+    }
+
     public void PopulateViewWithSubscribedEvents() {
 
 
         listOfSubscribedEvents.clear();
 
         Log.d("firebase - currentId", userId);
-        fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
                 Log.d("firebase - listsnapshot", snapshot.toString());
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (!child.getKey().toString().equals("Name")) {
                         Log.d("firebase - list event", child.toString());
                         listOfSubscribedEvents.add(child.getKey().toString());
-                    } else {
-                        Log.d("firebase - list name", child.toString());
-                    }
                 }
                 GetEventDetails();
 
@@ -267,7 +271,11 @@ public class SubscribedCarpools extends Fragment {
             if (v != null) v.setGravity(Gravity.CENTER);
             toast.show();
 
+            recyclerView.setVisibility(View.GONE);
+
         } else {
+
+            recyclerView.setVisibility(View.VISIBLE);
 
             subbedEvents = listOfSubscribedEvents.size();
             for (int i = 0; i < listOfSubscribedEvents.size(); i++) {

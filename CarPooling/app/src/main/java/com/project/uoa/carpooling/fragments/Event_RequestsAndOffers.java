@@ -78,10 +78,6 @@ public class Event_RequestsAndOffers extends Fragment {
 
         view = inflater.inflate(R.layout.fragment_event_requests_and_offers, container, false);
 
-        Snackbar.make(container, "Test get status " + status, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-
-
         viewPager = (ViewPager) view.findViewById(R.id.view_pager1);
 
         pagerAdapter = new RequestsAndOffersPagerAdapter(getChildFragmentManager(), status);
