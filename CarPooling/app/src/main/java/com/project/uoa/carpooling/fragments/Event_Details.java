@@ -4,12 +4,17 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -17,6 +22,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.dialogs.ChangeStatusPopup;
+import com.project.uoa.carpooling.dialogs.EventPopup;
+
+import org.json.JSONException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,6 +42,14 @@ public class Event_Details extends Fragment {
 
     // TODO: Rename and change types of parameters
     private Long eventId;
+
+    private DatabaseReference fireBaseReference;
+
+    private String eventID;
+    private String userID;
+    private String eventStatus;
+
+    private View view;
 
     private OnFragmentInteractionListener mListener;
 
@@ -66,28 +83,99 @@ public class Event_Details extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
 
-        View view = inflater.inflate(R.layout.fragment_event__details, container, false);
+        view = inflater.inflate(R.layout.fragment_event_driver_details, container, false);
+
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
+
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
+
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + eventID,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+
+                        TextView name = (TextView) view.findViewById(R.id.event_name);
+                        TextView description = (TextView) view.findViewById(R.id.event_description);
+                        TextView starttime = (TextView) view.findViewById(R.id.event_start_datetime);
+                        TextView location = (TextView) view.findViewById(R.id.event_location);
+
+                        try {
+                            name.setText("Name: " + response.getJSONObject().getString("name"));
+                            starttime.setText("Start Time: " + response.getJSONObject().getString("start_time"));
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        try {
+                            description.setText("Description: " + response.getJSONObject().getString("description"));
+                        } catch (JSONException e) {
+                            description.setText("Description: " + "NO DESCRIPTION");
+                        }
+                        try {
+                            location.setText("Location: " + response.getJSONObject().getJSONObject("place").getString("name"));
+                        } catch (JSONException e) {
+                            location.setText("Location: " + "NO LOCATION");
+                        }
+
+                    }
+                });
+
+        request.executeAsync();
 
 
-        final String userId = ((CarpoolEventActivity) getActivity()).getUserID();
+
+        if (eventStatus.equals("Observer")) {
+            view = inflater.inflate(R.layout.fragment_event_observer_details, container, false);
+
+        } else if (eventStatus.equals("Driver")) {
+            view = inflater.inflate(R.layout.fragment_event_driver_details, container, false);
+
+        } else if (eventStatus.equals("Passenger")) {
+            view = inflater.inflate(R.layout.fragment_event_passenger_details, container, false);
+
+        }
 
 
-        final DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
+        Button statusButton = (Button) view.findViewById(R.id.change_status_button);
+        statusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Fragment prev = getFragmentManager().findFragmentByTag("status_dialog");
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
+
+                // Create and show the dialog.
+                ChangeStatusPopup newFragment = new ChangeStatusPopup();
+                newFragment.show(ft, "status_dialog");
+
+            }
+        });
 
         Button leaveButton = (Button) view.findViewById(R.id.leave_carpool_button);
         leaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                fireBaseReference.child("users").child(userId).child(Long.toString(eventId)).addListenerForSingleValueEvent(new ValueEventListener() {
+                Log.d("test", userID + "   " + eventID);
+
+                fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
 
                         if (snapshot.exists()) {
-                            fireBaseReference.child("users").child(userId).child(Long.toString(eventId)).removeValue();
+                            //remove from users
+                            fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
+                            //remove from events
+                            fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
                             Log.d("firebase - event", "Unsubscribed: " + eventId);
                         }
                         // If it doesn't, create the user in the Firebase database
@@ -95,23 +183,17 @@ public class Event_Details extends Fragment {
                             Log.d("firebase - event", "Can't find: " + eventId);
                         }
 
+                        getActivity().finish();
+
                     }
+
                     @Override
                     public void onCancelled(DatabaseError firebaseError) {
                         Log.e("firebase - error", firebaseError.getMessage());
                     }
                 });
-
-
             }
-
-
         });
-
-
-
-
-
 
 
         return view;
