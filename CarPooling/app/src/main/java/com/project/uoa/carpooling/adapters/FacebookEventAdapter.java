@@ -2,7 +2,6 @@ package com.project.uoa.carpooling.adapters;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -47,7 +46,7 @@ public class FacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
 
     @Override
     public AddViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_car_pool_event, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__car_pool_instance, parent, false);
         AddViewHolder viewHolder = new AddViewHolder(view, context);
         return viewHolder;
     }

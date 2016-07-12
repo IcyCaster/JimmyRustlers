@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:showIn="@layout/activity__main">
 
     <!--android:paddingBottom="@dimen/activity_vertical_margin"-->
     <!--android:paddingLeft="@dimen/activity_horizontal_margin"-->

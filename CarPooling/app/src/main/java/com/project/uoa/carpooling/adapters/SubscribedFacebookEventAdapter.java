@@ -43,7 +43,7 @@ public class SubscribedFacebookEventAdapter extends RecyclerView.Adapter<Subscri
 
     @Override
     public SubscribedViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_car_pool_event, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__car_pool_instance, parent, false);
         SubscribedViewHolder viewHolder = new SubscribedViewHolder(view, context, this);
         return viewHolder;
     }

@@ -1,7 +1,6 @@
 package com.project.uoa.carpooling.activities;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -38,7 +37,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements Event_Spe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_car_pool_event);
+        setContentView(R.layout.activity__car_pool_instance);
 
         // Get everything necessary from the MainActivity
         Bundle bundle = getIntent().getExtras();

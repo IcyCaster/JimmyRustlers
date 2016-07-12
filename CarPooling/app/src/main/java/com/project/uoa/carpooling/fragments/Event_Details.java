@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.dialogs.ChangeStatusPopup;
+import com.project.uoa.carpooling.dialogs.EventPopup;
 
 import org.json.JSONException;
 
@@ -143,31 +146,17 @@ public class Event_Details extends Fragment {
             @Override
             public void onClick(View view) {
 
-                fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                Fragment prev = getFragmentManager().findFragmentByTag("status_dialog");
+                if (prev != null) {
+                    ft.remove(prev);
+                }
+                ft.addToBackStack(null);
 
-                        if (snapshot.exists()) {
-                            //remove from users
-                            fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
-                            //remove from events
-                            fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
-                            Log.d("firebase - event", "Unsubscribed: " + eventId);
-                        }
-                        // If it doesn't, create the user in the Firebase database
-                        else {
-                            Log.d("firebase - event", "Can't find: " + eventId);
-                        }
+                // Create and show the dialog.
+                ChangeStatusPopup newFragment = new ChangeStatusPopup();
+                newFragment.show(ft, "status_dialog");
 
-                        getActivity().finish();
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError firebaseError) {
-                        Log.e("firebase - error", firebaseError.getMessage());
-                    }
-                });
             }
         });
 

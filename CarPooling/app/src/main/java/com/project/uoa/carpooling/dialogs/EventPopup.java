@@ -24,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.FacebookEventAdapter;
 import com.project.uoa.carpooling.entities.EventCardEntity;
-import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Id_Response;
 
@@ -59,11 +58,13 @@ public class EventPopup extends DialogFragment {
         return f;
     }
 
+    public EventPopup() {
+
+    }
+
     @Override
     public void onDismiss(final DialogInterface dialog) {
         super.onDismiss(dialog);
-//        SubscribedCarpools subscribedCarpools = (SubscribedCarpools) getActivity().getSupportFragmentManager().findFragmentById(R.id.contentFragment);
-//        subscribedCarpools.PopulateViewWithSubscribedEvents();
         getActivity().recreate();
     }
 
@@ -72,7 +73,7 @@ public class EventPopup extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        view = inflater.inflate(R.layout.popup_sub_to_events, container, false);
+        view = inflater.inflate(R.layout.popup__new_events, container, false);
         popupRecyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
