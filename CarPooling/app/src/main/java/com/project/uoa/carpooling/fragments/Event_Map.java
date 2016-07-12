@@ -1,9 +1,11 @@
 package com.project.uoa.carpooling.fragments;
 
 import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -13,16 +15,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.maps.DirectionFinder;
+import com.project.uoa.carpooling.maps.DirectionFinderListener;
+import com.project.uoa.carpooling.maps.Route;
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,10 +47,11 @@ import java.util.Map;
  * Use the {@link Event_Map#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Event_Map extends Fragment implements OnMapReadyCallback  {
+public class Event_Map extends Fragment implements OnMapReadyCallback, DirectionFinderListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String EVENT_ID = "param1";
+    private String GOOGLE_API_KEY;
 
     // TODO: Rename and change types of parameters
     private Long eventId; // NOT USED!
@@ -46,9 +61,11 @@ public class Event_Map extends Fragment implements OnMapReadyCallback  {
     //TODO Update string with actual address dynamically.
     private String mSelectedAddress = "University Of Auckland";
     private OnFragmentInteractionListener mListener;
+    private List<Marker> originMarkers = new ArrayList<>();
+    private List<Marker> destinationMarkers = new ArrayList<>();
+    private List<Polyline> polylinePaths = new ArrayList<>();
 
     private GoogleMap mMap;
-//    private MapFragment mMapFragment;
     private MapView mMapView;
     private Button btnStartNav;
 
@@ -82,6 +99,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback  {
         eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
+        GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
     }
 
     @Override
@@ -102,6 +120,12 @@ public class Event_Map extends Fragment implements OnMapReadyCallback  {
             e.printStackTrace();
         }
 
+        try {
+            new DirectionFinder(this, "Manukau", "University of Auckland", GOOGLE_API_KEY).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
         //Nav Button and listener added
         btnStartNav = (Button) view.findViewById(R.id.btn_start_nav);
         btnStartNav.setOnClickListener(new View.OnClickListener() {
@@ -113,6 +137,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback  {
                 }
             }
         });
+
         return view;
     }
 
@@ -155,6 +180,52 @@ public class Event_Map extends Fragment implements OnMapReadyCallback  {
             return;
         }
         mMap.setMyLocationEnabled(true);
+    }
+
+    //TODO May not need to do this.
+    @Override
+    public void onDirectionFinderStart() {
+        if (originMarkers != null) {
+            for (Marker marker : originMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (destinationMarkers != null) {
+            for (Marker marker : destinationMarkers) {
+                marker.remove();
+            }
+        }
+
+        if (polylinePaths != null) {
+            for (Polyline polyline:polylinePaths ) {
+                polyline.remove();
+            }
+        }
+    }
+
+    @Override
+    public void onDirectionFinderSuccess(List<Route> routes) {
+        for (Route route : routes) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
+
+            originMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .title(route.startAddress)
+                    .position(route.startLocation)));
+            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                    .title(route.endAddress)
+                    .position(route.endLocation)));
+
+            // Options specify line graphic details and path of line.
+            PolylineOptions polylineOptions = new PolylineOptions().
+                    geodesic(true).
+                    color(Color.rgb(101, 156, 239));
+
+            for (int i = 0; i < route.points.size(); i++)
+                polylineOptions.add(route.points.get(i));
+
+            polylinePaths.add(mMap.addPolyline(polylineOptions));
+        }
     }
 
     /**
