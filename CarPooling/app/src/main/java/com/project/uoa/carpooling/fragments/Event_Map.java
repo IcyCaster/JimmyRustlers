@@ -1,7 +1,6 @@
 package com.project.uoa.carpooling.fragments;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,20 +9,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -38,7 +33,6 @@ import com.project.uoa.carpooling.maps.Route;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -209,7 +203,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     public void onDirectionFinderSuccess(List<Route> routes) {
         for (Route route : routes) {
             for (Leg leg : route.legs) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 16));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
 
                 originMarkers.add(mMap.addMarker(new MarkerOptions()
                         .title(leg.startAddress)
