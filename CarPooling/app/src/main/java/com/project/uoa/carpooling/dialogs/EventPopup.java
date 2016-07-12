@@ -68,6 +68,9 @@ public class EventPopup extends DialogFragment {
 
         view = inflater.inflate(R.layout.popup__new_events, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);
+        adapter = new FacebookEventAdapter(listOfEventCardEntities, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -195,8 +198,8 @@ public class EventPopup extends DialogFragment {
         subbedEvents--;
         if (subbedEvents == 0) {
             adapter = new FacebookEventAdapter(listOfEventCardEntities, getActivity());
-            recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
         }
     }
 }

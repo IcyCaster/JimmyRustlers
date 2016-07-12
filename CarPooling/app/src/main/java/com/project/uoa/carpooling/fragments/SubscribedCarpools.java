@@ -70,8 +70,6 @@ public class SubscribedCarpools extends Fragment {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
         userId = ((MainActivity) getActivity()).getUserID();
 
-        listOfSubscribedEvents = new ArrayList<>();
-
         // TODO: This will retrieve a list of all events the users is subscribed to. This list will be stored on firebase and will need to be parsed once retrieved.
         // TODO: For now, it just fetches all current events a user is subscribed to.
         PopulateViewWithSubscribedEvents();
@@ -79,7 +77,9 @@ public class SubscribedCarpools extends Fragment {
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-
+        adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
 
@@ -245,7 +245,6 @@ public class SubscribedCarpools extends Fragment {
 
                                                 @Override
                                                 public void onCompleted(GraphResponse response) {
-                                                    Log.d("FB", "Event details" + response.toString());
 
 
                                                     try {
@@ -254,8 +253,6 @@ public class SubscribedCarpools extends Fragment {
                                                         String url = "";
 
                                                         url = response.getJSONObject().getJSONObject("data").getString("url");
-
-                                                        Log.d("FB Picture", "url-" + url);
 
 
                                                         for (EventCardEntity e : listOfEventCardEntities) {
@@ -297,10 +294,9 @@ public class SubscribedCarpools extends Fragment {
         if (subbedEvents == 0) {
             swipeContainer.setRefreshing(false);
             adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
-            recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
 
-            Log.d("FB", "Array-" + listOfEventCardEntities.toString());
         }
     }
 
