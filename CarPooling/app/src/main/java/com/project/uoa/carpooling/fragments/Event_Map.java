@@ -32,6 +32,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.maps.DirectionFinder;
 import com.project.uoa.carpooling.maps.DirectionFinderListener;
+import com.project.uoa.carpooling.maps.Leg;
 import com.project.uoa.carpooling.maps.Route;
 
 import java.io.UnsupportedEncodingException;
@@ -207,15 +208,16 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     @Override
     public void onDirectionFinderSuccess(List<Route> routes) {
         for (Route route : routes) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(route.startLocation, 16));
+            for (Leg leg : route.legs) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 16));
 
-            originMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .title(route.startAddress)
-                    .position(route.startLocation)));
-            destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                    .title(route.endAddress)
-                    .position(route.endLocation)));
-
+                originMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(leg.startAddress)
+                        .position(leg.startLocation)));
+                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(leg.endAddress)
+                        .position(leg.endLocation)));
+            }
             // Options specify line graphic details and path of line.
             PolylineOptions polylineOptions = new PolylineOptions().
                     geodesic(true).
