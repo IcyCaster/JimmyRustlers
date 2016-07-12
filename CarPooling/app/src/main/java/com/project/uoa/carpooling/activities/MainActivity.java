@@ -32,26 +32,29 @@ import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_RequestsAndOffers.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Event_Specifics_Requests.OnFragmentInteractionListener, Event_Specifics_Offers.OnFragmentInteractionListener {
 
-    private String userId;
+    private String userID;
 
-    public String getUserId() {
-        return userId;
+    public String getUserID() {
+        return userID;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        // Get the userID stored in the shared preferences
         SharedPreferences sharedPreferences = getSharedPreferences(
                 getString(R.string.preference_file_key), Context.MODE_PRIVATE);
 
-        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
+        userID = sharedPreferences.getString("Current Facebook App-scoped ID", "");
 
         setContentView(R.layout.nav__drawer_layout);
+
+        // Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // Set up the navigation drawer
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -60,9 +63,9 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        displayView(R.id.nav_car_pools);
 
-
+        // Display the subscribed carpools fragment
+        displayView(R.id.nav_subscribed_carpools);
     }
 
     @Override
@@ -104,7 +107,7 @@ public class MainActivity extends AppCompatActivity
         String title = getString(R.string.app_name);
 
         switch (viewId) {
-            case R.id.nav_car_pools:
+            case R.id.nav_subscribed_carpools:
                 fragment = new SubscribedCarpools();
                 title = "Car Pools";
                 break;
@@ -132,7 +135,7 @@ public class MainActivity extends AppCompatActivity
             // Logs the user out of the application.
             case R.id.nav_logout:
                 LoginManager.getInstance().logOut();
-                Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                Intent i = new Intent(this, LoginActivity.class);
                 startActivity(i);
                 finish();
         }
@@ -155,6 +158,4 @@ public class MainActivity extends AppCompatActivity
     public void onFragmentInteraction(Uri uri) {
         // Kept Empty
     }
-
-
 }

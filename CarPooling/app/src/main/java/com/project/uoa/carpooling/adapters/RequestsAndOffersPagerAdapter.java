@@ -20,6 +20,7 @@ public class RequestsAndOffersPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         this.status = status;
 
+        // If they are a driver then the fragment needs to list requests, offers and passengers
         if (status.equals("Driver")) {
             tabCount = 3;
         } else {

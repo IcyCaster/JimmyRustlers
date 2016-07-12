@@ -1,7 +1,6 @@
 package com.project.uoa.carpooling.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,22 +40,16 @@ import java.util.ArrayList;
 
 public class SubscribedCarpools extends Fragment {
 
+    boolean shouldExecuteOnResume;
     private View view;
-
     private int subbedEvents;
-
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
-    private ArrayList<String> listOfSubscribedEvents;
-
+    private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
     private OnFragmentInteractionListener mListener;
-
     private RecyclerView recyclerView;
     private SubscribedFacebookEventAdapter adapter;
-
     private SwipeRefreshLayout swipeContainer;
-
     private DatabaseReference fireBaseReference;
-
     private String userId;
 
     public SubscribedCarpools() {
@@ -72,8 +65,10 @@ public class SubscribedCarpools extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        shouldExecuteOnResume = false;
+
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        userId = ((MainActivity) getActivity()).getUserId();
+        userId = ((MainActivity) getActivity()).getUserID();
 
         listOfSubscribedEvents = new ArrayList<>();
 
@@ -172,6 +167,13 @@ public class SubscribedCarpools extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        if (shouldExecuteOnResume) {
+            PopulateViewWithSubscribedEvents();
+        } else {
+            shouldExecuteOnResume = true;
+        }
+
     }
 
     public void PopulateViewWithSubscribedEvents() {
@@ -202,10 +204,11 @@ public class SubscribedCarpools extends Fragment {
 
     }
 
+
     public void GetEventDetails() {
 
 
-        listOfEventCardEntities = new ArrayList<EventCardEntity>();
+        listOfEventCardEntities.clear();
 
         if (listOfSubscribedEvents.size() == 0) {
             Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
@@ -256,7 +259,7 @@ public class SubscribedCarpools extends Fragment {
 
 
                                                         for (EventCardEntity e : listOfEventCardEntities) {
-                                                            if (e.id == (Long.parseLong(id))) {
+                                                            if (e.eventID.equals(id)) {
                                                                 listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                             }
                                                         }

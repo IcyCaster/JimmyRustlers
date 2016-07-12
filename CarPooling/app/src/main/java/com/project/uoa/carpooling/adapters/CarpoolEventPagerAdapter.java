@@ -17,17 +17,8 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
         super(fm);
     }
 
-//    private String userId;
-//    private String eventId;
-//    private String status;
-//
-//    public CarpoolEventPagerAdapter(FragmentManager fm, String eventId, String userId, String status) {
-//        super(fm);
-//    }
-
     @Override
     public Fragment getItem(int position) {
-
         switch (position) {
             case 0:
                 return new Event_Details();
