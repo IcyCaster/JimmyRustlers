@@ -23,7 +23,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.dialogs.ChangeStatusPopup;
-import com.project.uoa.carpooling.dialogs.EventPopup;
 
 import org.json.JSONException;
 
@@ -98,15 +97,82 @@ public class Event_Details extends Fragment {
         request.executeAsync();
 
 
-
         if (eventStatus.equals("Observer")) {
             view = inflater.inflate(R.layout.fragment_event_observer_details, container, false);
+
 
         } else if (eventStatus.equals("Driver")) {
             view = inflater.inflate(R.layout.fragment_event_driver_details, container, false);
 
+            fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+
+                    TextView passengerText = (TextView) view.findViewById(R.id.passenger_names);
+
+
+                    String passengers = "";
+                    for (DataSnapshot child : snapshot.child("Passengers").getChildren()) {
+                        if (!child.getKey().equals("PassengerCapacity")) {
+                            passengers = passengers + child.getKey() + "(" + child.getValue() + "); ";
+                        }
+                    }
+                    if (passengers.equals("")) {
+                        passengerText.setText("Passengers: No current passengers");
+                    } else {
+                        passengerText.setText("Passengers: " + passengers);
+                    }
+
+
+                    // Starting Route Time AND Estimated Arrival Time will need to be calculated based on start destination, passengers destination and the event's start time.
+
+                    TextView countText = (TextView) view.findViewById(R.id.information_count);
+                    countText.setText("Passenger Capacity: " + snapshot.child("Passengers").child("PassengerCapacity").getValue().toString());
+
+                    TextView locationText = (TextView) view.findViewById(R.id.information_location);
+                    locationText.setText("Leave location: " + snapshot.child("StartLat").getValue().toString() + "   " + snapshot.child("StartLong").getValue().toString());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError firebaseError) {
+                    Log.e("firebase - error", firebaseError.getMessage());
+                }
+            });
+
+
         } else if (eventStatus.equals("Passenger")) {
             view = inflater.inflate(R.layout.fragment_event_passenger_details, container, false);
+
+
+            fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot snapshot) {
+
+                    TextView driverText = (TextView) view.findViewById(R.id.driver_name);
+
+                    String driver = snapshot.child("Driver").getValue().toString();
+
+                    if (driver.equals("null")) {
+                        driverText.setText("Driver: No driver yet");
+                    } else {
+                        driverText.setText("Driver: " + driver);
+                    }
+
+
+                    // Starting Route Time AND Estimated Arrival Time will need to be calculated based on start destination, passengers destination and the event's start time.
+
+                    TextView countText = (TextView) view.findViewById(R.id.information_count);
+                    countText.setText("Passenger Total: " + snapshot.child("PassengerCount").getValue().toString());
+
+                    TextView locationText = (TextView) view.findViewById(R.id.information_location);
+                    locationText.setText("Leave location: " + snapshot.child("PickupLat").getValue().toString() + "   " + snapshot.child("PickupLong").getValue().toString());
+                }
+
+                @Override
+                public void onCancelled(DatabaseError firebaseError) {
+                    Log.e("firebase - error", firebaseError.getMessage());
+                }
+            });
 
         }
 

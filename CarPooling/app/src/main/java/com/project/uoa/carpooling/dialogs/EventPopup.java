@@ -1,6 +1,5 @@
 package com.project.uoa.carpooling.dialogs;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -15,6 +14,7 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
+import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -74,7 +74,7 @@ public class EventPopup extends DialogFragment {
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        userId = ((MainActivity)getActivity()).getUserID();
+        userId = ((MainActivity) getActivity()).getUserID();
 
         PopulateViewWithSubscribedEvents();
 
@@ -150,6 +150,7 @@ public class EventPopup extends DialogFragment {
 
                                 final String id = response.getJSONObject().getString("id");
 
+
                                 GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
                                         AccessToken.getCurrentAccessToken(),
                                         "/" + id + "/picture",
@@ -176,6 +177,20 @@ public class EventPopup extends DialogFragment {
                                                 callback();
                                             }
                                         });
+
+                                // ----------------------- BATCH EXAMPLE
+                                ArrayList<GraphRequest> listOfReq = new ArrayList<GraphRequest>();
+                                listOfReq.add(innerRequest);
+                                GraphRequestBatch batch = new GraphRequestBatch(listOfReq);
+                                batch.addCallback(new GraphRequestBatch.Callback() {
+
+                                    @Override
+                                    public void onBatchCompleted(GraphRequestBatch batch) {
+                                        Log.d("Facebook", "BATCH");
+                                    }
+
+                                });
+                                // ----------------------- BATCH EXAMPLE
 
                                 // Facebook parameters for getting large images.
                                 Bundle parameters = new Bundle();
