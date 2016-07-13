@@ -14,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.CarpoolEventPagerAdapter;
+import com.project.uoa.carpooling.dialogs.Status_Details;
 import com.project.uoa.carpooling.fragments.Event_Details;
 import com.project.uoa.carpooling.fragments.Event_Map;
 import com.project.uoa.carpooling.fragments.Event_RequestsAndOffers;
@@ -21,7 +22,7 @@ import com.project.uoa.carpooling.fragments.Event_Specifics_Offers;
 import com.project.uoa.carpooling.fragments.Event_Specifics_Passengers;
 import com.project.uoa.carpooling.fragments.Event_Specifics_Requests;
 
-public class CarpoolEventActivity extends AppCompatActivity implements Event_Specifics_Passengers.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_RequestsAndOffers.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Event_Specifics_Requests.OnFragmentInteractionListener, Event_Specifics_Offers.OnFragmentInteractionListener {
+public class CarpoolEventActivity extends AppCompatActivity implements Status_Details.OnFragmentInteractionListener, Event_Specifics_Passengers.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_RequestsAndOffers.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Event_Specifics_Requests.OnFragmentInteractionListener, Event_Specifics_Offers.OnFragmentInteractionListener {
 
     // These are relevant to the event instance
     private String userID;
@@ -54,7 +55,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements Event_Spe
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                Log.d("firebase - event", "You're an: Observer");
                 eventStatus = snapshot.getValue().toString();
 
                 setContentView(R.layout.activity__car_pool_instance);

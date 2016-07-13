@@ -4,13 +4,15 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -76,7 +78,20 @@ public class ChangeStatusPopup extends DialogFragment {
             driverButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // TODO: Open driver fragment
+
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    Fragment prev = getFragmentManager().findFragmentByTag("status_dialog2");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    Status_Details statusFragment = Status_Details.newInstance("Driver");
+                    statusFragment.show(ft, "status_dialog2");
+
+
                 }
             });
 
@@ -85,7 +100,17 @@ public class ChangeStatusPopup extends DialogFragment {
             passengerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    // TODO: Open passenger fragment
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    Fragment prev = getFragmentManager().findFragmentByTag("status_dialog2");
+                    if (prev != null) {
+                        ft.remove(prev);
+                    }
+                    ft.addToBackStack(null);
+
+                    // Create and show the dialog.
+                    Status_Details statusFragment = Status_Details.newInstance("Passenger");
+                    statusFragment.show(ft, "status_dialog2");
                 }
             });
         }
@@ -107,7 +132,10 @@ public class ChangeStatusPopup extends DialogFragment {
 
 
                 fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Observer");
+                fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
                 fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
+                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue("False");
+
 
                 getActivity().finish();
                 startActivity(getActivity().getIntent());

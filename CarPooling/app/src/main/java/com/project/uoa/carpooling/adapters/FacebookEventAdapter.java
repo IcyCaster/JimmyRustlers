@@ -57,6 +57,7 @@ public class FacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
         holder.eventName.setText(list.get(position).eventName);
         holder.eventStartDate.setText(list.get(position).startDate);
 
+
         // Picasso loads image from the URL
         if (list.get(position).eventImageURL != null) {
             Picasso.with(context)
@@ -83,8 +84,7 @@ public class FacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
     }
 
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(EventCardEntity data) {
-        int position = list.indexOf(data);
+    public void remove(int position) {
         list.remove(position);
         notifyItemRemoved(position);
     }
@@ -142,7 +142,7 @@ class AddViewHolder extends RecyclerView.ViewHolder {
                                                     fireBaseReference.child("events").child(eventId).child("location").push();
                                                     fireBaseReference.child("events").child(eventId).child("location").setValue(response.getJSONObject().getJSONObject("place").getString("name"));
                                                 }
-                                                if (response.getJSONObject().getJSONObject("place").has("location")) {
+                                                if (response.getJSONObject().has("place") && response.getJSONObject().getJSONObject("place").has("location")) {
                                                     // If the event contains a location-longitude, add it.
                                                     if (response.getJSONObject().getJSONObject("place").getJSONObject("location").has("latitude")) {
                                                         Log.d("facebook - event", "latitude added: " + response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("latitude"));
@@ -181,6 +181,7 @@ class AddViewHolder extends RecyclerView.ViewHolder {
 
 
                         // TODO: Remove it from the list? Or acknowledge that the event has been subscribed somehow?
+
 
                     }
 

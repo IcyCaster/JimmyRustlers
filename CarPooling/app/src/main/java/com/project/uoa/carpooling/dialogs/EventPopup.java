@@ -157,7 +157,6 @@ public class EventPopup extends DialogFragment {
 
                                             @Override
                                             public void onCompleted(GraphResponse response) {
-                                                Log.d("FB", "Event details2" + response.toString());
 
                                                 try {
 

@@ -39,19 +39,19 @@ public class FacebookConnector {
         return new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(final LoginResult loginResult) {
-                Log.d("Facebook-login", "callback successful");
+                Log.d("facebook-login", "callback successful");
                 loginActivity.successfulFacebookLogin(loginResult);
             }
 
             @Override
             public void onCancel() {
-                Log.d("Facebook-login", "callback cancel");
+                Log.d("facebook-login", "callback cancel");
             }
 
             @Override
             public void onError(FacebookException exception) {
-                Log.d("Facebook-login", "callback onError");
-                Log.d("Facebook-login", exception.getMessage());
+                Log.d("facebook-login", "callback onError");
+                Log.d("facebook-login", exception.getMessage());
             }
         };
     }
