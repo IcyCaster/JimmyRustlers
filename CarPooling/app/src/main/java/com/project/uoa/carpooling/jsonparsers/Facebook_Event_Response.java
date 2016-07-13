@@ -27,18 +27,13 @@ public class Facebook_Event_Response {
 
     public static EventCardEntity parse(JSONObject response) {
 
-
-
         try {
 
             // EventID, EventImage, EventName, StartTime
             // TODO: Swap R.drawable.test with the actual event image.
             // TODO: Format how the startTime is displayed
 
-            EventCardEntity entity = new EventCardEntity(Long.parseLong(response.getString("id")), "TEMP", response.getString("name"), response.getString("start_time"));
-
-            Log.d("JSON->Entity:", entity.toString());
-
+            EventCardEntity entity = new EventCardEntity(response.getString("id"), "TEMPORARY", response.getString("name"), response.getString("start_time"));
             return entity;
 
         } catch (JSONException e) {

@@ -22,6 +22,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.FacebookEventAdapter;
 import com.project.uoa.carpooling.entities.EventCardEntity;
 import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
@@ -37,10 +38,10 @@ import java.util.ArrayList;
 public class EventPopup extends DialogFragment {
 
     private View view;
-    private RecyclerView popupRecyclerView;
+    private RecyclerView recyclerView;
 
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
-    private ArrayList<String> listOfSubscribedEvents;
+    private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
 
     private FacebookEventAdapter adapter;
     private DatabaseReference fireBaseReference;
@@ -50,14 +51,6 @@ public class EventPopup extends DialogFragment {
 
     private int subbedEvents;
 
-    /**
-     * Create a new instance of Fragment
-     */
-    public static EventPopup newInstance() {
-        EventPopup f = new EventPopup();
-        return f;
-    }
-
     public EventPopup() {
 
     }
@@ -65,7 +58,7 @@ public class EventPopup extends DialogFragment {
     @Override
     public void onDismiss(final DialogInterface dialog) {
         super.onDismiss(dialog);
-        getActivity().recreate();
+        getActivity().getSupportFragmentManager().findFragmentById(R.id.contentFragment).onResume();
     }
 
 
@@ -74,13 +67,14 @@ public class EventPopup extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         view = inflater.inflate(R.layout.popup__new_events, container, false);
-        popupRecyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);
+        recyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);
+        adapter = new FacebookEventAdapter(listOfEventCardEntities, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        sharedPreferences = getActivity().getSharedPreferences(
-                getString(R.string.preference_file_key), Context.MODE_PRIVATE);
-        userId = sharedPreferences.getString("Current Facebook App-scoped ID", "");
+        userId = ((MainActivity)getActivity()).getUserID();
 
         PopulateViewWithSubscribedEvents();
 
@@ -89,6 +83,7 @@ public class EventPopup extends DialogFragment {
 
     public void PopulateViewWithSubscribedEvents() {
 
+        // Gets the current time
         long unixTime = System.currentTimeMillis() / 1000L;
 
         GraphRequest request = GraphRequest.newGraphPathRequest(
@@ -98,30 +93,24 @@ public class EventPopup extends DialogFragment {
                     @Override
                     public void onCompleted(GraphResponse response) {
 
-                        Log.d("FB", "Event ids");
-                        // This parses the events the users has subscribed to. (Currently it just parses upcoming facebook events
+
                         listOfSubscribedEvents = Facebook_Id_Response.parse(response.getJSONObject());
 
                         fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
+                                // Remove events off the list if they have already been subscribed to
                                 for (DataSnapshot child : snapshot.getChildren()) {
-
-
                                     listOfSubscribedEvents.remove(child.getKey().toString());
-                                    Log.d("firebase", "Event removed: " + child.getKey().toString() + " listSize: " + Integer.toString(listOfSubscribedEvents.size()));
-
-
                                 }
                                 if (listOfSubscribedEvents.size() == 0) {
-                                    Log.d("firebase", "List Size: " + Integer.toString(listOfSubscribedEvents.size()));
+                                    Log.d("firebase", "No event left to subscribe to");
                                     Toast.makeText(getActivity().getApplicationContext(), "No Facebook event left to join :(",
                                             Toast.LENGTH_SHORT).show();
                                 } else {
                                     GetEventDetails();
                                 }
-
                             }
 
                             @Override
@@ -132,6 +121,8 @@ public class EventPopup extends DialogFragment {
                     }
                 });
 
+        // Facebook parameters for getting events which haven't expired.
+        // TODO: Events should not be expired if less than 24h past their start time
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id");
         parameters.putString("since", Long.toString(unixTime));
@@ -141,9 +132,10 @@ public class EventPopup extends DialogFragment {
 
     public void GetEventDetails() {
 
-        listOfEventCardEntities = new ArrayList<EventCardEntity>();
+        listOfEventCardEntities.clear();
 
         subbedEvents = listOfSubscribedEvents.size();
+
         for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
 
             GraphRequest request = GraphRequest.newGraphPathRequest(
@@ -154,12 +146,9 @@ public class EventPopup extends DialogFragment {
                         public void onCompleted(GraphResponse response) {
                             try {
 
-                                Log.d("FB", "Event details1" + response.toString());
                                 listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
 
-
                                 final String id = response.getJSONObject().getString("id");
-                                Log.d("FB", id);
 
                                 GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
                                         AccessToken.getCurrentAccessToken(),
@@ -168,21 +157,14 @@ public class EventPopup extends DialogFragment {
 
                                             @Override
                                             public void onCompleted(GraphResponse response) {
-                                                Log.d("FB", "Event details2" + response.toString());
-
 
                                                 try {
 
-
                                                     String url = "";
-
                                                     url = response.getJSONObject().getJSONObject("data").getString("url");
 
-                                                    Log.d("FB Picture", "url-" + url);
-
-
                                                     for (EventCardEntity e : listOfEventCardEntities) {
-                                                        if (e.id == (Long.parseLong(id))) {
+                                                        if (e.eventID.equals(id)) {
                                                             listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                         }
                                                     }
@@ -191,10 +173,11 @@ public class EventPopup extends DialogFragment {
                                                     e.printStackTrace();
                                                 }
 
-
                                                 callback();
                                             }
                                         });
+
+                                // Facebook parameters for getting large images.
                                 Bundle parameters = new Bundle();
                                 parameters.putString("type", "large");
                                 parameters.putBoolean("redirect", false);
@@ -203,31 +186,21 @@ public class EventPopup extends DialogFragment {
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
-
                         }
                     });
-
             request.executeAsync();
-
         }
-
-
     }
 
+    // Callback ensures that the recycler doesn't update until the end
     public synchronized void callback() {
         subbedEvents--;
         if (subbedEvents == 0) {
-
-
             adapter = new FacebookEventAdapter(listOfEventCardEntities, getActivity());
-
-            popupRecyclerView.setAdapter(adapter);
-            popupRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
         }
     }
-
 }
 
 

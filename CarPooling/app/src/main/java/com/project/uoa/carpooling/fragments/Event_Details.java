@@ -27,21 +27,8 @@ import com.project.uoa.carpooling.dialogs.EventPopup;
 
 import org.json.JSONException;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link Event_Details.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link Event_Details#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class Event_Details extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String EVENT_ID = "param1";
 
-    // TODO: Rename and change types of parameters
-    private Long eventId;
+public class Event_Details extends Fragment {
 
     private DatabaseReference fireBaseReference;
 
@@ -57,27 +44,10 @@ public class Event_Details extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment Event_Details.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static Event_Details newInstance(Long eventId) {
-        Event_Details fragment = new Event_Details();
-        Bundle args = new Bundle();
-        args.putLong(EVENT_ID, eventId);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            eventId = getArguments().getLong(EVENT_ID);
-        }
     }
 
     @Override
@@ -165,8 +135,6 @@ public class Event_Details extends Fragment {
             @Override
             public void onClick(View view) {
 
-                Log.d("test", userID + "   " + eventID);
-
                 fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -176,11 +144,11 @@ public class Event_Details extends Fragment {
                             fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
                             //remove from events
                             fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
-                            Log.d("firebase - event", "Unsubscribed: " + eventId);
+                            Log.d("firebase - event", "Unsubscribed: " + eventID);
                         }
                         // If it doesn't, create the user in the Firebase database
                         else {
-                            Log.d("firebase - event", "Can't find: " + eventId);
+                            Log.d("firebase - event", "Can't find: " + eventID);
                         }
 
                         getActivity().finish();

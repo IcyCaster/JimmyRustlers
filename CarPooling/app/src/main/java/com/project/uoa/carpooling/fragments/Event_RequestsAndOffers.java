@@ -16,14 +16,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.adapters.RequestsAndOffersPagerAdapter;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link Event_RequestsAndOffers.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link Event_RequestsAndOffers#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class Event_RequestsAndOffers extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     private static final String EVENT_ID = "param1";
@@ -32,7 +25,6 @@ public class Event_RequestsAndOffers extends Fragment {
     // TODO: Rename and change types of parameters
     private Long eventId;
     private String status;
-    private String NOTUSEDstatus;
     private DatabaseReference fireBaseReference; // Root Firebase Reference
     private String userId;
     private View view;
@@ -49,24 +41,10 @@ public class Event_RequestsAndOffers extends Fragment {
         // Required empty public constructor
     }
 
-    public static Event_RequestsAndOffers newInstance(Long eventId, String status) {
-        Event_RequestsAndOffers fragment = new Event_RequestsAndOffers();
-
-        Bundle args = new Bundle();
-        args.putLong(EVENT_ID, eventId);
-        args.putString(EVENT_STATUS, status);
-        fragment.setArguments(args);
-
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            eventId = getArguments().getLong(EVENT_ID);
-            NOTUSEDstatus = getArguments().getString(EVENT_STATUS);
-        }
     }
 
     @Override

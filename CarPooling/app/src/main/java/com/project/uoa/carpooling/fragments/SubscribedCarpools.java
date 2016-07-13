@@ -1,7 +1,6 @@
 package com.project.uoa.carpooling.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -41,22 +40,16 @@ import java.util.ArrayList;
 
 public class SubscribedCarpools extends Fragment {
 
+    boolean shouldExecuteOnResume;
     private View view;
-
     private int subbedEvents;
-
     private ArrayList<EventCardEntity> listOfEventCardEntities = new ArrayList<>();
-    private ArrayList<String> listOfSubscribedEvents;
-
+    private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
     private OnFragmentInteractionListener mListener;
-
     private RecyclerView recyclerView;
     private SubscribedFacebookEventAdapter adapter;
-
     private SwipeRefreshLayout swipeContainer;
-
     private DatabaseReference fireBaseReference;
-
     private String userId;
 
     public SubscribedCarpools() {
@@ -72,10 +65,10 @@ public class SubscribedCarpools extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        userId = ((MainActivity) getActivity()).getUserId();
+        shouldExecuteOnResume = false;
 
-        listOfSubscribedEvents = new ArrayList<>();
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
+        userId = ((MainActivity) getActivity()).getUserID();
 
         // TODO: This will retrieve a list of all events the users is subscribed to. This list will be stored on firebase and will need to be parsed once retrieved.
         // TODO: For now, it just fetches all current events a user is subscribed to.
@@ -84,7 +77,9 @@ public class SubscribedCarpools extends Fragment {
         view = inflater.inflate(R.layout.fragment_car_pools, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-
+        adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
 
@@ -172,6 +167,13 @@ public class SubscribedCarpools extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+        if (shouldExecuteOnResume) {
+            PopulateViewWithSubscribedEvents();
+        } else {
+            shouldExecuteOnResume = true;
+        }
+
     }
 
     public void PopulateViewWithSubscribedEvents() {
@@ -179,14 +181,13 @@ public class SubscribedCarpools extends Fragment {
 
         listOfSubscribedEvents.clear();
 
-        Log.d("firebase - currentId", userId);
+
         fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                Log.d("firebase - listsnapshot", snapshot.toString());
+
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    Log.d("firebase - list event", child.toString());
                     listOfSubscribedEvents.add(child.getKey().toString());
                 }
                 GetEventDetails();
@@ -202,10 +203,11 @@ public class SubscribedCarpools extends Fragment {
 
     }
 
+
     public void GetEventDetails() {
 
 
-        listOfEventCardEntities = new ArrayList<EventCardEntity>();
+        listOfEventCardEntities.clear();
 
         if (listOfSubscribedEvents.size() == 0) {
             Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
@@ -242,7 +244,6 @@ public class SubscribedCarpools extends Fragment {
 
                                                 @Override
                                                 public void onCompleted(GraphResponse response) {
-                                                    Log.d("FB", "Event details" + response.toString());
 
 
                                                     try {
@@ -252,11 +253,9 @@ public class SubscribedCarpools extends Fragment {
 
                                                         url = response.getJSONObject().getJSONObject("data").getString("url");
 
-                                                        Log.d("FB Picture", "url-" + url);
-
 
                                                         for (EventCardEntity e : listOfEventCardEntities) {
-                                                            if (e.id == (Long.parseLong(id))) {
+                                                            if (e.eventID.equals(id)) {
                                                                 listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                             }
                                                         }
@@ -294,10 +293,9 @@ public class SubscribedCarpools extends Fragment {
         if (subbedEvents == 0) {
             swipeContainer.setRefreshing(false);
             adapter = new SubscribedFacebookEventAdapter(listOfEventCardEntities, getActivity());
-            recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
 
-            Log.d("FB", "Array-" + listOfEventCardEntities.toString());
         }
     }
 

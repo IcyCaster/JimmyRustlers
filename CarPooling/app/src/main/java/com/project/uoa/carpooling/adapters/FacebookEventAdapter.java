@@ -22,7 +22,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.entities.EventCardEntity;
-import com.project.uoa.carpooling.fragments.SubscribedCarpools;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -53,20 +52,23 @@ public class FacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
 
     @Override
     public void onBindViewHolder(AddViewHolder holder, int position) {
-        holder.eventId = Long.toString(list.get(position).id);
+
+        holder.eventId = list.get(position).eventID;
         holder.eventName.setText(list.get(position).eventName);
         holder.eventStartDate.setText(list.get(position).startDate);
 
-        // This is used to load the image
+
+        // Picasso loads image from the URL
         if (list.get(position).eventImageURL != null) {
             Picasso.with(context)
-                    .load(list.get(position).eventImageURL) // should load this if it works: list.get(position).eventImageURL
-                    .placeholder(R.drawable.placeholder_image) // Placeholder image
-                    .error(R.drawable.error_no_image) // Error image
+                    .load(list.get(position).eventImageURL)
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.error_no_image)
                     .fit()
                     .noFade()
                     .into(holder.eventThumbnail);
         } else {
+            // If no URL given, load default image
             holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.placeholder_image));
         }
     }
@@ -81,35 +83,26 @@ public class FacebookEventAdapter extends RecyclerView.Adapter<AddViewHolder> {
         super.onAttachedToRecyclerView(recyclerView);
     }
 
-    // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, EventCardEntity data) {
-        list.add(position, data);
-        notifyItemInserted(position);
-    }
-
     // Remove a RecyclerView item containing a specified Data object
-    public void remove(EventCardEntity data) {
-        int position = list.indexOf(data);
+    public void remove(int position) {
         list.remove(position);
         notifyItemRemoved(position);
     }
-
 }
 
-
 class AddViewHolder extends RecyclerView.ViewHolder {
-    public String eventId;
-    public TextView eventName;
-    public TextView eventStartDate;
-    public ImageView eventThumbnail;
-    private DatabaseReference fireBaseReference; // Root Firebase Reference
+    protected String eventId;
+    protected TextView eventName;
+    protected TextView eventStartDate;
+    protected ImageView eventThumbnail;
+    private DatabaseReference fireBaseReference;
     private String userId;
 
     public AddViewHolder(View itemView, Context context) {
         super(itemView);
+
         final MainActivity mainActivity = (MainActivity) context;
 
-//        eventThumbnail = (ImageView) itemView.findViewById(R.id.event_photo);
         eventName = (TextView) itemView.findViewById(R.id.event_name);
         eventStartDate = (TextView) itemView.findViewById(R.id.event_start_date);
         eventThumbnail = (ImageView) itemView.findViewById(R.id.event_photo);
@@ -118,29 +111,23 @@ class AddViewHolder extends RecyclerView.ViewHolder {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Initialise shared preferences
-        userId = ((MainActivity) context).getUserId();
+        userId = mainActivity.getUserID();
 
-
+        // Adds a click listener to every carpool card: the click subscribed the user to the carpool as an observer
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-//                Snackbar.make(v, "Subcribed to " + eventId, Snackbar.LENGTH_LONG).setAction("Action", null).show();
-
-                // Checks DB/events/{event-id}/users
+                // Checks events/{event-id} to see if the event exists in the database as this may be the first user subscribing
                 fireBaseReference.child("events").child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
 
-                        // If it exists, everything is sweet
-                        if (snapshot.exists()) {
-                            Log.d("firebase - event", "Already subscribed to: " + eventId);
-                        }
-                        // If it doesn't, create the event in the Firebase database
-                        else {
+                        // If it does not exist it needs to be added
+                        if (!snapshot.exists()) {
 
+                            // Add a /users branch
                             fireBaseReference.child("events").child(eventId).child("users").push();
-
 
                             GraphRequest request = GraphRequest.newGraphPathRequest(
                                     AccessToken.getCurrentAccessToken(),
@@ -149,78 +136,51 @@ class AddViewHolder extends RecyclerView.ViewHolder {
                                         @Override
                                         public void onCompleted(GraphResponse response) {
                                             try {
-
-                                                if (response.getJSONObject().getJSONObject("place").has("name")) {
-                                                    Log.d("y", "name");
+                                                // If the event contains a location-name, add it.
+                                                if (response.getJSONObject().has("place") && response.getJSONObject().getJSONObject("place").has("name")) {
+                                                    Log.d("facebook - event", "place added: " + response.getJSONObject().getJSONObject("place").getString("name"));
                                                     fireBaseReference.child("events").child(eventId).child("location").push();
                                                     fireBaseReference.child("events").child(eventId).child("location").setValue(response.getJSONObject().getJSONObject("place").getString("name"));
                                                 }
-                                                if (response.getJSONObject().getJSONObject("place").has("location")) {
+                                                if (response.getJSONObject().has("place") && response.getJSONObject().getJSONObject("place").has("location")) {
+                                                    // If the event contains a location-longitude, add it.
                                                     if (response.getJSONObject().getJSONObject("place").getJSONObject("location").has("latitude")) {
-                                                        Log.d("y", "lat");
+                                                        Log.d("facebook - event", "latitude added: " + response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("latitude"));
                                                         fireBaseReference.child("events").child(eventId).child("latitude").push();
                                                         fireBaseReference.child("events").child(eventId).child("latitude").setValue(response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("latitude"));
-
                                                     }
+                                                    // If the event contains a location-latitude, add it.
                                                     if (response.getJSONObject().getJSONObject("place").getJSONObject("location").has("longitude")) {
-                                                        Log.d("y", "long");
+                                                        Log.d("facebook - event", "longitude added: " + response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("longitude"));
                                                         fireBaseReference.child("events").child(eventId).child("longitude").push();
                                                         fireBaseReference.child("events").child(eventId).child("longitude").setValue(response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("longitude"));
                                                     }
-
-
                                                 }
-
-                                                SubscribedCarpools subscribedCarpools = (SubscribedCarpools)
-                                                        mainActivity.getSupportFragmentManager().findFragmentById(R.id.contentFragment);
-                                                subscribedCarpools.PopulateViewWithSubscribedEvents();
-
-
-
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
-                                            // Insert your code here
                                         }
                                     });
 
+                            // Facebook parameters for getting the event's place
                             Bundle parameters = new Bundle();
                             parameters.putString("fields", "place");
                             request.setParameters(parameters);
                             request.executeAsync();
                         }
+
+                        // Add {user-ID} to events/{event-ID}/users/ and set as an observer
                         fireBaseReference.child("events").child(eventId).child("users").child(userId).child("Status").setValue("Observer");
                         fireBaseReference.child("events").child(eventId).child("users").child(userId).child("isPublic").setValue("False");
 
+                        // Add {event-ID} to users/{user-ID}/events/ and set as an observer
+                        fireBaseReference.child("users").child(userId).child("events").child(eventId).push();
+                        fireBaseReference.child("users").child(userId).child("events").child(eventId).setValue("Observer");
+
                         Log.d("firebase - event", "Subscribed to: " + eventId);
 
-                    }
 
-                    @Override
-                    public void onCancelled(DatabaseError firebaseError) {
-                        Log.e("firebase - error", firebaseError.getMessage());
-                    }
-                });
-
-                // Checks DB/users/{user-id}/events/{event-id}
-                fireBaseReference.child("users").child(userId).child("events").child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-
-                        // If it exists, everything is sweet
-                        if (snapshot.exists()) {
-                            Log.d("firebase - event", "Already subscribed to: " + eventId);
-                        }
-                        // If it doesn't, create the event in the Firebase database
-                        else {
-                            fireBaseReference.child("users").child(userId).child("events").child(eventId).push();
-                            fireBaseReference.child("users").child(userId).child("events").child(eventId).setValue("Observer");
-                            Log.d("firebase - event", "Subscribed to: " + eventId);
-                        }
-
-                        SubscribedCarpools frag = (SubscribedCarpools) mainActivity.getSupportFragmentManager().findFragmentById(R.id.contentFragment);
-
-                        Log.d("hmm", frag.toString());
+                        // TODO: Remove it from the list? Or acknowledge that the event has been subscribed somehow?
 
 
                     }
@@ -230,7 +190,6 @@ class AddViewHolder extends RecyclerView.ViewHolder {
                         Log.e("firebase - error", firebaseError.getMessage());
                     }
                 });
-
             }
         });
     }

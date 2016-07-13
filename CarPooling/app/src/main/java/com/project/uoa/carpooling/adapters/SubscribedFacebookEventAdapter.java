@@ -31,9 +31,8 @@ import java.util.List;
  */
 public class SubscribedFacebookEventAdapter extends RecyclerView.Adapter<SubscribedViewHolder> {
 
-    List<EventCardEntity> list = Collections.emptyList();
+    protected List<EventCardEntity> list = Collections.emptyList();
     private Context context;
-
 
     // Constructor
     public SubscribedFacebookEventAdapter(List<EventCardEntity> list, Context context) {
@@ -51,49 +50,44 @@ public class SubscribedFacebookEventAdapter extends RecyclerView.Adapter<Subscri
     @Override
     public void onBindViewHolder(final SubscribedViewHolder holder, final int position) {
 
-        final DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
-        // This is used to load the image
+        // Picasso loads image from the URL
         if (list.get(position).eventImageURL != null) {
             Picasso.with(context)
-                    .load(list.get(position).eventImageURL) // should load this if it works: list.get(position).eventImageURL
-                    .placeholder(R.drawable.placeholder_image) // Placeholder image
-                    .error(R.drawable.error_no_image) // Error image
+                    .load(list.get(position).eventImageURL)
+                    .placeholder(R.drawable.placeholder_image)
+                    .error(R.drawable.error_no_image)
                     .fit()
                     .noFade()
                     .into(holder.eventThumbnail);
         } else {
+            // If no URL given, load default image
             holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.placeholder_image));
         }
 
         // Checks DB/users/{user-id}
-        fireBaseReference.child("users").child(((MainActivity)context).getUserId()).child("events").child(Long.toString(list.get(position).id)).addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
+        fireBaseReference.child("users").child(((MainActivity) context).getUserID()).child("events").child(list.get(position).eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-
-                // If it exists, everything is sweet
+                // Set the observer indicator
                 if (snapshot.getValue().equals("Observer")) {
-                    Log.d("firebase - event", "You're an: Observer");
                     holder.eventStatusImage.setImageResource(R.drawable.observer_icon);
                 }
-                // If it doesn't, create the user in the Firebase database
+                // Set the driver indicator
                 else if (snapshot.getValue().equals("Driver")) {
-                    Log.d("firebase - event", "You're a: Driver");
                     holder.eventStatusImage.setImageResource(R.drawable.driver_icon);
-                } else if (snapshot.getValue().equals("Passenger")) {
-                    Log.d("firebase - event", "You're a: Passenger");
+                }
+                // Set the passenger indicator
+                else if (snapshot.getValue().equals("Passenger")) {
                     holder.eventStatusImage.setImageResource(R.drawable.passenger_icon);
                 } else {
-                    Log.d("firebase - event", "Did not find it ");
                     holder.eventStatusImage.setImageResource(R.drawable.indicator);
-
                 }
 
-                holder.eventId = Long.toString(list.get(position).id);
+                holder.eventId = list.get(position).eventID;
                 holder.eventName.setText(list.get(position).eventName);
                 holder.eventStartDate.setText(list.get(position).startDate);
-
-
             }
 
             @Override
@@ -112,20 +106,6 @@ public class SubscribedFacebookEventAdapter extends RecyclerView.Adapter<Subscri
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
-
-    // Insert a new item to the RecyclerView on a predefined position
-    public void insert(int position, EventCardEntity data) {
-        list.add(position, data);
-        notifyItemInserted(position);
-    }
-
-    // Remove a RecyclerView item containing a specified Data object
-    public void remove(EventCardEntity data) {
-        int position = list.indexOf(data);
-        list.remove(position);
-        notifyItemRemoved(position);
-    }
-
 }
 
 class SubscribedViewHolder extends RecyclerView.ViewHolder {
@@ -135,77 +115,33 @@ class SubscribedViewHolder extends RecyclerView.ViewHolder {
     protected TextView eventStartDate;
     protected ImageView eventStatusImage;
     private MainActivity mainActivity;
-    String status = "NOTHING";
 
-
-    public SubscribedViewHolder(final View itemView, final Context context, SubscribedFacebookEventAdapter adapter) {
+    public SubscribedViewHolder(final View itemView, final Context context, final SubscribedFacebookEventAdapter adapter) {
         super(itemView);
-        final SubscribedFacebookEventAdapter eventAdapter = adapter;
         mainActivity = (MainActivity) context;
         eventStatusImage = (ImageView) itemView.findViewById(R.id.status_photo);
         eventThumbnail = (ImageView) itemView.findViewById(R.id.event_photo);
         eventName = (TextView) itemView.findViewById(R.id.event_name);
         eventStartDate = (TextView) itemView.findViewById(R.id.event_start_date);
 
-
-        final DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                final String eventID = Long.toString(eventAdapter.list.get(getAdapterPosition()).id);
+                String eventID = adapter.list.get(getAdapterPosition()).eventID;
 
-
-                Log.d("Event id:", eventID);
-
-
-                // Checks DB/users/{user-id}
-                fireBaseReference.child("users").child(mainActivity.getUserId()).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
-
-                        // If it exists, everything is sweet
-                        if (snapshot.getValue().equals("Observer")) {
-                            Log.d("firebase - event", "You're an: Observer");
-                            status = "Observer";
-                        }
-                        // If it doesn't, create the user in the Firebase database
-                        else if (snapshot.getValue().equals("Driver")) {
-                            Log.d("firebase - event", "You're a: Driver");
-                            status = "Driver";
-                        } else if (snapshot.getValue().equals("Passenger")) {
-                            Log.d("firebase - event", "You're a: Passenger");
-                            status = "Passenger";
-                        } else {
-                            Log.d("firebase - event", "Did not find it ");
-                            status = "Error";
-                        }
-
-                        Intent i = new Intent(mainActivity, CarpoolEventActivity.class);
-
-                        Bundle b = new Bundle();
-                        b.putString("userID", mainActivity.getUserId());
-                        b.putString("eventID", eventID);
-                        b.putString("eventStatus", status);
-                        i.putExtras(b);
-                        mainActivity.startActivity(i);
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError firebaseError) {
-                        Log.e("firebase - error", firebaseError.getMessage());
-                    }
-                });
-
+                // Launch the carpool instance as a new activity
+                Intent i = new Intent(mainActivity, CarpoolEventActivity.class);
+                Bundle b = new Bundle();
+                b.putString("userID", mainActivity.getUserID());
+                b.putString("eventID", eventID);
+                i.putExtras(b);
+                mainActivity.startActivity(i);
             }
 
 
         });
     }
-
-
 }
 
 
