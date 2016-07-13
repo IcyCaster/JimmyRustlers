@@ -28,7 +28,6 @@
                 android:layout_marginRight="16dp"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/test"
                 />
 
             <TextView
@@ -64,7 +63,7 @@
                 android:layout_height="50dp"
                 />
 
-            <!--android:src="@drawable/indicator"-->
+            <!--android:src="@drawable/temp_placeholder_indicator"-->
 
         </RelativeLayout>
 

@@ -1,23 +1,12 @@
 package com.project.uoa.carpooling.jsonparsers;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.entities.EventCardEntity;
+import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Converts a Facebook Event Response (JSON) object to a EventCardEntity so it can be displayed on the recyclerView.
+ * Converts a Facebook Event Response (JSON) object to a SimpleEventEntity so it can be displayed on the recyclerView.
  *
  * https://developers.facebook.com/docs/graph-api/reference/event
  *
@@ -25,7 +14,7 @@ import org.json.JSONObject;
  */
 public class Facebook_Event_Response {
 
-    public static EventCardEntity parse(JSONObject response) {
+    public static SimpleEventEntity parse(JSONObject response) {
 
         try {
 
@@ -33,7 +22,7 @@ public class Facebook_Event_Response {
             // TODO: Swap R.drawable.test with the actual event image.
             // TODO: Format how the startTime is displayed
 
-            EventCardEntity entity = new EventCardEntity(response.getString("id"), "TEMPORARY", response.getString("name"), response.getString("start_time"));
+            SimpleEventEntity entity = new SimpleEventEntity(response.getString("id"), "TEMPORARY", response.getString("name"), response.getString("start_time"));
             return entity;
 
         } catch (JSONException e) {
