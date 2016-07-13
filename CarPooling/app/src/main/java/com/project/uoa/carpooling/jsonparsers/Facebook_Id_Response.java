@@ -15,7 +15,7 @@ import java.util.List;
  *
  * Created by Chester on 21/06/2016.
  */
-public class Facebook_Id_Response {
+public class Facebook_ID_Response {
 
     public static ArrayList<String> parse(JSONObject response) {
 

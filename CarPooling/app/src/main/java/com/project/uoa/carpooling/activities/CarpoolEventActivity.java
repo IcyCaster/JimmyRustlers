@@ -13,16 +13,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.adapters.CarpoolEventPagerAdapter;
-import com.project.uoa.carpooling.dialogs.Status_Details;
-import com.project.uoa.carpooling.fragments.Event_Details;
-import com.project.uoa.carpooling.fragments.Event_Map;
-import com.project.uoa.carpooling.fragments.Event_RequestsAndOffers;
-import com.project.uoa.carpooling.fragments.Event_Specifics_Offers;
-import com.project.uoa.carpooling.fragments.Event_Specifics_Passengers;
-import com.project.uoa.carpooling.fragments.Event_Specifics_Requests;
+import com.project.uoa.carpooling.adapters.pagers.CarpoolEventPagerAdapter;
+import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
+import com.project.uoa.carpooling.fragments.carpool.Event_Details;
+import com.project.uoa.carpooling.fragments.carpool.Event_Map;
+import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
+import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
+import com.project.uoa.carpooling.fragments.carpool.Explorer_Passengers;
+import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
 
-public class CarpoolEventActivity extends AppCompatActivity implements Status_Details.OnFragmentInteractionListener, Event_Specifics_Passengers.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_RequestsAndOffers.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Event_Specifics_Requests.OnFragmentInteractionListener, Event_Specifics_Offers.OnFragmentInteractionListener {
+public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Explorer_Passengers.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
 
     // These are relevant to the event instance
     private String userID;

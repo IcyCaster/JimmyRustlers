@@ -24,7 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.services.FacebookConnector;
+import com.project.uoa.carpooling.helpers.FacebookConnector;
 
 import org.json.JSONException;
 import org.json.JSONObject;

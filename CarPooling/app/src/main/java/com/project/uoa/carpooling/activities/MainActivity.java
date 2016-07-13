@@ -19,18 +19,18 @@ import android.view.MenuItem;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.fragments.ArchivedPools;
-import com.project.uoa.carpooling.fragments.CarPoolEventAngels;
-import com.project.uoa.carpooling.fragments.Event_RequestsAndOffers;
-import com.project.uoa.carpooling.fragments.Event_Details;
-import com.project.uoa.carpooling.fragments.Event_Map;
-import com.project.uoa.carpooling.fragments.Event_Specifics_Offers;
-import com.project.uoa.carpooling.fragments.Event_Specifics_Requests;
-import com.project.uoa.carpooling.fragments.FriendGroups;
-import com.project.uoa.carpooling.fragments.SubscribedCarpools;
+import com.project.uoa.carpooling.fragments.main.ArchivedCarpools;
+import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
+import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
+import com.project.uoa.carpooling.fragments.carpool.Event_Details;
+import com.project.uoa.carpooling.fragments.carpool.Event_Map;
+import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
+import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
+import com.project.uoa.carpooling.fragments.main.FriendGroups;
+import com.project.uoa.carpooling.fragments.main.CurrentCarpools;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, SubscribedCarpools.OnFragmentInteractionListener, ArchivedPools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, CarPoolEventAngels.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_RequestsAndOffers.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Event_Specifics_Requests.OnFragmentInteractionListener, Event_Specifics_Offers.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, CurrentCarpools.OnFragmentInteractionListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, SimpleMessenger.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
 
     private String userID;
 
@@ -108,12 +108,12 @@ public class MainActivity extends AppCompatActivity
 
         switch (viewId) {
             case R.id.nav_subscribed_carpools:
-                fragment = new SubscribedCarpools();
+                fragment = new CurrentCarpools();
                 title = "Car Pools";
                 break;
 
             case R.id.nav_archived_pools:
-                fragment = new ArchivedPools();
+                fragment = new ArchivedCarpools();
                 title = "Archived Pools";
                 break;
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_settings:
-                fragment = new CarPoolEventAngels();
+                fragment = new SimpleMessenger();
                 title = "TEMP CAR POOL EVENT";
                 break;
 
