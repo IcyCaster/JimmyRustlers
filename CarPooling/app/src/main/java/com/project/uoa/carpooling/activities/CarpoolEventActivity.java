@@ -47,6 +47,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         Bundle bundle = getIntent().getExtras();
         userID = bundle.getString("userID");
         eventID = bundle.getString("eventID");
+        eventID = bundle.getString("eventID"); //TODO ClassCastException from long to string caused.
+        eventStatus = bundle.getString("eventStatus");
 
         DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
