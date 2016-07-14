@@ -1,6 +1,7 @@
 package com.project.uoa.carpooling.fragments.carpool;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -81,10 +82,19 @@ public class Event_Map extends Fragment {
 
 
 
+//        double latitude = 40.714728;
+//        double longitude = -73.998672;
+//        String label = "ABC Label";
+//        String uriBegin = "geo:" + latitude + "," + longitude;
+//        String query = latitude + "," + longitude + "(" + label + ")";
+//        String encodedQuery = Uri.encode(query);
+//        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
+//        Uri uri = Uri.parse(uriString);
+//        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+//        startActivity(intent);
 
 
-
-
+        
         // Do stuff here!
 
 
