@@ -1,4 +1,6 @@
-package com.project.uoa.carpooling.maps;
+package com.project.uoa.carpooling.helpers.directions;
+
+import com.project.uoa.carpooling.entities.maps.Route;
 
 import java.util.List;
 

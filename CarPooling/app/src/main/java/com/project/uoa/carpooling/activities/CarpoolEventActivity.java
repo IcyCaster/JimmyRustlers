@@ -2,6 +2,7 @@ package com.project.uoa.carpooling.activities;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -44,12 +45,19 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
         // Get userID and id passed from the MainActivity
-        Bundle bundle = getIntent().getExtras();
-        userID = bundle.getString("userID");
-        eventID = bundle.getString("eventID");
-        eventID = bundle.getString("eventID"); //TODO ClassCastException from long to string caused.
-        eventStatus = bundle.getString("eventStatus");
+        if (savedInstanceState != null) {
+            userID = savedInstanceState.getString("USER_ID");
+            eventID = savedInstanceState.getString("EVENT_ID");
+            eventStatus = savedInstanceState.getString("EVENT_STATUS");
+        } else {
+            Bundle bundle = getIntent().getExtras();
+            userID = bundle.getString("userID");
+            eventID = bundle.getString("eventID");
+            eventStatus = bundle.getString("eventStatus");
+        }
 
         DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -78,6 +86,32 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
             }
         });
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putString("USER_ID", userID);
+        savedInstanceState.putString("EVENT_ID", eventID);
+        savedInstanceState.putString("EVENT_STATUS", eventStatus);
+
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        userID = savedInstanceState.getString("USER_ID");
+        eventID = savedInstanceState.getString("EVENT_ID");
+        eventStatus = savedInstanceState.getString("EVENT_STATUS");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
     public void onFragmentInteraction(Uri uri) {
         // Kept Empty
     }

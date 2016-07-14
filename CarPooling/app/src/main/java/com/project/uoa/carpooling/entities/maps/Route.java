@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.maps;
+package com.project.uoa.carpooling.entities.maps;
 
 import com.google.android.gms.maps.model.LatLng;
 

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.facebook.FacebookSdk;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -25,10 +26,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.maps.DirectionFinder;
-import com.project.uoa.carpooling.maps.DirectionFinderListener;
-import com.project.uoa.carpooling.maps.Leg;
-import com.project.uoa.carpooling.maps.Route;
+import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
+import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
+import com.project.uoa.carpooling.entities.maps.Leg;
+import com.project.uoa.carpooling.entities.maps.Route;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -107,8 +108,6 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
 
-
-
 //        double latitude = 40.714728;
 //        double longitude = -73.998672;
 //        String label = "ABC Label";
@@ -119,12 +118,6 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
 //        Uri uri = Uri.parse(uriString);
 //        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
 //        startActivity(intent);
-
-
-        
-        // Do stuff here!
-
-
 
         // Map Initialization
         mMapView = (MapView) view.findViewById(R.id.mapView);

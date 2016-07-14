@@ -1,10 +1,14 @@
-package com.project.uoa.carpooling.maps;
+package com.project.uoa.carpooling.helpers.directions;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.PolyUtil;
+import com.project.uoa.carpooling.entities.maps.Distance;
+import com.project.uoa.carpooling.entities.maps.Duration;
+import com.project.uoa.carpooling.entities.maps.Leg;
+import com.project.uoa.carpooling.entities.maps.Route;
 
 import org.json.JSONArray;
 import org.json.JSONException;
