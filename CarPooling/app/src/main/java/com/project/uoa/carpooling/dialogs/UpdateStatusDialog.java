@@ -25,16 +25,13 @@ import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 public class UpdateStatusDialog extends DialogFragment {
     private OnFragmentInteractionListener mListener;
     View view;
-NumberPicker np;
+    NumberPicker np;
     EditText locationResult;
-
 
     private static final String STATUS = "param1";
 
-
-
     private String status;
-private String eventID;
+    private String eventID;
     private String userID;
 
     public UpdateStatusDialog() {
@@ -97,15 +94,11 @@ private String eventID;
             }
         });
 
-
-
-
         Button confirmButton = (Button)view.findViewById(R.id.confirm_button);
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 
                 DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
                 if(status.equals("Driver")) {
                     fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Driver");
                     fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Driver");
@@ -131,8 +124,6 @@ private String eventID;
                 startActivity(getActivity().getIntent());
             }
         });
-
-
 
         return view;
     }

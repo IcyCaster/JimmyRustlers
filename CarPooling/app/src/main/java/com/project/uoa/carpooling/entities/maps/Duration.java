@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.maps;
+package com.project.uoa.carpooling.entities.maps;
 
 /**
  * Credits to: Mai Thanh Hiep.
