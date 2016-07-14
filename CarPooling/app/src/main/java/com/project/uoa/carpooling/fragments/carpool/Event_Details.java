@@ -53,11 +53,20 @@ public class Event_Details extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        if(getActivity() == null) {
+            Log.d("ACTIVITY1", "is null");
+        }
         view = inflater.inflate(R.layout.fragment_event_details_driver, container, false);
+
+
 
         eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
+
+        if(getActivity() == null) {
+            Log.d("ACTIVITY1", eventStatus);
+        }
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 

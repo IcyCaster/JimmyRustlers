@@ -1,7 +1,11 @@
 package com.project.uoa.carpooling.entities.facebook;
 
+import android.util.Log;
+
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -14,8 +18,8 @@ public class ComplexFacebookEventEntity {
     private String name;
     private String description;
     private Place location;
-    private String startTime;
-    private String endTime;
+    private Calendar startCalendar;
+    private Calendar endCalendar;
     private String prettyStartTime;
     private String prettyEndTime;
     private double unixStartTime;
@@ -25,41 +29,25 @@ public class ComplexFacebookEventEntity {
         this.name = name;
         this.description = description;
         this.location = new Place(placeName, longitude, latitude);
-        this.startTime = startTime;
-        this.endTime = endTime;
 
         DateFormat facebookTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
+        DateFormat prettyFormat = new SimpleDateFormat("MMM d, h:mmaa", Locale.ENGLISH);
 
+        startCalendar = Calendar.getInstance();
+        endCalendar = Calendar.getInstance();
+        try {
 
-        DateFormat prettyFormat = new SimpleDateFormat("MMM d - h aa", Locale.ENGLISH);
+            startCalendar.setTime(facebookTimeFormat.parse(startTime));
+            endCalendar.setTime(facebookTimeFormat.parse(endTime));
 
-//        Date date = originalFormat.parse("August 21, 2012");
-//        String formattedDate = targetFormat.format(date);  // 20120821
+            prettyStartTime = prettyFormat.format(startCalendar.getTime());
+            prettyEndTime = prettyFormat.format(endCalendar.getTime());
 
-//        String timeStamp = "2014-12-14T18:23:17+0000";
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
-//        try {
-//            System.out.println("Unix timestamp: " + dateFormat.parse(timeStamp).getTime());
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-    }
+            unixStartTime = facebookTimeFormat.parse(startTime).getTime();
 
-
-    public double getUnixStartTime() {
-        return unixStartTime;
-    }
-
-    public void setUnixStartTime(double unixStartTime) {
-        this.unixStartTime = unixStartTime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public String getName() {
@@ -70,12 +58,60 @@ public class ComplexFacebookEventEntity {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Place getLocation() {
         return location;
     }
 
     public void setLocation(Place location) {
         this.location = location;
+    }
+
+    public Calendar getStartCalendar() {
+        return startCalendar;
+    }
+
+    public void setStartCalendar(Calendar startCalendar) {
+        this.startCalendar = startCalendar;
+    }
+
+    public Calendar getEndCalendar() {
+        return endCalendar;
+    }
+
+    public void setEndCalendar(Calendar endCalendar) {
+        this.endCalendar = endCalendar;
+    }
+
+    public String getPrettyStartTime() {
+        return prettyStartTime;
+    }
+
+    public void setPrettyStartTime(String prettyStartTime) {
+        this.prettyStartTime = prettyStartTime;
+    }
+
+    public String getPrettyEndTime() {
+        return prettyEndTime;
+    }
+
+    public void setPrettyEndTime(String prettyEndTime) {
+        this.prettyEndTime = prettyEndTime;
+    }
+
+    public double getUnixStartTime() {
+        return unixStartTime;
+    }
+
+    public void setUnixStartTime(double unixStartTime) {
+        this.unixStartTime = unixStartTime;
     }
 
     public String getID() {

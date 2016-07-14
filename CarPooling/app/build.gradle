@@ -28,7 +28,7 @@ dependencies {
     // Firebase UI
 
 
-    compile 'com.facebook.android:facebook-android-sdk:4.14.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.13.0'
 
     // Android
     compile 'com.android.support:appcompat-v7:23.4.0'

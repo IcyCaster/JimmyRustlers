@@ -17,6 +17,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialise FbSDK before setContentView, as the view uses Facebook components
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         setContentView(R.layout.activity__login);
 
         // Initialise shared preferences
