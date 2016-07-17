@@ -53,6 +53,7 @@ public class DirectionFinder {
         String urlDestination = URLEncoder.encode(destination, "utf-8");
 
         // Can supply a url with waypoints as well.
+        Log.d("Route Request: ", DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY);
         return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
     }
 

@@ -5,16 +5,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.facebook.FacebookSdk;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -26,10 +32,10 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
-import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
 import com.project.uoa.carpooling.entities.maps.Leg;
 import com.project.uoa.carpooling.entities.maps.Route;
+import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
+import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -43,10 +49,11 @@ import java.util.List;
  * Use the {@link Event_Map#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Event_Map extends Fragment implements OnMapReadyCallback, DirectionFinderListener {
+public class Event_Map extends Fragment implements OnMapReadyCallback, DirectionFinderListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String EVENT_ID = "param1";
+    private static final String TAG = "Event_Map";
     private String GOOGLE_API_KEY;
 
     // TODO: Rename and change types of parameters
@@ -54,14 +61,17 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     private String eventID;
     private String userID;
     private String eventStatus;
-    //TODO Update string with actual address dynamically.
-    private String mSelectedAddress = "University Of Auckland";
+
     private OnFragmentInteractionListener mListener;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
 
+    //TODO Update string with actual address dynamically.
+    private String mSelectedAddress = "University Of Auckland";
+    private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
+    private Location mCurrentLocation;
     private MapView mMapView;
     private Button btnStartNav;
 
@@ -92,32 +102,28 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
             eventId = getArguments().getLong(EVENT_ID);
         }
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //Start Google Location API
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
 
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
-
-//        double latitude = 40.714728;
-//        double longitude = -73.998672;
-//        String label = "ABC Label";
-//        String uriBegin = "geo:" + latitude + "," + longitude;
-//        String query = latitude + "," + longitude + "(" + label + ")";
-//        String encodedQuery = Uri.encode(query);
-//        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-//        Uri uri = Uri.parse(uriString);
-//        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-//        startActivity(intent);
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
         // Map Initialization
         mMapView = (MapView) view.findViewById(R.id.mapView);
@@ -128,12 +134,6 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            new DirectionFinder(this, "Manukau", "University of Auckland", GOOGLE_API_KEY).execute();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
@@ -181,7 +181,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         // Set route to event location
         mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
+            // TODO: Ask for permission, and handle if not granted.
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -209,7 +209,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         }
 
         if (polylinePaths != null) {
-            for (Polyline polyline:polylinePaths ) {
+            for (Polyline polyline : polylinePaths) {
                 polyline.remove();
             }
         }
@@ -238,6 +238,38 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
 
             polylinePaths.add(mMap.addPolyline(polylineOptions));
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        try {
+            // Start request for getting route information.
+            new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mSelectedAddress, GOOGLE_API_KEY).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode());
     }
 
     /**
@@ -289,5 +321,19 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 }
