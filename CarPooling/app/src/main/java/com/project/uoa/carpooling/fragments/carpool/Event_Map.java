@@ -30,6 +30,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.maps.Leg;
@@ -67,13 +72,15 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
 
-    //TODO Update string with actual address dynamically.
-    private String mSelectedAddress = "University Of Auckland";
+    private String mEventLocation;
+    private Location mCurrentLocation;
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
-    private Location mCurrentLocation;
     private MapView mMapView;
     private Button btnStartNav;
+
+    // Firebase reference
+    private DatabaseReference fireBaseReference;
 
     public Event_Map() {
         // Required empty public constructor
@@ -83,7 +90,6 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-
      * @return A new instance of fragment Event_Map.
      */
     // TODO: Rename and change types and number of parameters
@@ -106,11 +112,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
         //Start Google Location API
         mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
                 .addApi(LocationServices.API)
@@ -119,6 +121,13 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
                 .addApi(LocationServices.API)
                 .build();
 
+        // Get Firebase database reference.
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
         eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
@@ -142,9 +151,9 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         btnStartNav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mSelectedAddress != null) {
+                if (mEventLocation != null) {
                     // Start Intent
-                    launchGoogleMapsNavigationIntent(mSelectedAddress);
+                    launchGoogleMapsNavigationIntent(mEventLocation);
                 }
             }
         });
@@ -256,7 +265,9 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
 
         try {
             // Start request for getting route information.
-            new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mSelectedAddress, GOOGLE_API_KEY).execute();
+            if (mEventLocation != null) {
+                new DirectionFinder(this, eventID, mEventLocation, GOOGLE_API_KEY).execute();
+            }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
