@@ -1,15 +1,9 @@
 package com.project.uoa.carpooling.helpers.directions;
 
-import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.PolyUtil;
 import com.project.uoa.carpooling.entities.maps.Distance;
 import com.project.uoa.carpooling.entities.maps.Duration;
@@ -35,25 +29,17 @@ import java.util.List;
  * Credits to: Mai Thanh Hiep.
  */
 public class DirectionFinder {
-    private static final String TAG = "DirectionFinder";
-
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
     private final String GOOGLE_API_KEY;
     private DirectionFinderListener listener;
-    private String eventID;
+    private String origin;
     private String destination;
 
-    // Firebase reference
-    private DatabaseReference fireBaseReference;
-    private String mEventLocation;
-
-    public DirectionFinder(DirectionFinderListener listener, String eventID, String destination, String APIKey) {
+    public DirectionFinder(DirectionFinderListener listener, String origin, String destination, String APIKey) {
         this.listener = listener;
-        this.eventID = eventID;
+        this.origin = origin;
         this.destination = destination;
         this.GOOGLE_API_KEY = APIKey;
-
-        this.fireBaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     public void execute() throws UnsupportedEncodingException {
@@ -63,12 +49,12 @@ public class DirectionFinder {
 
     // Creates URL string for Google Directions Web API HTTP request.
     private String createUrl() throws UnsupportedEncodingException {
-        String urlOrigin = URLEncoder.encode(eventID, "utf-8");
+        String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
 
         // Can supply a url with waypoints as well.
-        // Log.d("Route Request: ", DIRECTION_URL_API + "eventID=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY);
-        return DIRECTION_URL_API + "eventID=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
+        Log.d("Route Request: ", DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY);
+        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
     }
 
     // Async Task for executing and downloading response from Directions API.
@@ -106,28 +92,6 @@ public class DirectionFinder {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void updateEventLocation() {
-        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Event location is being extracted.");
-                if (dataSnapshot.hasChild("latitude") && dataSnapshot.hasChild("longitude")){
-                    mEventLocation = dataSnapshot.child("latitude").getValue().toString()
-                            + ","
-                            + dataSnapshot.child("longitude").getValue().toString();
-                } else if (dataSnapshot.hasChild("location")){
-                    mEventLocation = dataSnapshot.child("location").getValue().toString();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Could not retrieve event location.");
-            }
-        });
     }
 
     private void parseJSON(String data) throws JSONException {
