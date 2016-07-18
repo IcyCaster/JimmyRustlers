@@ -13,15 +13,15 @@ import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
  */
 public class CarpoolExplorerPagerAdapter extends FragmentPagerAdapter {
 
-    private String status;
+    private String eventStatus;
     private int tabCount;
 
-    public CarpoolExplorerPagerAdapter(FragmentManager fm, String status) {
+    public CarpoolExplorerPagerAdapter(FragmentManager fm, String eventStatus) {
         super(fm);
-        this.status = status;
+        this.eventStatus = eventStatus;
 
         // If they are a driver then the fragment needs to list requests, offers and passengers
-        if (status.equals("Driver")) {
+        if (eventStatus.equals("Driver")) {
             tabCount = 3;
         } else {
             tabCount = 2;
@@ -31,7 +31,7 @@ public class CarpoolExplorerPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
 
-        if (status.equals("Driver")) {
+        if (eventStatus.equals("Driver")) {
             switch (position) {
                 case 0:
                     return new Explorer_Offers();
@@ -62,7 +62,7 @@ public class CarpoolExplorerPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
 
-        if (status.equals("Driver")) {
+        if (eventStatus.equals("Driver")) {
             switch (position) {
                 case 0:
                     //TODO: Same as other adapter

@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.adapters.recyclers;
+package com.project.uoa.carpooling.carpoolevent.driver.explorer.recycler;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -30,28 +30,28 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Chester on 13/06/2016.
+ * Created by Chester on 18/07/2016.
  */
-public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarpoolEventViewHolder> {
+public class DExplorerRecycler extends RecyclerView.Adapter<DExplorerViewHolder> {
 
     private List<SimpleFacebookEventEntity> list = Collections.emptyList();
     private Context context;
 
     // Constructor, pass in a list of Facebook Card Events and the applications context
-    public ExploreCarpoolEventAdapter(List<SimpleFacebookEventEntity> list, Context context) {
+    public DExplorerRecycler(List<SimpleFacebookEventEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
     @Override
-    public ExploreCarpoolEventViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DExplorerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__car_pool_instance, parent, false);
-        ExploreCarpoolEventViewHolder viewHolder = new ExploreCarpoolEventViewHolder(view, context);
+        DExplorerViewHolder viewHolder = new DExplorerViewHolder(view, context);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(ExploreCarpoolEventViewHolder holder, int position) {
+    public void onBindViewHolder(DExplorerViewHolder holder, int position) {
 
         holder.eventId = list.get(position).getEventID();
         holder.eventName.setText(list.get(position).getEventName());
@@ -90,7 +90,7 @@ public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarp
     }
 }
 
-class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
+class DExplorerViewHolder extends RecyclerView.ViewHolder {
     protected String eventId;
     protected TextView eventName;
     protected TextView eventStartDate;
@@ -98,7 +98,7 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
     private DatabaseReference fireBaseReference;
     private String userId;
 
-    public ExploreCarpoolEventViewHolder(View itemView, Context context) {
+    public DExplorerViewHolder(View itemView, Context context) {
         super(itemView);
 
         final MainActivity mainActivity = (MainActivity) context;
@@ -194,4 +194,3 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
         });
     }
 }
-

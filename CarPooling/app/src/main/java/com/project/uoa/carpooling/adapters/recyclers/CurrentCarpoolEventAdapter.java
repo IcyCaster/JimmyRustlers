@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
-import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
+import com.project.uoa.carpooling.entities.facebook.SimpleFacebookEventEntity;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
@@ -31,11 +31,11 @@ import java.util.List;
  */
 public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarpoolEventViewHolder> {
 
-    protected List<SimpleEventEntity> list = Collections.emptyList();
+    protected List<SimpleFacebookEventEntity> list = Collections.emptyList();
     private Context context;
 
     // Constructor
-    public CurrentCarpoolEventAdapter(List<SimpleEventEntity> list, Context context) {
+    public CurrentCarpoolEventAdapter(List<SimpleFacebookEventEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }
@@ -51,9 +51,9 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
     public void onBindViewHolder(final CurrentCarpoolEventViewHolder holder, final int position) {
 
         // Picasso loads image from the URL
-        if (list.get(position).eventImageURL != null) {
+        if (list.get(position).getEventImageURL() != null) {
             Picasso.with(context)
-                    .load(list.get(position).eventImageURL)
+                    .load(list.get(position).getEventImageURL())
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.error_no_image)
                     .fit()
@@ -66,7 +66,7 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
 
         // Checks DB/users/{user-id}
         DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        fireBaseReference.child("users").child(((MainActivity) context).getUserID()).child("events").child(list.get(position).eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("users").child(((MainActivity) context).getUserID()).child("events").child(list.get(position).getEventID()).addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -85,9 +85,9 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
                     holder.eventStatusImage.setImageResource(R.drawable.temp_placeholder_indicator);
                 }
 
-                holder.eventId = list.get(position).eventID;
-                holder.eventName.setText(list.get(position).eventName);
-                holder.eventStartDate.setText(list.get(position).startDate);
+                holder.eventId = list.get(position).getEventID();
+                holder.eventName.setText(list.get(position).getEventName());
+                holder.eventStartDate.setText(list.get(position).getPrettyStartTime());
             }
 
             @Override
@@ -128,7 +128,7 @@ class CurrentCarpoolEventViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
 
-                String eventID = adapter.list.get(getAdapterPosition()).eventID;
+                String eventID = adapter.list.get(getAdapterPosition()).getEventID();
 
                 // Launch the carpool instance as a new activity
                 Intent i = new Intent(mainActivity, CarpoolEventActivity.class);

@@ -4,11 +4,18 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.adapters.recyclers.OffersExplorerAdapter;
+import com.project.uoa.carpooling.entities.firebase.OffersEntity;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -27,6 +34,8 @@ public class Explorer_Offers extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private ArrayList<OffersEntity> passengersListOfOffers = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,8 +73,45 @@ public class Explorer_Offers extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        View view = inflater.inflate(R.layout.fragment_explorer_offers, container, false);
+        String status = ((CarpoolEventActivity)getActivity()).getEventStatus();
+
+//        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+//
+//
+//        if(status.equals("Driver")) {
+//
+//        }
+//        RecyclerView.Adapter adapter = new OffersExplorerAdapter(passengersListOfOffers, getActivity());
+//
+//
+//
+//
+//        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+//        recyclerView.setAdapter(adapter);
+
+//        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+//
+//        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                swipeContainer.setRefreshing(false);
+//                fetchTimelineAsync();
+//            }
+//        });
+//
+//        // Configure the refreshing colors
+//        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+//                android.R.color.holo_green_light,
+//                android.R.color.holo_orange_light,
+//                android.R.color.holo_red_light);
+
+
+
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_explorer_offers, container, false);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

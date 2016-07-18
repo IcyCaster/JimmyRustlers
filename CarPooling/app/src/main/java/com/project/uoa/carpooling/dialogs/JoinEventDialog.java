@@ -24,9 +24,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.recyclers.ExploreCarpoolEventAdapter;
-import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
-import com.project.uoa.carpooling.jsonparsers.Facebook_ID_Response;
+import com.project.uoa.carpooling.entities.facebook.SimpleFacebookEventEntity;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ID_Parser;
 
 import org.json.JSONException;
 
@@ -40,7 +40,7 @@ public class JoinEventDialog extends DialogFragment {
     private View view;
     private RecyclerView recyclerView;
 
-    private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
+    private ArrayList<SimpleFacebookEventEntity> listOfEventCardEntities = new ArrayList<>();
     private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
 
     private ExploreCarpoolEventAdapter adapter;
@@ -94,7 +94,7 @@ public class JoinEventDialog extends DialogFragment {
                     public void onCompleted(GraphResponse response) {
 
 
-                        listOfSubscribedEvents = Facebook_ID_Response.parse(response.getJSONObject());
+                        listOfSubscribedEvents = Facebook_ID_Parser.parse(response.getJSONObject());
 
                         fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -146,7 +146,7 @@ public class JoinEventDialog extends DialogFragment {
                         public void onCompleted(GraphResponse response) {
                             try {
 
-                                listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
 
                                 final String id = response.getJSONObject().getString("id");
 
@@ -164,8 +164,8 @@ public class JoinEventDialog extends DialogFragment {
                                                     String url = "";
                                                     url = response.getJSONObject().getJSONObject("data").getString("url");
 
-                                                    for (SimpleEventEntity e : listOfEventCardEntities) {
-                                                        if (e.eventID.equals(id)) {
+                                                    for (SimpleFacebookEventEntity e : listOfEventCardEntities) {
+                                                        if (e.getEventID().equals(id)) {
                                                             listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                         }
                                                     }
