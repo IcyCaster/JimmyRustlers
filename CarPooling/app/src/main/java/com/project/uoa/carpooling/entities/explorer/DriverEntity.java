@@ -25,10 +25,13 @@ public class DriverEntity {
             Log.e("isPending", "Boolean not set correctly.");
         }
 
-
         this.carCapacity = Integer.getInteger(carCapacity);
 
     }
 
-
+    public DriverEntity(String ID, String name, String carCapacity ) {
+        this.ID = ID;
+        this.name = name;
+        this.carCapacity = Integer.getInteger(carCapacity);
+    }
 }

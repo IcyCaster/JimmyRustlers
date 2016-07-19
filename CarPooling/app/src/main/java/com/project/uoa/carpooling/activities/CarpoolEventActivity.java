@@ -18,7 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
-import com.project.uoa.carpooling.adapters.pagers.CarpoolEventPagerAdapter;
+//import com.project.uoa.carpooling.adapters.pagers.CarpoolEventPagerAdapter;
+import com.project.uoa.carpooling.carpoolevent.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.enums.EventStatus;
@@ -64,26 +65,26 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         if (savedInstanceState != null) {
             userID = savedInstanceState.getString("USER_ID");
             eventID = savedInstanceState.getString("EVENT_ID");
-            status = savedInstanceState.getString("EVENT_STATUS");
+//            status = savedInstanceState.getString("EVENT_STATUS");
         } else {
             Bundle bundle = getIntent().getExtras();
             userID = bundle.getString("userID");
             eventID = bundle.getString("eventID");
-            status = bundle.getString("eventStatus");
+//            status = bundle.getString("eventStatus");
         }
 
-        if(status.equals("Observer")) {
-            eventStatus = EventStatus.OBSERVER;
-        }
-        else  if(status.equals("Driver")) {
-            eventStatus = EventStatus.DRIVER;
-        }
-        else if(status.equals("Passenger")) {
-            eventStatus = EventStatus.PASSENGER;
-        }
-        else {
-            Log.e("Status Error", "Status was not assigned correctly");
-        }
+//        if(status.equals("Observer")) {
+//            eventStatus = EventStatus.OBSERVER;
+//        }
+//        else  if(status.equals("Driver")) {
+//            eventStatus = EventStatus.DRIVER;
+//        }
+//        else if(status.equals("Passenger")) {
+//            eventStatus = EventStatus.PASSENGER;
+//        }
+//        else {
+//            Log.e("Status Error", "Status was not assigned correctly");
+//        }
 
         GraphRequest request = GraphRequest.newGraphPathRequest(
                 AccessToken.getCurrentAccessToken(),
@@ -99,13 +100,37 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
-                                // Not sure what the purpose of this is?
-                                status = snapshot.getValue().toString();
+
 
                                 setContentView(R.layout.activity__car_pool_instance);
 
                                 // Set up the pageViewer with the adapter
-                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager());
+//                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager());
+
+
+
+                                status = snapshot.getValue().toString();
+
+
+
+                                EventStatus eventStatus = null;
+                                if(status.equals("Observer")) {
+                                    eventStatus = EventStatus.OBSERVER;
+                                }
+                                else if(status.equals("Driver")) {
+                                    eventStatus = EventStatus.DRIVER;
+                                }
+                                else if(status.equals("Passenger")) {
+                                    eventStatus = EventStatus.PASSENGER;
+                                }
+
+                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus);
+
+
+
+
+
+
                                 ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
                                 viewPager.setAdapter(pagerAdapter);
 

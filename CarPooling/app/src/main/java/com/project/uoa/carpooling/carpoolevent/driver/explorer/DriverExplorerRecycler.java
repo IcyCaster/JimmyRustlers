@@ -19,26 +19,26 @@ import java.util.List;
 /**
  * Created by Chester on 18/07/2016.
  */
-public class DExplorerRecycler extends RecyclerView.Adapter<DExplorerViewHolder> {
+public class DriverExplorerRecycler extends RecyclerView.Adapter<DriverExplorerViewHolder> {
 
     private List<?> list = Collections.emptyList();
     private Context context;
 
     // Constructor, pass in a list of Facebook Card Events and the applications context
-    public DExplorerRecycler(List<?> list, Context context) {
+    public DriverExplorerRecycler(List<?> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
     @Override
-    public DExplorerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public DriverExplorerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__car_pool_instance, parent, false);
-        DExplorerViewHolder viewHolder = new DExplorerViewHolder(view, context);
+        DriverExplorerViewHolder viewHolder = new DriverExplorerViewHolder(view, context);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(DExplorerViewHolder holder, int position) {
+    public void onBindViewHolder(DriverExplorerViewHolder holder, int position) {
 
 //        holder.eventId = list.get(position).getEventID();
 //        holder.eventName.setText(list.get(position).getEventName());
@@ -77,7 +77,7 @@ public class DExplorerRecycler extends RecyclerView.Adapter<DExplorerViewHolder>
     }
 }
 
-class DExplorerViewHolder extends RecyclerView.ViewHolder {
+class DriverExplorerViewHolder extends RecyclerView.ViewHolder {
     protected String eventId;
     protected TextView eventName;
     protected TextView eventStartDate;
@@ -85,7 +85,7 @@ class DExplorerViewHolder extends RecyclerView.ViewHolder {
     private DatabaseReference fireBaseReference;
     private String userId;
 
-    public DExplorerViewHolder(View itemView, Context context) {
+    public DriverExplorerViewHolder(View itemView, Context context) {
         super(itemView);
 
         final MainActivity mainActivity = (MainActivity) context;

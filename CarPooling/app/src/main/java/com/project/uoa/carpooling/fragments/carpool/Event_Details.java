@@ -56,7 +56,7 @@ public class Event_Details extends Fragment {
         if(getActivity() == null) {
             Log.d("ACTIVITY1", "is null");
         }
-        view = inflater.inflate(R.layout.fragment_event_details_driver, container, false);
+        view = inflater.inflate(R.layout.carpool_driver_details, container, false);
 
 
 
@@ -111,7 +111,7 @@ public class Event_Details extends Fragment {
 
 
         } else if (eventStatus.equals("Driver")) {
-            view = inflater.inflate(R.layout.fragment_event_details_driver, container, false);
+            view = inflater.inflate(R.layout.carpool_driver_details, container, false);
 
             fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

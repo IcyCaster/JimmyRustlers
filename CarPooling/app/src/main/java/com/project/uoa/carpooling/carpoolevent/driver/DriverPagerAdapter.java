@@ -1,21 +1,20 @@
-package com.project.uoa.carpooling.carpoolevent.driver.explorer;
+package com.project.uoa.carpooling.carpoolevent.driver;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Passengers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
+import com.project.uoa.carpooling.carpoolevent.driver.explorer.DriverOffers;
+import com.project.uoa.carpooling.carpoolevent.driver.explorer.DriverRequests;
 
 /**
  * Created by Chester on 18/07/2016.
  */
-public class DPagerAdapter extends FragmentPagerAdapter {
+public class DriverPagerAdapter extends FragmentPagerAdapter {
 
-    private int tabCount = 3;
+    private int tabCount = 2;
 
-    public DPagerAdapter(FragmentManager fm) {
+    public DriverPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -23,11 +22,11 @@ public class DPagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new DOffers();
+                return new DriverOffers();
             case 1:
-                return new DRequests();
-            case 2:
-                return new DPassengers();
+                return new DriverRequests();
+//            case 2:
+//                return new DPassengers();
             default:
                 return null;
         }
@@ -45,8 +44,8 @@ public class DPagerAdapter extends FragmentPagerAdapter {
                 return "Offers";
             case 1:
                 return "Requests";
-            case 2:
-                return "Passengers";
+//            case 2:
+//                return "Passengers";
             default:
                 return null;
         }

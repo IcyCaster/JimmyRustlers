@@ -132,6 +132,7 @@ public class ChangeStatusDialog extends DialogFragment {
 
                 fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Observer");
                 fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
+
                 fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
                 fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue("False");
 

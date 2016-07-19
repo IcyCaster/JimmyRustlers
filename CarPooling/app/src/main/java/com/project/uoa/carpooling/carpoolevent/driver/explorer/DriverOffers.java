@@ -3,7 +3,6 @@ package com.project.uoa.carpooling.carpoolevent.driver.explorer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +11,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,11 +23,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
 import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
-import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
+import com.project.uoa.carpooling.entities.firebase.PassengersEntity;
 import com.project.uoa.carpooling.helpers.SimpleEventComparator;
 
 import org.json.JSONException;
@@ -38,24 +37,45 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class DOffers extends Fragment {
-
-
-
-    // TODO: THIS IS NEXT TO REFACTOR SO IT USES DEXPLORERRECYCLER and shows passengers who this driver can offer to
-
-
-
+public class DriverOffers extends Fragment {
     boolean shouldExecuteOnResume;
+
     private View view;
+
+
+
+
     private int subbedEvents;
-    private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
+
+
+
+
+    private ArrayList<PassengersEntity> listOfOffers = new ArrayList<>();
+
+
     private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
+
+
     private RecyclerView recyclerView;
-    private CurrentCarpoolEventAdapter adapter;
+    private DriverExplorerRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
-    private String userId;
+
+
+    private String userID;
+    private String eventID;
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (shouldExecuteOnResume) {
+            PopulateOffers();
+        } else {
+            shouldExecuteOnResume = true;
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,18 +84,19 @@ public class DOffers extends Fragment {
         shouldExecuteOnResume = false;
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        userId = ((MainActivity) getActivity()).getUserID();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        // TODO: This will retrieve a list of all events the users is subscribed to. This list will be stored on firebase and will need to be parsed once retrieved.
-        // TODO: For now, it just fetches all current events a user is subscribed to.
-        PopulateViewWithSubscribedEvents();
+        PopulateOffers();
 
-        view = inflater.inflate(R.layout.fragment_current_car_pools, container, false);
+        view = inflater.inflate(R.layout.carpool_driver_exp_offers, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
+        adapter = new DriverExplorerRecycler(listOfOffers, getActivity());
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
 
@@ -94,25 +115,6 @@ public class DOffers extends Fragment {
                 android.R.color.holo_red_light);
 
 
-        Button addButton = (Button) view.findViewById(R.id.join_carpool_button);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                Fragment prev = getFragmentManager().findFragmentByTag("dialog");
-                if (prev != null) {
-                    ft.remove(prev);
-                }
-                ft.addToBackStack(null);
-
-                // Create and show the dialog.
-                JoinEventDialog newFragment = new JoinEventDialog();
-                newFragment.show(ft, "dialog");
-            }
-
-
-        });
 
 
         return view;
@@ -129,27 +131,40 @@ public class DOffers extends Fragment {
         h.post(new Runnable() {
             @Override
             public void run() {
-                PopulateViewWithSubscribedEvents();
+                PopulateOffers();
 
             }
         });
     }
 
 
-    public void PopulateViewWithSubscribedEvents() {
+    public void PopulateOffers() {
 
 
         listOfSubscribedEvents.clear();
 
 
-        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+
+        // CURRENT: all passengers of event
+        // NEXT: check each passenger to see if they are public
+        // TODO: check to make sure they are not on current passenger list
+        // todo: add filters later (eg capacity, location....blah blah blah)
+
+
+
+        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-
-
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    listOfSubscribedEvents.add(child.getKey().toString());
+                    if(child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals("True")) {
+                        Log.d("T","T");
+                    }
+
+
+
+//                    listOfSubscribedEvents.add(child.getKey().toString());
                 }
+
                 GetEventDetails();
 
             }
@@ -167,7 +182,7 @@ public class DOffers extends Fragment {
     public void GetEventDetails() {
 
 
-        listOfEventCardEntities.clear();
+        listOfOffers.clear();
 
         if (listOfSubscribedEvents.size() == 0) {
             Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
@@ -194,7 +209,7 @@ public class DOffers extends Fragment {
                             public void onCompleted(GraphResponse response) {
                                 try {
 
-                                    listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
+
                                     final String id = response.getJSONObject().getString("id");
 
                                     GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
@@ -214,11 +229,11 @@ public class DOffers extends Fragment {
                                                         url = response.getJSONObject().getJSONObject("data").getString("url");
 
 
-                                                        for (SimpleEventEntity e : listOfEventCardEntities) {
-                                                            if (e.getEventID().equals(id)) {
-                                                                listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
-                                                            }
-                                                        }
+//                                                        for (SimpleEventEntity e : listOfOffers) {
+//                                                            if (e.getEventID().equals(id)) {
+//                                                                listOfOffers.get(listOfOffers.indexOf(e)).setImage(url);
+//                                                            }
+//                                                        }
 
                                                     } catch (JSONException e) {
                                                         e.printStackTrace();
@@ -252,10 +267,10 @@ public class DOffers extends Fragment {
         subbedEvents--;
         if (subbedEvents == 0) {
 
-            Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
-
-            swipeContainer.setRefreshing(false);
-            adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
+//            Collections.sort(listOfOffers, new SimpleEventComparator());
+//
+//            swipeContainer.setRefreshing(false);
+//            adapter = new CurrentCarpoolEventAdapter(listOfOffers, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
 

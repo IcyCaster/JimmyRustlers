@@ -35,7 +35,7 @@ public class DriverDetails extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        view = inflater.inflate(R.layout.fragment_event_details_driver, container, false);
+        view = inflater.inflate(R.layout.carpool_driver_details, container, false);
 
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
@@ -111,6 +111,16 @@ public class DriverDetails extends Fragment {
 
         // TODO: Might want to consider also having a helper method which sets up the buttons for the Details page
         // SetupDetailsButtons(statusButton, leaveButton, this)
+
+        Button detailsButton = (Button) view.findViewById(R.id.change_details_button);
+        detailsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Log.d("Change Details", "BUTTON TODO:");
+
+            }
+        });
 
         Button statusButton = (Button) view.findViewById(R.id.change_status_button);
         statusButton.setOnClickListener(new View.OnClickListener() {

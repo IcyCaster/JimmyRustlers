@@ -10,9 +10,6 @@ import android.view.ViewGroup;
 
 import com.google.firebase.database.DatabaseReference;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.adapters.pagers.CarpoolExplorerPagerAdapter;
-import com.project.uoa.carpooling.carpoolevent.driver.explorer.DPagerAdapter;
 import com.project.uoa.carpooling.enums.EventStatus;
 
 /**
@@ -29,7 +26,7 @@ public class DriverExplorer extends Fragment{
 
 
     private ViewPager viewPager;
-    private DPagerAdapter pagerAdapter;
+    private DriverPagerAdapter pagerAdapter;
     private TabLayout tabLayout;
 
 
@@ -39,7 +36,7 @@ public class DriverExplorer extends Fragment{
 
         view = inflater.inflate(R.layout.carpool_driver_explorer, container, false);
 
-        pagerAdapter = new DPagerAdapter(getChildFragmentManager());
+        pagerAdapter = new DriverPagerAdapter(getChildFragmentManager());
 
         viewPager = (ViewPager) view.findViewById(R.id.driver_explorer_viewpager);
         viewPager.setAdapter(pagerAdapter);
