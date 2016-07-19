@@ -20,7 +20,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.entities.facebook.ComplexFacebookEventEntity;
+import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.fragments.main.ArchivedCarpools;
 import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
 import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.nav__drawer_layout);
 
 
-        new ComplexFacebookEventEntity("1","hi", "desd","1", "1", "place", "2016-12-31T23:00:00+1300","2016-12-31T23:00:00+1300");
+        new ComplexEventEntity("1","hi", "desd","1", "1", "place", "2016-12-31T23:00:00+1300","2016-12-31T23:00:00+1300");
 
         // Set up the toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);

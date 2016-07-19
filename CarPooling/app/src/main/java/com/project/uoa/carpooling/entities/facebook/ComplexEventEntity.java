@@ -12,7 +12,7 @@ import java.util.Locale;
 /**
  * Created by Chester on 14/07/2016.
  */
-public class ComplexFacebookEventEntity {
+public class ComplexEventEntity {
 
     private String ID;
     private String name;
@@ -24,7 +24,7 @@ public class ComplexFacebookEventEntity {
     private String prettyEndTime;
     private double unixStartTime;
 
-    public ComplexFacebookEventEntity(String ID, String name, String description, String longitude, String latitude, String placeName, String startTime, String endTime) {
+    public ComplexEventEntity(String ID, String name, String description, String longitude, String latitude, String placeName, String startTime, String endTime) {
         this.ID = ID;
         this.name = name;
         this.description = description;

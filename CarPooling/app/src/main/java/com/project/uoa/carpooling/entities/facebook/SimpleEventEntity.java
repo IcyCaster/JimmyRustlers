@@ -9,7 +9,7 @@ import java.util.Locale;
 /**
  * Created by Chester on 13/06/2016.
  */
-public class SimpleFacebookEventEntity {
+public class SimpleEventEntity {
 
     private String eventID;
     private String eventImageURL = null;
@@ -18,7 +18,7 @@ public class SimpleFacebookEventEntity {
     private String prettyStartTime;
     private double unixStartTime;
 
-    public SimpleFacebookEventEntity(String eventID, String eventName, String startTime) {
+    public SimpleEventEntity(String eventID, String eventName, String startTime) {
         this.eventID = eventID;
         this.eventName = eventName;
 

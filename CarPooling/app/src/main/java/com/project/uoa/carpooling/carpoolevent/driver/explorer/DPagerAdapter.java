@@ -15,7 +15,7 @@ public class DPagerAdapter extends FragmentPagerAdapter {
 
     private int tabCount = 3;
 
-    public DPagerAdapter(FragmentManager fm, String eventStatus) {
+    public DPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 

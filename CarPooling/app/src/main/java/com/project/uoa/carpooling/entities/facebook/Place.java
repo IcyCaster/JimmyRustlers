@@ -9,7 +9,7 @@ public class Place {
     private String longitude;
     private String latitude;
 
-    public Place(String name, String longitude, String latitude){
+    public Place(String name, String longitude, String latitude) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -37,5 +37,10 @@ public class Place {
 
     public void setLatitude(String latitude) {
         this.latitude = latitude;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

@@ -21,7 +21,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
-import com.project.uoa.carpooling.entities.facebook.SimpleFacebookEventEntity;
+import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -34,11 +34,11 @@ import java.util.List;
  */
 public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarpoolEventViewHolder> {
 
-    private List<SimpleFacebookEventEntity> list = Collections.emptyList();
+    private List<SimpleEventEntity> list = Collections.emptyList();
     private Context context;
 
     // Constructor, pass in a list of Facebook Card Events and the applications context
-    public ExploreCarpoolEventAdapter(List<SimpleFacebookEventEntity> list, Context context) {
+    public ExploreCarpoolEventAdapter(List<SimpleEventEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }

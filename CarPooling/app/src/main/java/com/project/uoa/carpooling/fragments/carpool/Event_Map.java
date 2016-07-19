@@ -92,7 +92,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
             eventId = getArguments().getLong(EVENT_ID);
         }
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
+        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
@@ -104,7 +104,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
 
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
+        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
 

@@ -75,7 +75,7 @@ public class Explorer_Offers extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_explorer_offers, container, false);
-        String status = ((CarpoolEventActivity)getActivity()).getEventStatus();
+        String status = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
 
 //        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.rv);
 //

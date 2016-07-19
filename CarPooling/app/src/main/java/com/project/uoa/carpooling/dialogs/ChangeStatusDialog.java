@@ -43,7 +43,7 @@ public class ChangeStatusDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus().toString();
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 

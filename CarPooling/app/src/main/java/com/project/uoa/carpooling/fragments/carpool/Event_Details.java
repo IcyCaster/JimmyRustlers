@@ -60,7 +60,7 @@ public class Event_Details extends Fragment {
 
 
 
-        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus().toString();
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 

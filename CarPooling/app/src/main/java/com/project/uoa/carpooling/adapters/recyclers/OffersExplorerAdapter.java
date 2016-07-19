@@ -26,7 +26,7 @@ public class OffersExplorerAdapter extends RecyclerView.Adapter<OffersExplorerVi
     public OffersExplorerAdapter(ArrayList<?> list, Context context) {
         this.list = list;
         this.context = context;
-        eventStatus = ((CarpoolEventActivity)context).getEventStatus();
+        eventStatus = ((CarpoolEventActivity)context).getEventStatus().toString();
     }
 
     @Override

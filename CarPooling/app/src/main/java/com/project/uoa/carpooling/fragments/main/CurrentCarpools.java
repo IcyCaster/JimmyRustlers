@@ -30,7 +30,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
 import com.project.uoa.carpooling.dialogs.JoinEventDialog;
-import com.project.uoa.carpooling.entities.facebook.SimpleFacebookEventEntity;
+import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
 import com.project.uoa.carpooling.helpers.SimpleEventComparator;
 
@@ -45,7 +45,7 @@ public class CurrentCarpools extends Fragment {
     boolean shouldExecuteOnResume;
     private View view;
     private int subbedEvents;
-    private ArrayList<SimpleFacebookEventEntity> listOfEventCardEntities = new ArrayList<>();
+    private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
     private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
     private OnFragmentInteractionListener mListener;
     private RecyclerView recyclerView;
@@ -256,7 +256,7 @@ public class CurrentCarpools extends Fragment {
                                                         url = response.getJSONObject().getJSONObject("data").getString("url");
 
 
-                                                        for (SimpleFacebookEventEntity e : listOfEventCardEntities) {
+                                                        for (SimpleEventEntity e : listOfEventCardEntities) {
                                                             if (e.getEventID().equals(id)) {
                                                                 listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                             }
@@ -295,7 +295,7 @@ public class CurrentCarpools extends Fragment {
         if (subbedEvents == 0) {
 
             Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
-            
+
             swipeContainer.setRefreshing(false);
             adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

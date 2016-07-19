@@ -51,7 +51,7 @@ public class Event_Explorer extends Fragment {
                              Bundle savedInstanceState) {
 
 
-        status = ((CarpoolEventActivity)getActivity()).getEventStatus();
+        status = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
 
         view = inflater.inflate(R.layout.fragment_event_explorer, container, false);
 

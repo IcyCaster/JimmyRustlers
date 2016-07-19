@@ -1,6 +1,6 @@
 package com.project.uoa.carpooling.adapters.jsonparsers;
 
-import com.project.uoa.carpooling.entities.facebook.ComplexFacebookEventEntity;
+import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,7 +10,7 @@ import org.json.JSONObject;
  */
 public class Facebook_ComplexEvent_Parser {
 
-    public static ComplexFacebookEventEntity parse(JSONObject jsonObject) {
+    public static ComplexEventEntity parse(JSONObject jsonObject) {
 
         String ID;
         String name;
@@ -48,7 +48,7 @@ public class Facebook_ComplexEvent_Parser {
                 }
             }
 
-            ComplexFacebookEventEntity entity = new ComplexFacebookEventEntity(ID, name, description, longitude, latitude, placeName, startTime, endTime);
+            ComplexEventEntity entity = new ComplexEventEntity(ID, name, description, longitude, latitude, placeName, startTime, endTime);
 
             return entity;
 

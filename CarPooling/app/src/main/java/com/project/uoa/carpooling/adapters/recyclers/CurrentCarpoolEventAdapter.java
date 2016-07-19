@@ -20,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
-import com.project.uoa.carpooling.entities.facebook.SimpleFacebookEventEntity;
+import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
@@ -31,11 +31,11 @@ import java.util.List;
  */
 public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarpoolEventViewHolder> {
 
-    protected List<SimpleFacebookEventEntity> list = Collections.emptyList();
+    protected List<SimpleEventEntity> list = Collections.emptyList();
     private Context context;
 
     // Constructor
-    public CurrentCarpoolEventAdapter(List<SimpleFacebookEventEntity> list, Context context) {
+    public CurrentCarpoolEventAdapter(List<SimpleEventEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }

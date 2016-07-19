@@ -2,12 +2,10 @@ package com.project.uoa.carpooling.activities;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
@@ -22,7 +20,8 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
 import com.project.uoa.carpooling.adapters.pagers.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
-import com.project.uoa.carpooling.entities.facebook.ComplexFacebookEventEntity;
+import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.Event_Details;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
 import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
@@ -30,15 +29,14 @@ import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
 import com.project.uoa.carpooling.fragments.carpool.Explorer_Passengers;
 import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
 
-import org.json.JSONException;
-
 public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Explorer_Passengers.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
 
     // These are relevant to the event instance
     private String userID;
     private String eventID;
-    private String eventStatus;
-    private ComplexFacebookEventEntity facebookEventObject;
+    private EventStatus eventStatus;
+    private ComplexEventEntity facebookEventObject;
+    private String status;
 
     private DatabaseReference fireBaseReference;
 
@@ -48,10 +46,10 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     public String getEventID() {
         return eventID;
     }
-    public String getEventStatus() {
+    public EventStatus getEventStatus() {
         return eventStatus;
     }
-    public ComplexFacebookEventEntity getFacebookEvent() {
+    public ComplexEventEntity getFacebookEvent() {
         return facebookEventObject;
     }
 
@@ -66,12 +64,25 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         if (savedInstanceState != null) {
             userID = savedInstanceState.getString("USER_ID");
             eventID = savedInstanceState.getString("EVENT_ID");
-            eventStatus = savedInstanceState.getString("EVENT_STATUS");
+            status = savedInstanceState.getString("EVENT_STATUS");
         } else {
             Bundle bundle = getIntent().getExtras();
             userID = bundle.getString("userID");
             eventID = bundle.getString("eventID");
-            eventStatus = bundle.getString("eventStatus");
+            status = bundle.getString("eventStatus");
+        }
+
+        if(status.equals("Observer")) {
+            eventStatus = EventStatus.OBSERVER;
+        }
+        else  if(status.equals("Driver")) {
+            eventStatus = EventStatus.DRIVER;
+        }
+        else if(status.equals("Passenger")) {
+            eventStatus = EventStatus.PASSENGER;
+        }
+        else {
+            Log.e("Status Error", "Status was not assigned correctly");
         }
 
         GraphRequest request = GraphRequest.newGraphPathRequest(
@@ -88,7 +99,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
-                                eventStatus = snapshot.getValue().toString();
+                                // Not sure what the purpose of this is?
+                                status = snapshot.getValue().toString();
 
                                 setContentView(R.layout.activity__car_pool_instance);
 
@@ -107,9 +119,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 Log.e("firebase - error", firebaseError.getMessage());
                             }
                         });
-
-
-
                     }
                 });
         request.executeAsync();
@@ -119,7 +128,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putString("USER_ID", userID);
         savedInstanceState.putString("EVENT_ID", eventID);
-        savedInstanceState.putString("EVENT_STATUS", eventStatus);
+        savedInstanceState.putString("EVENT_STATUS", status);
 
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -132,7 +141,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         // Restore state members from saved instance
         userID = savedInstanceState.getString("USER_ID");
         eventID = savedInstanceState.getString("EVENT_ID");
-        eventStatus = savedInstanceState.getString("EVENT_STATUS");
+        status = savedInstanceState.getString("EVENT_STATUS");
     }
 
     @Override
