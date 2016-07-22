@@ -4,9 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import com.project.uoa.carpooling.carpoolevent.driver.DriverDetails;
-import com.project.uoa.carpooling.carpoolevent.driver.DriverExplorer;
-import com.project.uoa.carpooling.carpoolevent.driver.DriverMap;
+import com.project.uoa.carpooling.carpoolevent.driver.pages.D_Details;
+import com.project.uoa.carpooling.carpoolevent.driver.pages.D_Explorer;
+import com.project.uoa.carpooling.carpoolevent.driver.pages.D_Map;
 import com.project.uoa.carpooling.carpoolevent.observer.ObserverDetails;
 import com.project.uoa.carpooling.carpoolevent.observer.ObserverExplorer;
 import com.project.uoa.carpooling.carpoolevent.observer.ObserverMap;
@@ -42,11 +42,11 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
             case DRIVER:
                 switch (position) {
                     case 0:
-                        return new DriverDetails();
+                        return new D_Details();
                     case 1:
-                        return new DriverMap();
+                        return new D_Map();
                     case 2:
-                        return new DriverExplorer();
+                        return new D_Explorer();
                 }
             case PASSENGER:
                 switch (position) {

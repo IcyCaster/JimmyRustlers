@@ -120,7 +120,6 @@ public class CurrentCarpools extends Fragment {
 
         });
 
-
         return view;
     }
 
@@ -128,15 +127,13 @@ public class CurrentCarpools extends Fragment {
     public void fetchTimelineAsync() {
 
 
-        // Send the network request to fetch the updated data
-        // `client` here is an instance of Android Async HTTP
+
         Handler h = new Handler();
         //later to update UI
         h.post(new Runnable() {
             @Override
             public void run() {
                 PopulateViewWithSubscribedEvents();
-
             }
         });
     }

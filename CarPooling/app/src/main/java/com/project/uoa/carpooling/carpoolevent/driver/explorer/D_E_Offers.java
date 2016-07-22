@@ -18,29 +18,25 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.carpoolevent._entities.PassengerEntity;
 import com.project.uoa.carpooling.entities.facebook.Place;
+import com.project.uoa.carpooling.helpers.PassengerComparator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
-public class DriverOffers extends Fragment {
-    boolean shouldExecuteOnResume;
+public class D_E_Offers extends Fragment {
 
     private View view;
+    private boolean shouldExecuteOnResume;
 
-
-    private int numberOfPublicPassengers;
-
-
-    private ArrayList<PassengerEntity> listOfPublicPassengers = new ArrayList<>();
-
+    private ArrayList<PassengerEntity> listOfPotentialPassengers = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private DriverExplorerRecycler adapter;
+    private D_E_OffersRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
-
-    private boolean refreshing = false;
 
     private String userID;
     private String eventID;
@@ -48,7 +44,6 @@ public class DriverOffers extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         if (shouldExecuteOnResume) {
             PopulateOffers();
         } else {
@@ -72,42 +67,29 @@ public class DriverOffers extends Fragment {
         view = inflater.inflate(R.layout.carpool_driver_exp_offers, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new DriverExplorerRecycler(listOfPublicPassengers, getActivity());
+        adapter = new D_E_OffersRecycler(listOfPotentialPassengers, getActivity());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
-
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-
-                    swipeContainer.setRefreshing(true);
-                    fetchTimelineAsync();
-
+                swipeContainer.setRefreshing(true);
+                fetchTimelineAsync();
             }
         });
 
-        // Configure the refreshing colors
         swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
-
         return view;
     }
 
-
     public void fetchTimelineAsync() {
-
-
-        // Send the network request to fetch the updated data
-        // `client` here is an instance of Android Async HTTP
         Handler h = new Handler();
-        //later to update UI
         h.post(new Runnable() {
             @Override
             public void run() {
@@ -117,17 +99,13 @@ public class DriverOffers extends Fragment {
         });
     }
 
-
     public void PopulateOffers() {
 
-
-        listOfPublicPassengers.clear();
-
+        listOfPotentialPassengers.clear();
 
         // CURRENT: all public passengers of event
         // TODO: check to make sure they are not on current passenger list
         // todo: add filters later (eg capacity, location....blah blah blah)
-
 
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -146,52 +124,41 @@ public class DriverOffers extends Fragment {
 
                         String passengerCount = child.child("PassengerCount").getValue().toString();
 
-//                        String isPending = child.child("").getValue().toString();
-                        String isPending = "TODO";
+                        String isPending = "False";
+                        if (child.child("Offers").exists()) {
+                            for (DataSnapshot UID : child.child("Offers").getChildren()) {
+                                if (UID.getKey().equals(userID)) {
+                                    if (UID.getValue().equals("Pending")) {
+                                        isPending = "True";
+                                    }
+                                    //Might consider adding something for "Decline" here? Not sure?
+                                }
 
+                            }
+                        }
+
+                        // Make passenger entity and add it to the list
                         PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
-                        listOfPublicPassengers.add(passenger);
-
-                        PassengerEntity passenger1 = new PassengerEntity(passengerID, "2", pickupLocation, passengerCount, isPending);
-                        listOfPublicPassengers.add(passenger1);
-
-                        PassengerEntity passenger2 = new PassengerEntity(passengerID, "3", pickupLocation, passengerCount, isPending);
-                        listOfPublicPassengers.add(passenger2);
-
-                        PassengerEntity passenger3 = new PassengerEntity(passengerID, "4", pickupLocation, passengerCount, isPending);
-                        listOfPublicPassengers.add(passenger3);
-
-
+                        listOfPotentialPassengers.add(passenger);
                     }
                 }
                 callback();
             }
-
 
             @Override
             public void onCancelled(DatabaseError firebaseError) {
                 Log.e("firebase - error", firebaseError.getMessage());
             }
         });
-
-
     }
 
     public synchronized void callback() {
-//        numberOfPublicPassengers--;
-//        if (numberOfPublicPassengers == 0) {
-
-//            Collections.sort(listOfOffers, new SimpleEventComparator()); //TODO: Sort alphabetically
-//
-
-            adapter = new DriverExplorerRecycler(listOfPublicPassengers, getActivity());
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(adapter);
-            swipeContainer.setRefreshing(false);
-        }
-//    }
-
-
+        Collections.sort(listOfPotentialPassengers, new PassengerComparator());
+        adapter = new D_E_OffersRecycler(listOfPotentialPassengers, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        swipeContainer.setRefreshing(false);
+    }
 }
 
 

@@ -46,32 +46,33 @@
                 android:text="Passenger Count: -#-"
                 />
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_below="@+id/passenger_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/passenger_left_button"
-                android:layout_width="wrap_content"
+                android:id="@+id/offer_button"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Positive" />
+                android:layout_weight="1"
+                android:text="Offer" />
 
             <Button
-                android:id="@+id/passenger_middle_button"
-                android:layout_width="wrap_content"
+                android:id="@+id/cancel_button"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/passenger_left_button"
-                android:text="Negative" />
+                android:layout_weight="1"
+                android:text="Cancel" />
 
             <Button
-                android:id="@+id/passenger_right_button"
-                android:layout_width="wrap_content"
+                android:id="@+id/map_button"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/passenger_middle_button"
-                android:text="View" />
+                android:layout_weight="1"
+                android:text="Map" />
 
-        </RelativeLayout>
+        </LinearLayout>
 
 
         </RelativeLayout>

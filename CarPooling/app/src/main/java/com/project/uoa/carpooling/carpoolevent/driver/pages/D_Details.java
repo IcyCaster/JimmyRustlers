@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.carpoolevent.driver;
+package com.project.uoa.carpooling.carpoolevent.driver.pages;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,7 +21,7 @@ import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 
 
-public class DriverDetails extends Fragment {
+public class D_Details extends Fragment {
 
     private DatabaseReference fireBaseReference;
 

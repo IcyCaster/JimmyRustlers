@@ -1,11 +1,11 @@
-package com.project.uoa.carpooling.carpoolevent.driver;
+package com.project.uoa.carpooling.carpoolevent.driver.pages;
 
 import android.support.v4.app.Fragment;
 
 /**
  * Created by Chester on 18/07/2016.
  */
-public class DriverMap extends Fragment {
+public class D_Map extends Fragment {
 
     // TODO AT A LATE DATE
 

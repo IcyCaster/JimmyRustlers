@@ -119,12 +119,14 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
 
                 // Checks events/{event-id} to see if the event exists in the database as this may be the first user subscribing
-                fireBaseReference.child("events").child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
+                fireBaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
 
+
+
                         // If it does not exist it needs to be added
-                        if (!snapshot.exists()) {
+                        if (!snapshot.child("events").child(eventId).exists()) {
 
                             // Add a /users branch
                             fireBaseReference.child("events").child(eventId).child("users").push();
@@ -161,28 +163,30 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
                                             }
                                         }
                                     });
-
                             // Facebook parameters for getting the event's place
                             Bundle parameters = new Bundle();
                             parameters.putString("fields", "place");
                             request.setParameters(parameters);
                             request.executeAsync();
+
+
+
+
+
                         }
 
-                        // Add {user-ID} to events/{event-ID}/users/ and set as an observer
+                        // Add {user-ID} to events/{event-ID}/users/, set as an observer and add users name
                         fireBaseReference.child("events").child(eventId).child("users").child(userId).child("Status").setValue("Observer");
                         fireBaseReference.child("events").child(eventId).child("users").child(userId).child("isPublic").setValue("False");
+                        fireBaseReference.child("events").child(eventId).child("users").child(userId).child("Name").setValue(snapshot.child("users").child(userId).child("Name").getValue());
 
                         // Add {event-ID} to users/{user-ID}/events/ and set as an observer
                         fireBaseReference.child("users").child(userId).child("events").child(eventId).push();
                         fireBaseReference.child("users").child(userId).child("events").child(eventId).setValue("Observer");
 
-                        Log.d("firebase - event", "Subscribed to: " + eventId);
 
 
                         // TODO: Remove it from the list? Or acknowledge that the event has been subscribed somehow?
-
-
                     }
 
                     @Override
