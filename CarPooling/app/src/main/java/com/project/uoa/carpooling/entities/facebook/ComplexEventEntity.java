@@ -38,10 +38,12 @@ public class ComplexEventEntity {
         try {
 
             startCalendar.setTime(facebookTimeFormat.parse(startTime));
-            endCalendar.setTime(facebookTimeFormat.parse(endTime));
-
             prettyStartTime = prettyFormat.format(startCalendar.getTime());
-            prettyEndTime = prettyFormat.format(endCalendar.getTime());
+
+            if(!endTime.equals("")) {
+                endCalendar.setTime(facebookTimeFormat.parse(endTime));
+                prettyEndTime = prettyFormat.format(endCalendar.getTime());
+            }
 
             unixStartTime = facebookTimeFormat.parse(startTime).getTime();
 

@@ -5,7 +5,7 @@
     android:padding="2dp">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/drivers_card"
+        android:id="@+id/passengers_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardUseCompatPadding="true"
@@ -21,34 +21,26 @@
             >
 
             <TextView
-                android:id="@+id/driver_card_name"
+                android:id="@+id/passenger_card_name"
                 android:layout_alignParentTop="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="-PASSENGER NAME-"
+                android:text="-DRIVER NAME-"
                 android:textSize="20sp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 />
 
             <TextView
-                android:id="@+id/driver_location"
+                android:id="@+id/passenger_pickuptime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/driver_card_name"
-                android:text="Pickup Location: -enter the name of the rough location address here-"
-                />
-
-            <TextView
-                android:id="@+id/driver_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/driver_location"
-                android:text="Passenger Count: -#-"
+                android:layout_below="@+id/passenger_card_name"
+                android:text="Estimated pickup: -pickup time-"
                 />
 
         <RelativeLayout
-            android:layout_below="@+id/driver_count"
+            android:layout_below="@+id/passenger_pickuptime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

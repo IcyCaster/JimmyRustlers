@@ -11,7 +11,9 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
+import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
+import com.project.uoa.carpooling.entities.firebase.PassengersEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,18 +23,18 @@ import java.util.List;
  */
 public class DriverExplorerRecycler extends RecyclerView.Adapter<DriverExplorerViewHolder> {
 
-    private List<?> list = Collections.emptyList();
+    private List<PassengerEntity> list = Collections.emptyList();
     private Context context;
 
     // Constructor, pass in a list of Facebook Card Events and the applications context
-    public DriverExplorerRecycler(List<?> list, Context context) {
+    public DriverExplorerRecycler(List<PassengerEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
     @Override
     public DriverExplorerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__car_pool_instance, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__passenger_instance, parent, false);
         DriverExplorerViewHolder viewHolder = new DriverExplorerViewHolder(view, context);
         return viewHolder;
     }
@@ -40,24 +42,10 @@ public class DriverExplorerRecycler extends RecyclerView.Adapter<DriverExplorerV
     @Override
     public void onBindViewHolder(DriverExplorerViewHolder holder, int position) {
 
-//        holder.eventId = list.get(position).getEventID();
-//        holder.eventName.setText(list.get(position).getEventName());
-//        holder.eventStartDate.setText(list.get(position).getPrettyStartTime());
-//
-//
-//        // Picasso loads image from the URL
-//        if (list.get(position).getEventImageURL() != null) {
-//            Picasso.with(context)
-//                    .load(list.get(position).getEventImageURL())
-//                    .placeholder(R.drawable.placeholder_image)
-//                    .error(R.drawable.error_no_image)
-//                    .fit()
-//                    .noFade()
-//                    .into(holder.eventThumbnail);
-//        } else {
-//            // If no URL given, load default image
-//            holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.placeholder_image));
-//        }
+        holder.passengerName.setText(list.get(position).getName());
+        holder.passengerLocation.setText("Location: " + list.get(position).getPickupLocation().toString());
+        holder.passengerCount.setText("Passenger Count: " + Integer.toString(list.get(position).getPassengerCount()));
+
     }
 
     @Override
@@ -78,31 +66,26 @@ public class DriverExplorerRecycler extends RecyclerView.Adapter<DriverExplorerV
 }
 
 class DriverExplorerViewHolder extends RecyclerView.ViewHolder {
-    protected String eventId;
-    protected TextView eventName;
-    protected TextView eventStartDate;
-    protected ImageView eventThumbnail;
+    protected TextView passengerName;
+    protected TextView passengerLocation;
+    protected TextView passengerCount;
     private DatabaseReference fireBaseReference;
     private String userId;
 
     public DriverExplorerViewHolder(View itemView, Context context) {
         super(itemView);
+        passengerName = (TextView) itemView.findViewById(R.id.passenger_name);
+        passengerLocation = (TextView) itemView.findViewById(R.id.passenger_location);
+        passengerCount = (TextView) itemView.findViewById(R.id.passenger_count);
 
-        final MainActivity mainActivity = (MainActivity) context;
+
+        final CarpoolEventActivity carpoolActivity = (CarpoolEventActivity) context;
 
         // Connect to Firebase
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Initialise shared preferences
-        userId = mainActivity.getUserID();
+        userId = carpoolActivity.getUserID();
 
-        // Adds a click listener
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-            }
-        });
     }
 }

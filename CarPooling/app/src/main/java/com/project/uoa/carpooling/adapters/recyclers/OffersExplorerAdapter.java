@@ -38,10 +38,10 @@ public class OffersExplorerAdapter extends RecyclerView.Adapter<OffersExplorerVi
     public OffersExplorerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         if(eventStatus.equals("Driver")) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__driver_instance, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__passenger_instance, parent, false);
         }
         if(eventStatus.equals("Passenger")) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__passenger_instance, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__driver_instance, parent, false);
         }
         else {
             view = null;

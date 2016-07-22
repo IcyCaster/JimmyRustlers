@@ -7,16 +7,10 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,17 +18,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.activities.MainActivity;
-import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
-import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
-import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.entities.firebase.PassengersEntity;
-import com.project.uoa.carpooling.helpers.SimpleEventComparator;
-
-import org.json.JSONException;
+import com.project.uoa.carpooling.entities.facebook.Place;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 
 public class DriverOffers extends Fragment {
@@ -43,17 +29,10 @@ public class DriverOffers extends Fragment {
     private View view;
 
 
+    private int numberOfPublicPassengers;
 
 
-    private int subbedEvents;
-
-
-
-
-    private ArrayList<PassengersEntity> listOfOffers = new ArrayList<>();
-
-
-    private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
+    private ArrayList<PassengerEntity> listOfPublicPassengers = new ArrayList<>();
 
 
     private RecyclerView recyclerView;
@@ -61,6 +40,7 @@ public class DriverOffers extends Fragment {
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
 
+    private boolean refreshing = false;
 
     private String userID;
     private String eventID;
@@ -92,7 +72,7 @@ public class DriverOffers extends Fragment {
         view = inflater.inflate(R.layout.carpool_driver_exp_offers, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new DriverExplorerRecycler(listOfOffers, getActivity());
+        adapter = new DriverExplorerRecycler(listOfPublicPassengers, getActivity());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -103,8 +83,10 @@ public class DriverOffers extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeContainer.setRefreshing(false);
-                fetchTimelineAsync();
+
+                    swipeContainer.setRefreshing(true);
+                    fetchTimelineAsync();
+
             }
         });
 
@@ -113,8 +95,6 @@ public class DriverOffers extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
-
 
 
         return view;
@@ -141,33 +121,52 @@ public class DriverOffers extends Fragment {
     public void PopulateOffers() {
 
 
-        listOfSubscribedEvents.clear();
+        listOfPublicPassengers.clear();
 
 
-
-        // CURRENT: all passengers of event
-        // NEXT: check each passenger to see if they are public
+        // CURRENT: all public passengers of event
         // TODO: check to make sure they are not on current passenger list
         // todo: add filters later (eg capacity, location....blah blah blah)
-
 
 
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if(child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals("True")) {
-                        Log.d("T","T");
+                    if (child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals("True")) {
+
+                        String passengerID = child.getKey();
+                        String passengerName = child.child("Name").getValue().toString();
+                        String pickupName = child.child("PickupName").getValue().toString();
+                        String pickupLongitude = child.child("PickupLong").getValue().toString();
+                        String pickupLatitude = child.child("PickupLat").getValue().toString();
+
+                        Place pickupLocation = new Place(pickupName, pickupLongitude, pickupLatitude);
+
+                        String passengerCount = child.child("PassengerCount").getValue().toString();
+
+//                        String isPending = child.child("").getValue().toString();
+                        String isPending = "TODO";
+
+                        PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
+                        listOfPublicPassengers.add(passenger);
+
+                        PassengerEntity passenger1 = new PassengerEntity(passengerID, "2", pickupLocation, passengerCount, isPending);
+                        listOfPublicPassengers.add(passenger1);
+
+                        PassengerEntity passenger2 = new PassengerEntity(passengerID, "3", pickupLocation, passengerCount, isPending);
+                        listOfPublicPassengers.add(passenger2);
+
+                        PassengerEntity passenger3 = new PassengerEntity(passengerID, "4", pickupLocation, passengerCount, isPending);
+                        listOfPublicPassengers.add(passenger3);
+
+
                     }
-
-
-
-//                    listOfSubscribedEvents.add(child.getKey().toString());
                 }
-
-                GetEventDetails();
-
+                callback();
             }
+
 
             @Override
             public void onCancelled(DatabaseError firebaseError) {
@@ -178,104 +177,19 @@ public class DriverOffers extends Fragment {
 
     }
 
-
-    public void GetEventDetails() {
-
-
-        listOfOffers.clear();
-
-        if (listOfSubscribedEvents.size() == 0) {
-            Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
-                    Toast.LENGTH_SHORT);
-            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-            if (v != null) v.setGravity(Gravity.CENTER);
-            toast.show();
-
-            recyclerView.setVisibility(View.GONE);
-
-        } else {
-
-            recyclerView.setVisibility(View.VISIBLE);
-
-            subbedEvents = listOfSubscribedEvents.size();
-            for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
-
-
-                GraphRequest request = GraphRequest.newGraphPathRequest(
-                        AccessToken.getCurrentAccessToken(),
-                        "/" + listOfSubscribedEvents.get(i),
-                        new GraphRequest.Callback() {
-                            @Override
-                            public void onCompleted(GraphResponse response) {
-                                try {
-
-
-                                    final String id = response.getJSONObject().getString("id");
-
-                                    GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
-                                            AccessToken.getCurrentAccessToken(),
-                                            "/" + id + "/picture",
-                                            new GraphRequest.Callback() {
-
-                                                @Override
-                                                public void onCompleted(GraphResponse response) {
-
-
-                                                    try {
-
-
-                                                        String url = "";
-
-                                                        url = response.getJSONObject().getJSONObject("data").getString("url");
-
-
-//                                                        for (SimpleEventEntity e : listOfOffers) {
-//                                                            if (e.getEventID().equals(id)) {
-//                                                                listOfOffers.get(listOfOffers.indexOf(e)).setImage(url);
-//                                                            }
-//                                                        }
-
-                                                    } catch (JSONException e) {
-                                                        e.printStackTrace();
-                                                    }
-
-
-                                                    callback();
-                                                }
-                                            });
-
-
-                                    Bundle parameters = new Bundle();
-                                    parameters.putString("type", "large");
-                                    parameters.putBoolean("redirect", false);
-                                    innerRequest.setParameters(parameters);
-                                    innerRequest.executeAsync();
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-
-                request.executeAsync();
-
-            }
-        }
-    }
-
     public synchronized void callback() {
-        subbedEvents--;
-        if (subbedEvents == 0) {
+//        numberOfPublicPassengers--;
+//        if (numberOfPublicPassengers == 0) {
 
-//            Collections.sort(listOfOffers, new SimpleEventComparator());
+//            Collections.sort(listOfOffers, new SimpleEventComparator()); //TODO: Sort alphabetically
 //
-//            swipeContainer.setRefreshing(false);
-//            adapter = new CurrentCarpoolEventAdapter(listOfOffers, getActivity());
+
+            adapter = new DriverExplorerRecycler(listOfPublicPassengers, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
-
+            swipeContainer.setRefreshing(false);
         }
-    }
+//    }
 
 
 }

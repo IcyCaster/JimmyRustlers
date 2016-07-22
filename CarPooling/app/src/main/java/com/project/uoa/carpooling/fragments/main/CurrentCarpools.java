@@ -88,7 +88,7 @@ public class CurrentCarpools extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeContainer.setRefreshing(false);
+                swipeContainer.setRefreshing(true);
                 fetchTimelineAsync();
             }
         });
@@ -296,11 +296,11 @@ public class CurrentCarpools extends Fragment {
 
             Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
 
-            swipeContainer.setRefreshing(false);
+
             adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
-
+            swipeContainer.setRefreshing(false);
         }
     }
 
