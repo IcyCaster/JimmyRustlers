@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -65,6 +66,9 @@ public class JoinEventDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set no title bar:
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         view = inflater.inflate(R.layout.dialog__explore_carpool_events, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);

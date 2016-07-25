@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -42,6 +43,9 @@ public class ChangeStatusDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Set no title bar:
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
