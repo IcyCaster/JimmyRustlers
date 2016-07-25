@@ -30,6 +30,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.maps.Leg;
@@ -72,8 +77,16 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     private Location mCurrentLocation;
+
     private MapView mMapView;
     private Button btnStartNav;
+
+    // Firebase reference
+    private DatabaseReference fireBaseReference;
+    private String mEventLocation = "University Of Auckland";
+
+    // Temporary, I don't think this works, not the correct reference (cuz its java which has no reference).
+    private DirectionFinderListener tempListener = this;
 
     public Event_Map() {
         // Required empty public constructor
@@ -118,6 +131,8 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
@@ -254,12 +269,14 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         }
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        try {
-            // Start request for getting route information.
-            new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mSelectedAddress, GOOGLE_API_KEY).execute();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        updateEventLocation(eventID);
+
+//        try {
+//            // Start request for getting route information.
+//            new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
+//        } catch (UnsupportedEncodingException e) {
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -288,7 +305,8 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     }
 
     private void launchGoogleMapsNavigationIntent(String address) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + address.replaceAll(" ", "+"));
+        //Uri gmmIntentUri = Uri.parse("google.navigation:q=" + address.replaceAll(" ", "+"));
+        Uri gmmIntentUri = Uri.parse("https://maps.google.ch/maps?saddr=Manukau&daddr=University of Auckland to:Auckland to: Charles Prevost Dr");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -335,5 +353,35 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         if (mGoogleApiClient.isConnected()) {
             mGoogleApiClient.disconnect();
         }
+    }
+
+    private void updateEventLocation(String eventID) {
+        Log.d(TAG, "updateEventLocation() executed.");
+
+        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d(TAG, "Event location is being extracted.");
+                if (dataSnapshot.hasChild("latitude") && dataSnapshot.hasChild("longitude")){
+                    mEventLocation = dataSnapshot.child("latitude").getValue().toString()
+                            + ","
+                            + dataSnapshot.child("longitude").getValue().toString();
+                } else if (dataSnapshot.hasChild("location")){
+                    mEventLocation = dataSnapshot.child("location").getValue().toString();
+                }
+
+                try {
+                    // Start request for getting route information.
+                    new DirectionFinder(tempListener, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e(TAG, "Could not retrieve event location.");
+            }
+        });
     }
 }
