@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -41,6 +43,7 @@ public class JoinEventDialog extends DialogFragment {
 
     private View view;
     private RecyclerView recyclerView;
+    private ProgressBar mProgressBar;
 
     private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
     private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
@@ -68,8 +71,13 @@ public class JoinEventDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        // Set no title bar:
+//        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        getDialog().setTitle("Join an Event's carpool:");
         view = inflater.inflate(R.layout.dialog__explore_carpool_events, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         adapter = new ExploreCarpoolEventAdapter(listOfEventCardEntities, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -95,7 +103,6 @@ public class JoinEventDialog extends DialogFragment {
                     @Override
                     public void onCompleted(GraphResponse response) {
 
-
                         listOfSubscribedEvents = Facebook_ID_Parser.parse(response.getJSONObject());
 
                         fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -108,7 +115,7 @@ public class JoinEventDialog extends DialogFragment {
                                 }
                                 if (listOfSubscribedEvents.size() == 0) {
                                     Log.d("firebase", "No event left to subscribe to");
-                                    Toast.makeText(getActivity().getApplicationContext(), "No Facebook event left to join :(",
+                                    Toast.makeText(getActivity().getApplicationContext(), "No Facebook events left to join.",
                                             Toast.LENGTH_SHORT).show();
                                 } else {
                                     GetEventDetails();
@@ -150,8 +157,8 @@ public class JoinEventDialog extends DialogFragment {
 
                                 listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
 
-                                final String id = response.getJSONObject().getString("id");
 
+                                final String id = response.getJSONObject().getString("id");
 
                                 GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
                                         AccessToken.getCurrentAccessToken(),
@@ -220,6 +227,9 @@ public class JoinEventDialog extends DialogFragment {
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
         }
+
+        // Set progress bar to invisible.
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
     }
 }
 

@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_settings:
                 fragment = new SimpleMessenger();
-                title = "TEMP CAR POOL EVENT";
+                title = "Global Messenger";
                 break;
 
             case R.id.nav_help:

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.NumberPicker;
@@ -57,6 +58,9 @@ public class UpdateStatusDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Set no title bar:
+        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_status_details, container, false);
 
