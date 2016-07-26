@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +99,7 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
     private DatabaseReference fireBaseReference;
     private String userId;
 
-    public ExploreCarpoolEventViewHolder(View itemView, Context context) {
+    public ExploreCarpoolEventViewHolder(View itemView, final Context context) {
         super(itemView);
 
         final MainActivity mainActivity = (MainActivity) context;
@@ -179,10 +180,10 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
 
                         Log.d("firebase - event", "Subscribed to: " + eventId);
 
+//                        // Execute back functionality. TODO Find a better way to do this.
+//                        ((MainActivity) context).onBackPressed();
 
                         // TODO: Remove it from the list? Or acknowledge that the event has been subscribed somehow?
-
-
                     }
 
                     @Override
