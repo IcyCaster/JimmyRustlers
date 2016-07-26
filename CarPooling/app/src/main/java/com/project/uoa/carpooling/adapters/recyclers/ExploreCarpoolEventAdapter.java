@@ -180,8 +180,8 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
 
                         Log.d("firebase - event", "Subscribed to: " + eventId);
 
-                        // Execute back functionality. TODO Find a better way to do this.
-                        ((MainActivity) context).onBackPressed();
+//                        // Execute back functionality. TODO Find a better way to do this.
+//                        ((MainActivity) context).onBackPressed();
 
                         // TODO: Remove it from the list? Or acknowledge that the event has been subscribed somehow?
                     }
