@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.carpoolevent.driver.explorer;
+package com.project.uoa.carpooling.carpoolevent.passenger.explorer;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,23 +18,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.carpoolevent._entities.PassengerEntity;
+import com.project.uoa.carpooling.carpoolevent._entities.DriverEntity;
 import com.project.uoa.carpooling.entities.facebook.Place;
-import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
+import com.project.uoa.carpooling.helpers.comparators.DriverComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class D_E_Offers extends Fragment {
+public class P_E_Requests extends Fragment {
 
     private View view;
     private boolean shouldExecuteOnResume;
 
-    private ArrayList<PassengerEntity> listOfPotentialPassengers = new ArrayList<>();
+    private ArrayList<DriverEntity> listOfPotentialDrivers = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private D_E_OffersRecycler adapter;
+    private P_E_RequestsRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
 
@@ -45,7 +45,7 @@ public class D_E_Offers extends Fragment {
     public void onResume() {
         super.onResume();
         if (shouldExecuteOnResume) {
-            PopulateOffers();
+            PopulateRequests();
         } else {
             shouldExecuteOnResume = true;
         }
@@ -62,12 +62,12 @@ public class D_E_Offers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        PopulateOffers();
+        PopulateRequests();
 
         view = inflater.inflate(R.layout.carpool_driver_exp_offers, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new D_E_OffersRecycler(listOfPotentialPassengers, getActivity());
+        adapter = new P_E_RequestsRecycler(listOfPotentialDrivers, getActivity());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -93,40 +93,37 @@ public class D_E_Offers extends Fragment {
         h.post(new Runnable() {
             @Override
             public void run() {
-                PopulateOffers();
+                PopulateRequests();
 
             }
         });
     }
 
-    public void PopulateOffers() {
+    public void PopulateRequests() {
 
-        listOfPotentialPassengers.clear();
-
-        // CURRENT: all public passengers of event
-        // TODO: check to make sure they are not on current passenger list
-        // todo: add filters later (eg capacity, location....blah blah blah)
+        listOfPotentialDrivers.clear();
 
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals("True")) {
+                    if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals("True")) {
 
-                        String passengerID = child.getKey();
-                        String passengerName = child.child("Name").getValue().toString();
-//                        String pickupName = child.child("PickupName").getValue().toString();
-                        String pickupLongitude = child.child("PickupLong").getValue().toString();
-                        String pickupLatitude = child.child("PickupLat").getValue().toString();
+                        String driverID = child.getKey();
+                        String driverName = child.child("Name").getValue().toString();
 
-                        Place pickupLocation = new Place("", pickupLongitude, pickupLatitude);
+                        // Location currently not used for driverEntity
+                        String startLongitude = child.child("StartLong").getValue().toString();
+                        String startLatitude = child.child("StartLat").getValue().toString();
+                        Place startLocation = new Place("", startLongitude, startLatitude);
 
-                        String passengerCount = child.child("PassengerCount").getValue().toString();
+                        String carCapacity = child.child("Passengers").child("PassengerCapacity").getValue().toString();
+                        //TODO: Calculate total space and compare it with number of passengers
 
                         String isPending = "False";
-                        if (child.child("Offers").exists()) {
-                            for (DataSnapshot UID : child.child("Offers").getChildren()) {
+                        if (child.child("Requests").exists()) {
+                            for (DataSnapshot UID : child.child("Requests").getChildren()) {
                                 if (UID.getKey().equals(userID)) {
                                     if (UID.getValue().equals("Pending")) {
                                         isPending = "True";
@@ -137,9 +134,9 @@ public class D_E_Offers extends Fragment {
                             }
                         }
 
-                        // Make passenger entity and add it to the list
-                        PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
-                        listOfPotentialPassengers.add(passenger);
+                        // Make driver entity and add it to the list
+                        DriverEntity driver = new DriverEntity(driverID, driverName, isPending, carCapacity);
+                        listOfPotentialDrivers.add(driver);
                     }
                 }
                 callback();
@@ -153,8 +150,8 @@ public class D_E_Offers extends Fragment {
     }
 
     public synchronized void callback() {
-        Collections.sort(listOfPotentialPassengers, new PassengerComparator());
-        adapter = new D_E_OffersRecycler(listOfPotentialPassengers, getActivity());
+        Collections.sort(listOfPotentialDrivers, new DriverComparator());
+        adapter = new P_E_RequestsRecycler(listOfPotentialDrivers, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
         swipeContainer.setRefreshing(false);

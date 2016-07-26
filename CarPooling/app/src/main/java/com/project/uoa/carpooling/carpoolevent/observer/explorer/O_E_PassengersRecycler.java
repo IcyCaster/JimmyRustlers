@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.carpoolevent.driver.explorer;
+package com.project.uoa.carpooling.carpoolevent.observer.explorer;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -20,27 +20,27 @@ import java.util.List;
 /**
  * Created by Chester on 18/07/2016.
  */
-public class D_E_RequestsRecycler extends RecyclerView.Adapter<D_E_RequestsViewHolder> {
+public class O_E_PassengersRecycler extends RecyclerView.Adapter<O_E_PassengersViewHolder> {
 
     private List<PassengerEntity> list = Collections.emptyList();
     private Context context;
 
-    public D_E_RequestsRecycler(List<PassengerEntity> list, Context context) {
+    public O_E_PassengersRecycler(List<PassengerEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
     @Override
-    public D_E_RequestsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public O_E_PassengersViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Passenger card instance
         View cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__passenger_instance, parent, false);
         // ViewHolder
-        D_E_RequestsViewHolder viewHolder = new D_E_RequestsViewHolder(cardView, context);
+        O_E_PassengersViewHolder viewHolder = new O_E_PassengersViewHolder(cardView, context);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(D_E_RequestsViewHolder holder, int position) {
+    public void onBindViewHolder(O_E_PassengersViewHolder holder, int position) {
 
         // Create the position specific card instance
         holder.passengerID = list.get(position).getID();
@@ -57,7 +57,7 @@ public class D_E_RequestsRecycler extends RecyclerView.Adapter<D_E_RequestsViewH
     }
 }
 
-class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
+class O_E_PassengersViewHolder extends RecyclerView.ViewHolder {
     protected String passengerID;
     protected TextView passengerName;
     protected TextView passengerLocation;
@@ -69,7 +69,7 @@ class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
     private String userID;
     private String eventID;
 
-    public D_E_RequestsViewHolder(View itemView, Context context) {
+    public O_E_PassengersViewHolder(View itemView, Context context) {
         super(itemView);
 
         final CarpoolEventActivity carpoolActivity = (CarpoolEventActivity) context;

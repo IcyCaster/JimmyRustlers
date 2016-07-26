@@ -27,10 +27,9 @@ import com.project.uoa.carpooling.fragments.carpool.Event_Details;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
 import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
 import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Passengers;
 import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
 
-public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Explorer_Passengers.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
+public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
 
     // These are relevant to the event instance
     private String userID;
@@ -59,6 +58,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         super.onCreate(savedInstanceState);
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Get userID and id passed from the MainActivity
@@ -101,19 +101,13 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                             public void onDataChange(DataSnapshot snapshot) {
 
 
-
                                 setContentView(R.layout.activity__car_pool_instance);
 
                                 // Set up the pageViewer with the adapter
 //                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager());
 
-
-
                                 status = snapshot.getValue().toString();
 
-
-
-                                EventStatus eventStatus = null;
                                 if(status.equals("Observer")) {
                                     eventStatus = EventStatus.OBSERVER;
                                 }
@@ -123,6 +117,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 else if(status.equals("Passenger")) {
                                     eventStatus = EventStatus.PASSENGER;
                                 }
+
+                                Log.d("EventStatus", eventStatus.toString());
 
                                 CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus);
 
@@ -153,7 +149,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putString("USER_ID", userID);
         savedInstanceState.putString("EVENT_ID", eventID);
-        savedInstanceState.putString("EVENT_STATUS", status);
+//        savedInstanceState.putString("EVENT_STATUS", status);
 
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -166,7 +162,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         // Restore state members from saved instance
         userID = savedInstanceState.getString("USER_ID");
         eventID = savedInstanceState.getString("EVENT_ID");
-        status = savedInstanceState.getString("EVENT_STATUS");
+//        status = savedInstanceState.getString("EVENT_STATUS");
     }
 
     @Override

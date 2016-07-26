@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.entities.explorer;
+package com.project.uoa.carpooling.carpoolevent._entities;
 
 import android.util.Log;
 
@@ -25,13 +25,45 @@ public class DriverEntity {
             Log.e("isPending", "Boolean not set correctly.");
         }
 
-        this.carCapacity = Integer.getInteger(carCapacity);
+        this.carCapacity = Integer.parseInt(carCapacity);
 
     }
 
     public DriverEntity(String ID, String name, String carCapacity ) {
         this.ID = ID;
         this.name = name;
-        this.carCapacity = Integer.getInteger(carCapacity);
+        this.carCapacity = Integer.parseInt(carCapacity);
+    }
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isPending() {
+        return isPending;
+    }
+
+    public void setPending(boolean pending) {
+        isPending = pending;
+    }
+
+    public int getCarCapacity() {
+        return carCapacity;
+    }
+
+    public void setCarCapacity(int carCapacity) {
+        this.carCapacity = carCapacity;
     }
 }

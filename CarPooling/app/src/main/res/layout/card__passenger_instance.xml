@@ -52,7 +52,7 @@
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/offer_button"
+                android:id="@+id/request_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"

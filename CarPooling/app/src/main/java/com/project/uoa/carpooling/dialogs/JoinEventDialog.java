@@ -27,7 +27,7 @@ import com.project.uoa.carpooling.adapters.recyclers.ExploreCarpoolEventAdapter;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ID_Parser;
-import com.project.uoa.carpooling.helpers.SimpleEventComparator;
+import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
 
 import org.json.JSONException;
 

@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.carpoolevent.driver.explorer;
+package com.project.uoa.carpooling.carpoolevent.observer.explorer;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.carpoolevent._entities.PassengerEntity;
+import com.project.uoa.carpooling.carpoolevent.driver.explorer.D_E_OffersRecycler;
 import com.project.uoa.carpooling.entities.facebook.Place;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
 
@@ -26,16 +27,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-public class D_E_Requests extends Fragment {
+public class O_E_Passengers extends Fragment {
 
     private View view;
     private boolean shouldExecuteOnResume;
 
     private long requestNumber;
-    private ArrayList<PassengerEntity> listOfRequestingPassenger = new ArrayList<>();
+    private ArrayList<PassengerEntity> listOfPassenger = new ArrayList<>();
 
     private RecyclerView recyclerView;
-    private D_E_RequestsRecycler adapter;
+    private O_E_PassengersRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
 
@@ -67,7 +68,7 @@ public class D_E_Requests extends Fragment {
         view = inflater.inflate(R.layout.carpool_driver_exp_offers, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
+        adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -101,57 +102,31 @@ public class D_E_Requests extends Fragment {
 
     public void PopulateRequests() {
 
-        listOfRequestingPassenger.clear();
+        listOfPassenger.clear();
 
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                if (snapshot.child("Requests").exists()) {
+                for (DataSnapshot child : snapshot.getChildren()) {
+                    if (child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals("True")) {
 
-                    requestNumber = snapshot.child("Requests").getChildrenCount();
+                        String passengerID = child.getKey();
+                        String passengerName = child.child("Name").getValue().toString();
+                        String pickupName = child.child("PickupName").getValue().toString();
+                        String pickupLongitude = child.child("PickupLong").getValue().toString();
+                        String pickupLatitude = child.child("PickupLat").getValue().toString();
 
-                    for (DataSnapshot requests : snapshot.child("Requests").getChildren()) {
+                        Place pickupLocation = new Place(pickupName, pickupLongitude, pickupLatitude);
 
-                        if (requests.getValue().equals("Pending")) {
+                        String passengerCount = child.child("PassengerCount").getValue().toString();
 
-                            fireBaseReference.child("events").child(eventID).child("users").child(requests.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot snapshot) {
-
-                                    String passengerID = snapshot.getKey();
-                                    String passengerName = snapshot.child("Name").getValue().toString();
-                                    String pickupName = snapshot.child("PickupName").getValue().toString();
-                                    String pickupLongitude = snapshot.child("PickupLong").getValue().toString();
-                                    String pickupLatitude = snapshot.child("PickupLat").getValue().toString();
-
-                                    Place pickupLocation = new Place(pickupName, pickupLongitude, pickupLatitude);
-
-                                    String passengerCount = snapshot.child("PassengerCount").getValue().toString();
-
-                                    String isPending = "True";
-
-                                    // Make passenger entity and add it to the list
-                                    PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
-                                    listOfRequestingPassenger.add(passenger);
-
-                                    callback();
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError firebaseError) {
-                                    Log.e("firebase - error", firebaseError.getMessage());
-                                }
-                            });
-                        }
+                        // Make passenger entity and add it to the list
+                        PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount);
+                        listOfPassenger.add(passenger);
                     }
-                } else {
-                    // TODO: Add message to say that there are no requests
-                    requestNumber = 0;
-                    callback();
                 }
-
+                callback();
             }
 
             @Override
@@ -162,17 +137,11 @@ public class D_E_Requests extends Fragment {
     }
 
     public synchronized void callback() {
-        requestNumber--;
-        if (requestNumber <= 0) {
-
-            Log.d("T", listOfRequestingPassenger.toString());
-
-            Collections.sort(listOfRequestingPassenger, new PassengerComparator());
-            adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(adapter);
-            swipeContainer.setRefreshing(false);
-        }
+        Collections.sort(listOfPassenger, new PassengerComparator());
+        adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+        swipeContainer.setRefreshing(false);
     }
 }
 

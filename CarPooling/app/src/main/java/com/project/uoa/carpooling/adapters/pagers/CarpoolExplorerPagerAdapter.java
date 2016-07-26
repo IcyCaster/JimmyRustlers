@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Passengers;
 import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
 
 /**
@@ -37,8 +36,6 @@ public class CarpoolExplorerPagerAdapter extends FragmentPagerAdapter {
                     return new Explorer_Offers();
                 case 1:
                     return new Explorer_Requests();
-                case 2:
-                    return new Explorer_Passengers();
                 default:
                     return null;
             }

@@ -32,7 +32,7 @@ import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
 import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
-import com.project.uoa.carpooling.helpers.SimpleEventComparator;
+import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
 
 import org.json.JSONException;
 
@@ -216,6 +216,7 @@ public class CurrentCarpools extends Fragment {
             toast.show();
 
             recyclerView.setVisibility(View.GONE);
+            swipeContainer.setRefreshing(false);
 
         } else {
 
@@ -289,7 +290,7 @@ public class CurrentCarpools extends Fragment {
 
     public synchronized void callback() {
         subbedEvents--;
-        if (subbedEvents == 0) {
+        if (subbedEvents <= 0) {
 
             Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
 

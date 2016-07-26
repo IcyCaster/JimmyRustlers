@@ -34,6 +34,13 @@ public class PassengerEntity {
         }
     }
 
+    public PassengerEntity(String ID, String name, Place pickupLocation, String passengerCount) {
+        this.ID = ID;
+        this.name = name;
+        this.pickupLocation = pickupLocation;
+        this.passengerCount = Integer.parseInt(passengerCount);
+    }
+
     public PassengerEntity(String ID, String name, Place pickupLocation, String passengerCount, int stopNumber) {
         this.ID = ID;
         this.name = name;

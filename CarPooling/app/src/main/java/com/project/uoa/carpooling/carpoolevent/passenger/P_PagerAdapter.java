@@ -1,20 +1,20 @@
-package com.project.uoa.carpooling.carpoolevent.driver;
+package com.project.uoa.carpooling.carpoolevent.passenger;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.project.uoa.carpooling.carpoolevent.driver.explorer.D_E_Offers;
-import com.project.uoa.carpooling.carpoolevent.driver.explorer.D_E_Requests;
+import com.project.uoa.carpooling.carpoolevent.passenger.explorer.P_E_Requests;
+import com.project.uoa.carpooling.carpoolevent.passenger.explorer.P_E_Offers;
 
 /**
  * Created by Chester on 18/07/2016.
  */
-public class D_PagerAdapter extends FragmentPagerAdapter {
+public class P_PagerAdapter extends FragmentPagerAdapter {
 
     private int tabCount = 2;
 
-    public D_PagerAdapter(FragmentManager fm) {
+    public P_PagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -22,9 +22,9 @@ public class D_PagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                return new D_E_Offers();
+                return new P_E_Requests();
             case 1:
-                return new D_E_Requests();
+                return new P_E_Offers();
             default:
                 return null;
         }
@@ -39,9 +39,9 @@ public class D_PagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Offer";
+                return "Request";
             case 1:
-                return "Requests";
+                return "Offers";
             default:
                 return null;
         }

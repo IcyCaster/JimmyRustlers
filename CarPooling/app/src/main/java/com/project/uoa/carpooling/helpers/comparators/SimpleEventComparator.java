@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.helpers;
+package com.project.uoa.carpooling.helpers.comparators;
 
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 

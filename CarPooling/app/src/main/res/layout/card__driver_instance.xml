@@ -5,7 +5,7 @@
     android:padding="2dp">
 
     <android.support.v7.widget.CardView
-        android:id="@+id/passengers_card"
+        android:id="@+id/driver_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         card_view:cardUseCompatPadding="true"
@@ -21,7 +21,7 @@
             >
 
             <TextView
-                android:id="@+id/passenger_card_name"
+                android:id="@+id/driver_card_name"
                 android:layout_alignParentTop="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -32,39 +32,40 @@
                 />
 
             <TextView
-                android:id="@+id/passenger_pickuptime"
+                android:id="@+id/driver_pickuptime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/passenger_card_name"
+                android:layout_below="@+id/driver_card_name"
                 android:text="Estimated pickup: -pickup time-"
                 />
 
-        <RelativeLayout
-            android:layout_below="@+id/passenger_pickuptime"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_below="@+id/driver_pickuptime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/driver_left_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Positive" />
+                <Button
+                    android:id="@+id/request_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Offer" />
 
-            <Button
-                android:id="@+id/driver_middle_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/driver_left_button"
-                android:text="Negative" />
+                <Button
+                    android:id="@+id/cancel_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Cancel" />
 
-            <Button
-                android:id="@+id/driver_right_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/driver_middle_button"
-                android:text="View" />
+                <Button
+                    android:id="@+id/map_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Map" />
 
-        </RelativeLayout>
+            </LinearLayout>
 
 
         </RelativeLayout>

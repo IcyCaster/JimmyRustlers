@@ -1,4 +1,4 @@
-package com.project.uoa.carpooling.carpoolevent.driver.explorer;
+package com.project.uoa.carpooling.carpoolevent.passenger.explorer;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -12,7 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.carpoolevent._entities.PassengerEntity;
+import com.project.uoa.carpooling.carpoolevent._entities.DriverEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,35 +20,35 @@ import java.util.List;
 /**
  * Created by Chester on 18/07/2016.
  */
-public class D_E_RequestsRecycler extends RecyclerView.Adapter<D_E_RequestsViewHolder> {
+public class P_E_OffersRecycler extends RecyclerView.Adapter<P_E_OffersViewHolder> {
 
-    private List<PassengerEntity> list = Collections.emptyList();
+    private List<DriverEntity> list = Collections.emptyList();
     private Context context;
 
-    public D_E_RequestsRecycler(List<PassengerEntity> list, Context context) {
+    public P_E_OffersRecycler(List<DriverEntity> list, Context context) {
         this.list = list;
         this.context = context;
     }
 
     @Override
-    public D_E_RequestsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public P_E_OffersViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         // Passenger card instance
-        View cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__passenger_instance, parent, false);
+        View cardView = LayoutInflater.from(parent.getContext()).inflate(R.layout.card__driver_instance, parent, false);
         // ViewHolder
-        D_E_RequestsViewHolder viewHolder = new D_E_RequestsViewHolder(cardView, context);
+        P_E_OffersViewHolder viewHolder = new P_E_OffersViewHolder(cardView, context);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(D_E_RequestsViewHolder holder, int position) {
+    public void onBindViewHolder(P_E_OffersViewHolder holder, int position) {
 
         // Create the position specific card instance
-        holder.passengerID = list.get(position).getID();
-        holder.passengerName.setText(list.get(position).getName());
-        holder.passengerLocation.setText("Location: " + list.get(position).getPickupLocation().toString());
-        holder.passengerCount.setText("Passenger Count: " + Integer.toString(list.get(position).getPassengerCount()));
-        holder.offerButton.setText("Approve");
-        holder.cancelButton.setText("Decline");
+//        holder.driverID = list.get(position).getID();
+//        holder.driverName.setText(list.get(position).getName());
+//        holder.passengerLocation.setText("Location: " + list.get(position).getPickupLocation().toString());
+//        holder.passengerCount.setText("Passenger Count: " + Integer.toString(list.get(position).getPassengerCount()));
+//        holder.offerButton.setText("Approve");
+//        holder.cancelButton.setText("Decline");
     }
 
     @Override
@@ -57,19 +57,20 @@ public class D_E_RequestsRecycler extends RecyclerView.Adapter<D_E_RequestsViewH
     }
 }
 
-class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
-    protected String passengerID;
-    protected TextView passengerName;
-    protected TextView passengerLocation;
-    protected TextView passengerCount;
-    protected Button offerButton;
+class P_E_OffersViewHolder extends RecyclerView.ViewHolder {
+    protected String driverID;
+
+    protected TextView driverName;
+    protected TextView estimatedPickupTime;
+
+    protected Button requestButton;
     protected Button cancelButton;
     protected Button mapButton;
     private DatabaseReference fireBaseReference;
     private String userID;
     private String eventID;
 
-    public D_E_RequestsViewHolder(View itemView, Context context) {
+    public P_E_OffersViewHolder(View itemView, Context context) {
         super(itemView);
 
         final CarpoolEventActivity carpoolActivity = (CarpoolEventActivity) context;
@@ -78,21 +79,21 @@ class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        passengerName = (TextView) itemView.findViewById(R.id.passenger_name);
-        passengerLocation = (TextView) itemView.findViewById(R.id.passenger_location);
-        passengerCount = (TextView) itemView.findViewById(R.id.passenger_count);
-        offerButton = (Button) itemView.findViewById(R.id.request_button);
+        driverName = (TextView) itemView.findViewById(R.id.driver_card_name);
+        estimatedPickupTime = (TextView) itemView.findViewById(R.id.driver_pickuptime);
+
+        requestButton = (Button) itemView.findViewById(R.id.request_button);
         cancelButton = (Button) itemView.findViewById(R.id.cancel_button);
         mapButton = (Button) itemView.findViewById(R.id.map_button);
 
-        // Offers a ride to a passenger
-        offerButton.setOnClickListener(new View.OnClickListener() {
+        // Request a ride from a driver
+        requestButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 // TODO: ADD USER TO YOUR CARPOOL
 
-                offerButton.setEnabled(false);
+                requestButton.setEnabled(false);
                 cancelButton.setEnabled(false);
             }
         });
@@ -101,8 +102,8 @@ class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Requests").child(passengerID).removeValue();
-                offerButton.setEnabled(false);
+                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Offers").child(driverID).removeValue();
+                requestButton.setEnabled(false);
                 cancelButton.setEnabled(false);
             }
         });

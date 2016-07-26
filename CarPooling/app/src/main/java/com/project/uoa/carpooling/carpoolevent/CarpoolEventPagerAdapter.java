@@ -7,12 +7,13 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.project.uoa.carpooling.carpoolevent.driver.pages.D_Details;
 import com.project.uoa.carpooling.carpoolevent.driver.pages.D_Explorer;
 import com.project.uoa.carpooling.carpoolevent.driver.pages.D_Map;
-import com.project.uoa.carpooling.carpoolevent.observer.ObserverDetails;
-import com.project.uoa.carpooling.carpoolevent.observer.ObserverExplorer;
-import com.project.uoa.carpooling.carpoolevent.observer.ObserverMap;
-import com.project.uoa.carpooling.carpoolevent.passenger.PassengerDetails;
-import com.project.uoa.carpooling.carpoolevent.passenger.PassengerExplorer;
-import com.project.uoa.carpooling.carpoolevent.passenger.PassengerMap;
+
+import com.project.uoa.carpooling.carpoolevent.observer.pages.O_Details;
+import com.project.uoa.carpooling.carpoolevent.observer.pages.O_Explorer;
+import com.project.uoa.carpooling.carpoolevent.observer.pages.O_Map;
+import com.project.uoa.carpooling.carpoolevent.passenger.pages.P_Details;
+import com.project.uoa.carpooling.carpoolevent.passenger.pages.P_Explorer;
+import com.project.uoa.carpooling.carpoolevent.passenger.pages.P_Map;
 import com.project.uoa.carpooling.enums.EventStatus;
 
 /**
@@ -33,11 +34,11 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
             case OBSERVER:
                 switch (position) {
                     case 0:
-                        return new ObserverDetails();
+                        return new O_Details();
                     case 1:
-                        return new ObserverMap();
+                        return new O_Map();
                     case 2:
-                        return new ObserverExplorer();
+                        return new O_Explorer();
                 }
             case DRIVER:
                 switch (position) {
@@ -51,11 +52,11 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
             case PASSENGER:
                 switch (position) {
                     case 0:
-                        return new PassengerDetails();
+                        return new P_Details();
                     case 1:
-                        return new PassengerMap();
+                        return new P_Map();
                     case 2:
-                        return new PassengerExplorer();
+                        return new P_Explorer();
                 }
             default:
                 return null;

@@ -65,7 +65,7 @@ public class Event_Details extends Fragment {
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
         if(getActivity() == null) {
-            Log.d("ACTIVITY1", eventStatus);
+            Log.d("ACTIVITY1", eventStatus.toString());
         }
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
