@@ -18,25 +18,30 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
-//import com.project.uoa.carpooling.adapters.pagers.CarpoolEventPagerAdapter;
-import com.project.uoa.carpooling.carpoolevent.CarpoolEventPagerAdapter;
+import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.enums.EventStatus;
-import com.project.uoa.carpooling.fragments.carpool.Event_Details;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
-import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
 
-public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
+/**
+ * CarpoolEventActivity is the created when a user wishes to see a specific carpool they have subscribed to.
+ * From this activity they can navigate via tabbed pages to visit:
+ *                                                                 - The event/carpool details
+ *                                                                 - A map of the route to the location
+ *                                                                 - An explorer where they can check out passengers/drivers' requests/offers
+ *
+ * They can also switch between the different status' Observer/Driver/Passenger
+ * Or leave the carpool altogether.
+ */
+public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+//TODO: Remove the irrelevant OnFragmentInteractionListeners
 
-    // These are relevant to the event instance
+    // Unique to the event instance
     private String userID;
     private String eventID;
     private EventStatus eventStatus;
     private ComplexEventEntity facebookEventObject;
-    private String status;
 
     private DatabaseReference fireBaseReference;
 
@@ -57,35 +62,21 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Facebook and Firebase
         FacebookSdk.sdkInitialize(getApplicationContext());
-
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        // Get userID and id passed from the MainActivity
+        // Set the userID and eventID
         if (savedInstanceState != null) {
             userID = savedInstanceState.getString("USER_ID");
             eventID = savedInstanceState.getString("EVENT_ID");
-//            status = savedInstanceState.getString("EVENT_STATUS");
         } else {
             Bundle bundle = getIntent().getExtras();
             userID = bundle.getString("userID");
             eventID = bundle.getString("eventID");
-//            status = bundle.getString("eventStatus");
         }
 
-//        if(status.equals("Observer")) {
-//            eventStatus = EventStatus.OBSERVER;
-//        }
-//        else  if(status.equals("Driver")) {
-//            eventStatus = EventStatus.DRIVER;
-//        }
-//        else if(status.equals("Passenger")) {
-//            eventStatus = EventStatus.PASSENGER;
-//        }
-//        else {
-//            Log.e("Status Error", "Status was not assigned correctly");
-//        }
-
+        // Facebook request to create the Facebook event object
         GraphRequest request = GraphRequest.newGraphPathRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + eventID,
@@ -93,6 +84,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                     @Override
                     public void onCompleted(GraphResponse response) {
 
+                        // Parsing the event object
                         facebookEventObject = Facebook_ComplexEvent_Parser.parse(response.getJSONObject());
 
                         // users/{user-ID}/events/{event-ID}
@@ -100,13 +92,11 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
-
+                                // Set the activities view content
                                 setContentView(R.layout.activity__car_pool_instance);
 
-                                // Set up the pageViewer with the adapter
-//                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager());
-
-                                status = snapshot.getValue().toString();
+                                String status = snapshot.getValue().toString();
+                                Log.d("firebase - log", "Event Status: " + status);
 
                                 if(status.equals("Observer")) {
                                     eventStatus = EventStatus.OBSERVER;
@@ -118,15 +108,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                     eventStatus = EventStatus.PASSENGER;
                                 }
 
-                                Log.d("EventStatus", eventStatus.toString());
-
+                                // Create Pager and Adapter
                                 CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus);
-
-
-
-
-
-
                                 ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
                                 viewPager.setAdapter(pagerAdapter);
 
@@ -142,15 +125,15 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                         });
                     }
                 });
+        // Execute Facebook request
         request.executeAsync();
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save state members in saved instance
         savedInstanceState.putString("USER_ID", userID);
         savedInstanceState.putString("EVENT_ID", eventID);
-//        savedInstanceState.putString("EVENT_STATUS", status);
-
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -158,16 +141,9 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
-
         // Restore state members from saved instance
         userID = savedInstanceState.getString("USER_ID");
         eventID = savedInstanceState.getString("EVENT_ID");
-//        status = savedInstanceState.getString("EVENT_STATUS");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     public void onFragmentInteraction(Uri uri) {

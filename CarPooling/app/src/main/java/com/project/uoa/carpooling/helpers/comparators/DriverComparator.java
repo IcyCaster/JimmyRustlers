@@ -1,6 +1,6 @@
 package com.project.uoa.carpooling.helpers.comparators;
 
-import com.project.uoa.carpooling.carpoolevent._entities.DriverEntity;
+import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
 
 import java.util.Comparator;
 

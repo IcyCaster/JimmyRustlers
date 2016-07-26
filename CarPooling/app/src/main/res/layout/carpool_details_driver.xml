@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_margin="10sp"
-            android:text="Status: Passenger"
+            android:text="Status: Driver"
             android:textAllCaps="true"
             android:textColor="@color/colorPrimary"
             android:textSize="20sp" />
@@ -184,18 +184,18 @@
                             android:paddingLeft="30dp">
 
                             <TextView
-                                android:id="@+id/driver_name"
+                                android:id="@+id/passenger_names"
                                 style="@style/Base.TextAppearance.AppCompat.Body1"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Driver: -driver-" />
+                                android:text="Passengers: -passengers-" />
 
                             <TextView
-                                android:id="@+id/driver_pickup"
+                                android:id="@+id/driver_start"
                                 style="@style/Base.TextAppearance.AppCompat.Body1"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Estimated Pickup Time: -time-" />
+                                android:text="Start Route Time: -time-" />
 
                             <TextView
                                 android:id="@+id/driver_arrival"
@@ -238,14 +238,14 @@
                                 style="@style/Base.TextAppearance.AppCompat.Body1"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Pickup Location: -location-" />
+                                android:text="Starting Location: -location-" />
 
                             <TextView
                                 android:id="@+id/information_count"
                                 style="@style/Base.TextAppearance.AppCompat.Body1"
                                 android:layout_width="fill_parent"
                                 android:layout_height="wrap_content"
-                                android:text="Passenger Count: -number-" />
+                                android:text="Avaliable Capacity: -number-" />
 
                         </LinearLayout>
 

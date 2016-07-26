@@ -26,17 +26,13 @@ public class Facebook_ID_Parser {
 
             for (int i = 0; i < jarray.length(); i++) {
                 JSONObject oneAlbum = jarray.getJSONObject(i);
-                //get your values
+                // Get your values
                 list.add(oneAlbum.getString("id"));
             }
-
             return list;
 
         } catch (JSONException e) {
-            e.printStackTrace();
             return null;
         }
     }
-
-
 }
