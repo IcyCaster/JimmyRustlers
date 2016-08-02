@@ -36,7 +36,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 0:
                         return new O_Details();
                     case 1:
-                        return new O_Map();
+                        return new Event_Map();
                     case 2:
                         return new O_Explorer();
                 }
@@ -45,7 +45,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 0:
                         return new D_Details();
                     case 1:
-                        return new D_Map();
+                        return new Event_Map();
                     case 2:
                         return new D_Explorer();
                 }
@@ -54,7 +54,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 0:
                         return new P_Details();
                     case 1:
-                        return new P_Map();
+                        return new Event_Map();
                     case 2:
                         return new P_Explorer();
                 }

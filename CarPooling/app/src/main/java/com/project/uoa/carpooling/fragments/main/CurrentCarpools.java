@@ -1,6 +1,5 @@
 package com.project.uoa.carpooling.fragments.main;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -39,6 +38,7 @@ import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
 import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
+import com.project.uoa.carpooling.services.TutorialService;
 
 import org.json.JSONException;
 
@@ -130,10 +130,26 @@ public class CurrentCarpools extends Fragment {
         fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("Firebase", "isDriving Changed");
-                Toast.makeText(getActivity().getApplicationContext(), "Driver is: " + dataSnapshot.getValue().toString(),
-                        Toast.LENGTH_SHORT).show();
-                showNotification();
+
+                // Detect that the driver is driving, trigger notification and
+                if((boolean)dataSnapshot.getValue()) {
+                    Log.d("Firebase", "isDriving true");
+                    Toast.makeText(getActivity().getApplicationContext(), "Driver is: " + dataSnapshot.getValue().toString(),
+                            Toast.LENGTH_SHORT).show();
+
+                    showNotification();
+
+
+                    getActivity().startService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+
+                }
+                else {
+                    Log.d("Firebase", "isDriving false");
+                    //TODO: check if background service is running, and cancel it.
+
+                    getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+
+                }
             }
 
             @Override
@@ -159,6 +175,8 @@ public class CurrentCarpools extends Fragment {
                         .setContentTitle("[Driver] is Driving!")
                         .setContentText("Touch to see how far away he is from you!")
                         .setContentIntent(pendingIntent); //Required on Gingerbread and below
+
+        //TODO: Add click to launch carpool event on map page.
 
         mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
         NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
