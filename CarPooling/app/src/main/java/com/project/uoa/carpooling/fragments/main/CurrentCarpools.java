@@ -1,12 +1,18 @@
 package com.project.uoa.carpooling.fragments.main;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -120,7 +126,44 @@ public class CurrentCarpools extends Fragment {
 
         });
 
+        // TODO: Needs to be added to all subscribed events
+        fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("Firebase", "isDriving Changed");
+                Toast.makeText(getActivity().getApplicationContext(), "Driver is: " + dataSnapshot.getValue().toString(),
+                        Toast.LENGTH_SHORT).show();
+                showNotification();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
+
         return view;
+    }
+
+    private void showNotification() {
+
+        // Reference: http://stackoverflow.com/questions/13902115/how-to-create-a-notification-with-notificationcompat-builder
+
+        int mID = 100;
+        final Intent emptyIntent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, emptyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getActivity())
+                        .setSmallIcon(R.drawable.driving_icon)
+                        .setContentTitle("[Driver] is Driving!")
+                        .setContentText("Touch to see how far away he is from you!")
+                        .setContentIntent(pendingIntent); //Required on Gingerbread and below
+
+        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(mID, mBuilder.build());
+
     }
 
 
