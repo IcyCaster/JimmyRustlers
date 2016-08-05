@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
-import com.project.uoa.carpooling.entities.facebook.Place;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
 
 import java.util.ArrayList;
@@ -121,11 +121,12 @@ public class D_E_Requests extends Fragment {
 
                                     String passengerID = snapshot.getKey();
                                     String passengerName = snapshot.child("Name").getValue().toString();
+
                                     String pickupName = snapshot.child("PickupName").getValue().toString();
                                     String pickupLongitude = snapshot.child("PickupLong").getValue().toString();
                                     String pickupLatitude = snapshot.child("PickupLat").getValue().toString();
 
-                                    Place pickupLocation = new Place(pickupName, pickupLongitude, pickupLatitude);
+                                    Place pickupLocation = new Place(pickupName, Double.parseDouble(pickupLongitude), Double.parseDouble(pickupLatitude));
 
                                     String passengerCount = snapshot.child("PassengerCount").getValue().toString();
 

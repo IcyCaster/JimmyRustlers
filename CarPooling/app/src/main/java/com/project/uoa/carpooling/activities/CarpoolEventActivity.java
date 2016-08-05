@@ -24,6 +24,7 @@ import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 /**
  * CarpoolEventActivity is the created when a user wishes to see a specific carpool they have subscribed to.
@@ -89,7 +90,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                         facebookEventObject = Facebook_ComplexEvent_Parser.parse(response.getJSONObject());
 
                         // users/{user-ID}/events/{event-ID}
-                        fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+                        fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
@@ -118,10 +119,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
                                 tabLayout.setupWithViewPager(viewPager);
                                 tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError firebaseError) {
-                                Log.e("firebase - error", firebaseError.getMessage());
                             }
                         });
                     }

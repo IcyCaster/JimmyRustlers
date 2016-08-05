@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
-import com.project.uoa.carpooling.entities.facebook.Place;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.DriverComparator;
 
 import java.util.ArrayList;
@@ -116,7 +116,7 @@ public class P_E_Requests extends Fragment {
                         // Location currently not used for driverEntity
                         String startLongitude = child.child("StartLong").getValue().toString();
                         String startLatitude = child.child("StartLat").getValue().toString();
-                        Place startLocation = new Place("", startLongitude, startLatitude);
+                        Place startLocation = new Place("", Double.parseDouble(startLongitude), Double.parseDouble(startLatitude));
 
                         String carCapacity = child.child("Passengers").child("PassengerCapacity").getValue().toString();
                         //TODO: Calculate total space and compare it with number of passengers

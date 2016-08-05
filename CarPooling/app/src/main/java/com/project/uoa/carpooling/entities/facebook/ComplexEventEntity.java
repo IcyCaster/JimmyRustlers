@@ -1,12 +1,11 @@
 package com.project.uoa.carpooling.entities.facebook;
 
-import android.util.Log;
+import com.project.uoa.carpooling.entities.shared.Place;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -28,7 +27,7 @@ public class ComplexEventEntity {
         this.ID = ID;
         this.name = name;
         this.description = description;
-        this.location = new Place(placeName, longitude, latitude);
+        this.location = new Place(placeName, Double.parseDouble(longitude), Double.parseDouble(latitude));
 
         DateFormat facebookTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
         DateFormat prettyFormat = new SimpleDateFormat("MMM d, h:mmaa", Locale.ENGLISH);

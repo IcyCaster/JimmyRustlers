@@ -6,21 +6,19 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
-import com.project.uoa.carpooling.entities.facebook.Place;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,7 +29,7 @@ public class D_E_Offers extends Fragment {
     private View view;
     private boolean shouldExecuteOnResume;
 
-    private ArrayList<PassengerEntity> listOfPotentialPassengers = new ArrayList<>();
+    private ArrayList<PassengerEntity> listOfAvailablePassengers = new ArrayList<>();
 
     private RecyclerView recyclerView;
     private D_E_OffersRecycler adapter;
@@ -41,43 +39,49 @@ public class D_E_Offers extends Fragment {
     private String userID;
     private String eventID;
 
+    /**
+     * This method executes only if the users re-opens the application.
+     */
     @Override
     public void onResume() {
         super.onResume();
         if (shouldExecuteOnResume) {
-            PopulateOffers();
+            DiscoverOffers();
         } else {
             shouldExecuteOnResume = true;
         }
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        shouldExecuteOnResume = false;
-
+        // Firebase Reference
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
+
+        // UserID / EventID
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        PopulateOffers();
+        DiscoverOffers();
+        shouldExecuteOnResume = false;
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new D_E_OffersRecycler(listOfPotentialPassengers, getActivity());
+        adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
+        // Create the swipe refresher
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 swipeContainer.setRefreshing(true);
-                fetchTimelineAsync();
+//                populateAsync(); // Not sure why I'm populating asynchronously... Will keep this here just in case.
+                DiscoverOffers();
             }
         });
 
@@ -88,26 +92,26 @@ public class D_E_Offers extends Fragment {
         return view;
     }
 
-    public void fetchTimelineAsync() {
+    // Kept but not used
+    public void populateAsync() {
         Handler h = new Handler();
         h.post(new Runnable() {
             @Override
             public void run() {
-                PopulateOffers();
+                DiscoverOffers();
 
             }
         });
     }
 
-    public void PopulateOffers() {
+    public void DiscoverOffers() {
 
-        listOfPotentialPassengers.clear();
-
+        listOfAvailablePassengers.clear();
         // CURRENT: all public passengers of event
         // TODO: check to make sure they are not on current passenger list
         // todo: add filters later (eg capacity, location....blah blah blah)
 
-        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -120,7 +124,7 @@ public class D_E_Offers extends Fragment {
                         String pickupLongitude = child.child("PickupLong").getValue().toString();
                         String pickupLatitude = child.child("PickupLat").getValue().toString();
 
-                        Place pickupLocation = new Place("", pickupLongitude, pickupLatitude);
+                        Place pickupLocation = new Place("", Double.parseDouble(pickupLongitude), Double.parseDouble(pickupLatitude));
 
                         String passengerCount = child.child("PassengerCount").getValue().toString();
 
@@ -139,24 +143,21 @@ public class D_E_Offers extends Fragment {
 
                         // Make passenger entity and add it to the list
                         PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
-                        listOfPotentialPassengers.add(passenger);
+                        listOfAvailablePassengers.add(passenger);
                     }
                 }
-                callback();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
+                PopulateOffers();
             }
         });
     }
 
-    public synchronized void callback() {
-        Collections.sort(listOfPotentialPassengers, new PassengerComparator());
-        adapter = new D_E_OffersRecycler(listOfPotentialPassengers, getActivity());
+    public synchronized void PopulateOffers() {
+        // Sort them alphabetically first
+        Collections.sort(listOfAvailablePassengers, new PassengerComparator());
+        adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
+        // Stop the refresher icon
         swipeContainer.setRefreshing(false);
     }
 }

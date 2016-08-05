@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Car Pooling</string>
+
+    <string name="app_name_short">ePool</string>
+    <string name="app_name">evtPool</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email:</string>
@@ -9,6 +11,7 @@
     <string name="error_incorrect_password">This password is incorrect</string>
 
     <string name="facebook_app_id">1044291042280619</string>
+
     <string name="title_activity_car_pools">CarPoolsActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -19,4 +22,5 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello fragment</string>
+
 </resources>

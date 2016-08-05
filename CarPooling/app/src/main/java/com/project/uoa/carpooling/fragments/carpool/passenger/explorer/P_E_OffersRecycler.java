@@ -43,12 +43,14 @@ public class P_E_OffersRecycler extends RecyclerView.Adapter<P_E_OffersViewHolde
     public void onBindViewHolder(P_E_OffersViewHolder holder, int position) {
 
         // Create the position specific card instance
-//        holder.driverID = list.get(position).getID();
-//        holder.driverName.setText(list.get(position).getName());
-//        holder.passengerLocation.setText("Location: " + list.get(position).getPickupLocation().toString());
-//        holder.passengerCount.setText("Passenger Count: " + Integer.toString(list.get(position).getPassengerCount()));
-//        holder.offerButton.setText("Approve");
-//        holder.cancelButton.setText("Decline");
+        holder.driverID = list.get(position).getID();
+        holder.driverName.setText(list.get(position).getName());
+
+        // TODO: Calculate estimated pickup time or display something else
+        holder.estimatedPickupTime.setText("TODO:");
+
+        holder.acceptButton.setText("Approve");
+        holder.declineButton.setText("Decline");
     }
 
     @Override
@@ -63,8 +65,8 @@ class P_E_OffersViewHolder extends RecyclerView.ViewHolder {
     protected TextView driverName;
     protected TextView estimatedPickupTime;
 
-    protected Button requestButton;
-    protected Button cancelButton;
+    protected Button acceptButton;
+    protected Button declineButton;
     protected Button mapButton;
     private DatabaseReference fireBaseReference;
     private String userID;
@@ -82,29 +84,29 @@ class P_E_OffersViewHolder extends RecyclerView.ViewHolder {
         driverName = (TextView) itemView.findViewById(R.id.driver_card_name);
         estimatedPickupTime = (TextView) itemView.findViewById(R.id.driver_pickuptime);
 
-        requestButton = (Button) itemView.findViewById(R.id.request_button);
-        cancelButton = (Button) itemView.findViewById(R.id.cancel_button);
+        acceptButton = (Button) itemView.findViewById(R.id.request_button);
+        declineButton = (Button) itemView.findViewById(R.id.cancel_button);
         mapButton = (Button) itemView.findViewById(R.id.map_button);
 
-        // Request a ride from a driver
-        requestButton.setOnClickListener(new View.OnClickListener() {
+        // Accept a ride from a driver
+        acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 // TODO: ADD USER TO YOUR CARPOOL
 
-                requestButton.setEnabled(false);
-                cancelButton.setEnabled(false);
+                acceptButton.setEnabled(false);
+                declineButton.setEnabled(false);
             }
         });
 
-        // Cancels the offer
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        // Decline the offer
+        declineButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Offers").child(driverID).removeValue();
-                requestButton.setEnabled(false);
-                cancelButton.setEnabled(false);
+                acceptButton.setEnabled(false);
+                declineButton.setEnabled(false);
             }
         });
 

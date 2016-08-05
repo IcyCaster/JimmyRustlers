@@ -3,7 +3,7 @@ package com.project.uoa.carpooling.fragments.carpool._entities;
 import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
-import com.project.uoa.carpooling.entities.facebook.Place;
+import com.project.uoa.carpooling.entities.shared.Place;
 
 /**
  * Created by Chester on 18/07/2016.
