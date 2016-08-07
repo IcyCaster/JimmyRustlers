@@ -20,6 +20,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
 import com.project.uoa.carpooling.helpers.comparators.DriverComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,7 +103,7 @@ public class P_E_Offers extends Fragment {
 
         listOfOffersFromDrivers.clear();
 
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -114,7 +115,7 @@ public class P_E_Offers extends Fragment {
 
                         if (requests.getValue().equals("Pending")) {
 
-                            fireBaseReference.child("events").child(eventID).child("users").child(requests.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            fireBaseReference.child("events").child(eventID).child("users").child(requests.getKey()).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
 
@@ -130,7 +131,7 @@ public class P_E_Offers extends Fragment {
                                     String carCapacity = snapshot.child("Passengers").child("PassengerCapacity").getValue().toString();
                                     //TODO: Calculate total space and compare it with number of passengers
 
-                                    String isPending = "True";
+                                    boolean isPending = true;
 
                                     // Make driver entity and add it to the list
                                     DriverEntity driver = new DriverEntity(driverID, driverName, isPending, carCapacity);
@@ -138,11 +139,6 @@ public class P_E_Offers extends Fragment {
 
                                     callback();
 
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError firebaseError) {
-                                    Log.e("firebase - error", firebaseError.getMessage());
                                 }
                             });
                         }
@@ -153,11 +149,6 @@ public class P_E_Offers extends Fragment {
                     callback();
                 }
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
             }
         });
     }

@@ -1,7 +1,5 @@
 package com.project.uoa.carpooling.fragments.carpool._entities;
 
-import android.util.Log;
-
 import com.google.firebase.database.DatabaseReference;
 import com.project.uoa.carpooling.entities.shared.Place;
 
@@ -20,32 +18,26 @@ public class PassengerEntity {
 
     private DatabaseReference fireBaseReference;
 
-    public PassengerEntity(String ID, String name, Place pickupLocation, String passengerCount, String isPending) {
+    public PassengerEntity(String ID, String name, Place pickupLocation, int passengerCount, boolean isPending) {
         this.ID = ID;
         this.name = name;
         this.pickupLocation = pickupLocation;
-        this.passengerCount = Integer.parseInt(passengerCount);
-        if (isPending.equals("True")) {
-            this.isPending = true;
-        } else if (isPending.equals("False")) {
-            this.isPending = false;
-        } else {
-            Log.e("isPending", "Boolean not set correctly in constructor. TODO");
-        }
+        this.passengerCount = passengerCount;
+        this.isPending = isPending;
     }
 
-    public PassengerEntity(String ID, String name, Place pickupLocation, String passengerCount) {
+    public PassengerEntity(String ID, String name, Place pickupLocation, int passengerCount) {
         this.ID = ID;
         this.name = name;
         this.pickupLocation = pickupLocation;
-        this.passengerCount = Integer.parseInt(passengerCount);
+        this.passengerCount = passengerCount;
     }
 
-    public PassengerEntity(String ID, String name, Place pickupLocation, String passengerCount, int stopNumber) {
+    public PassengerEntity(String ID, String name, Place pickupLocation, int passengerCount, int stopNumber) {
         this.ID = ID;
         this.name = name;
         this.pickupLocation = pickupLocation;
-        this.passengerCount = Integer.parseInt(passengerCount);
+        this.passengerCount = passengerCount;
         this.stopNumber = stopNumber;
     }
 

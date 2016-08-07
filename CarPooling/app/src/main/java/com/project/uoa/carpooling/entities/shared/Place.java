@@ -43,6 +43,24 @@ public class Place {
         this.latitude = latitude;
     }
 
+    public boolean hasPlaceName() {
+        if(placeName == null || placeName.equals("")) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    public boolean hasLatLong() {
+        if(latitude == 0.0 && longitude == 0.0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
     @Override
     public String toString() {
         return placeName;

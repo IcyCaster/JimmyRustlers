@@ -16,7 +16,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
 import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;

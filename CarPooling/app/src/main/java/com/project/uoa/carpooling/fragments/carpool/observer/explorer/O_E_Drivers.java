@@ -21,6 +21,7 @@ import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.DriverComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,12 +104,12 @@ public class O_E_Drivers extends Fragment {
 
         listOfDrivers.clear();
 
-        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals("True")) {
+                    if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals(true)) {
 
                         String driverID = child.getKey();
                         String driverName = child.child("Name").getValue().toString();
@@ -129,10 +130,6 @@ public class O_E_Drivers extends Fragment {
                 callback();
             }
 
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
         });
     }
 

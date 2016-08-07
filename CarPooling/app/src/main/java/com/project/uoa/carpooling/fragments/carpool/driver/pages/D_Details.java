@@ -19,6 +19,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 
 public class D_Details extends Fragment {
@@ -74,7 +75,7 @@ public class D_Details extends Fragment {
 
 
         // driver specific details
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -99,13 +100,10 @@ public class D_Details extends Fragment {
                 countText.setText("Passenger Capacity: " + snapshot.child("Passengers").child("PassengerCapacity").getValue().toString());
 
                 TextView locationText = (TextView) view.findViewById(R.id.information_location);
-                locationText.setText("Leave location: " + snapshot.child("StartLat").getValue().toString() + "   " + snapshot.child("StartLong").getValue().toString());
+                locationText.setText("Leave location: " + snapshot.child("StartLocation").child("latitude").getValue().toString() + "   " + snapshot.child("StartLocation").child("longitude").getValue().toString());
             }
 
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
+
         });
 
 

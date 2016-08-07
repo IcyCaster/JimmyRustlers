@@ -21,6 +21,7 @@ import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,12 +104,12 @@ public class O_E_Passengers extends Fragment {
 
         listOfPassenger.clear();
 
-        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals("True")) {
+                    if (child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals(true)) {
 
                         String passengerID = child.getKey();
                         String passengerName = child.child("Name").getValue().toString();
@@ -118,7 +119,7 @@ public class O_E_Passengers extends Fragment {
 
                         Place pickupLocation = new Place(pickupName, Double.parseDouble(pickupLongitude), Double.parseDouble(pickupLatitude));
 
-                        String passengerCount = child.child("PassengerCount").getValue().toString();
+                        int passengerCount = (int)child.child("PassengerCount").getValue();
 
                         // Make passenger entity and add it to the list
                         PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount);
@@ -126,11 +127,6 @@ public class O_E_Passengers extends Fragment {
                     }
                 }
                 callback();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
             }
         });
     }

@@ -38,6 +38,7 @@ import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
 import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 import com.project.uoa.carpooling.services.TutorialService;
 
 import org.json.JSONException;
@@ -127,7 +128,7 @@ public class CurrentCarpools extends Fragment {
         });
 
         // TODO: Needs to be added to all subscribed events
-        fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new ValueEventListener() {
+        fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -152,10 +153,6 @@ public class CurrentCarpools extends Fragment {
                 }
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("The read failed: " + databaseError.getCode());
-            }
         });
 
         return view;
@@ -242,7 +239,7 @@ public class CurrentCarpools extends Fragment {
         listOfSubscribedEvents.clear();
 
 
-        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -254,10 +251,7 @@ public class CurrentCarpools extends Fragment {
 
             }
 
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
+
         });
 
 

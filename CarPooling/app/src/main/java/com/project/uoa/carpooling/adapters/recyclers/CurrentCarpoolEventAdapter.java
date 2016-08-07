@@ -21,6 +21,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
@@ -66,7 +67,7 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
 
         // Checks DB/users/{user-id}
         DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        fireBaseReference.child("users").child(((MainActivity) context).getUserID()).child("events").child(list.get(position).getEventID()).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("users").child(((MainActivity) context).getUserID()).child("events").child(list.get(position).getEventID()).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -88,11 +89,6 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
                 holder.eventId = list.get(position).getEventID();
                 holder.eventName.setText(list.get(position).getEventName());
                 holder.eventStartDate.setText(list.get(position).getPrettyStartTime());
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
             }
         });
     }

@@ -26,6 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.helpers.comparators.FacebookConnector;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -147,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                             sharedPreferences.edit().putString("Current Facebook App-scoped ID", userId).apply();
 
                             // Checks DB/users/{user-id}
-                            fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
 
@@ -161,10 +162,6 @@ public class LoginActivity extends AppCompatActivity {
                                         fireBaseReference.child("users").child(userId).child("Name").setValue(userName);
                                         Log.d("firebase - user created", userId);
                                     }
-                                }
-                                @Override
-                                public void onCancelled(DatabaseError firebaseError) {
-                                    Log.e("firebase - error", firebaseError.getMessage());
                                 }
                             });
 

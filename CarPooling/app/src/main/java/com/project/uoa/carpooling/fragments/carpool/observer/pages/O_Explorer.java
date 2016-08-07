@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.fragments.carpool.driver.D_PagerAdapter;
+import com.project.uoa.carpooling.fragments.carpool.observer.O_PagerAdapter;
 
 /**
  * Created by Chester on 18/07/2016.
@@ -18,7 +19,7 @@ public class O_Explorer extends Fragment{
 
     private View view;
     private ViewPager viewPager;
-    private D_PagerAdapter pagerAdapter;
+    private O_PagerAdapter pagerAdapter;
     private TabLayout tabLayout;
 
     @Override
@@ -27,7 +28,7 @@ public class O_Explorer extends Fragment{
 
         view = inflater.inflate(R.layout.carpool_explorer_tab_pager, container, false);
 
-        pagerAdapter = new D_PagerAdapter(getChildFragmentManager());
+        pagerAdapter = new O_PagerAdapter(getChildFragmentManager());
 
         viewPager = (ViewPager) view.findViewById(R.id.driver_explorer_viewpager);
         viewPager.setAdapter(pagerAdapter);

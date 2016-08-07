@@ -12,21 +12,11 @@ public class DriverEntity {
     private boolean isPending;
     private int carCapacity;
 
-    public DriverEntity(String ID, String name, String isPending, String carCapacity ) {
+    public DriverEntity(String ID, String name, boolean isPending, String carCapacity ) {
         this.ID = ID;
         this.name = name;
-        if(isPending.equals("True")) {
-            this.isPending = true;
-        }
-        else if(isPending.equals("False")) {
-            this.isPending = false;
-        }
-        else {
-            Log.e("isPending", "Boolean not set correctly.");
-        }
-
+        this.isPending = isPending;
         this.carCapacity = Integer.parseInt(carCapacity);
-
     }
 
     public DriverEntity(String ID, String name, String carCapacity ) {

@@ -21,6 +21,7 @@ import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,7 +104,7 @@ public class D_E_Requests extends Fragment {
 
         listOfRequestingPassenger.clear();
 
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -115,7 +116,7 @@ public class D_E_Requests extends Fragment {
 
                         if (requests.getValue().equals("Pending")) {
 
-                            fireBaseReference.child("events").child(eventID).child("users").child(requests.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            fireBaseReference.child("events").child(eventID).child("users").child(requests.getKey()).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
 
@@ -128,9 +129,9 @@ public class D_E_Requests extends Fragment {
 
                                     Place pickupLocation = new Place(pickupName, Double.parseDouble(pickupLongitude), Double.parseDouble(pickupLatitude));
 
-                                    String passengerCount = snapshot.child("PassengerCount").getValue().toString();
+                                    int passengerCount = (int)snapshot.child("PassengerCount").getValue();
 
-                                    String isPending = "True";
+                                    boolean isPending = true;
 
                                     // Make passenger entity and add it to the list
                                     PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
@@ -138,11 +139,6 @@ public class D_E_Requests extends Fragment {
 
                                     callback();
 
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError firebaseError) {
-                                    Log.e("firebase - error", firebaseError.getMessage());
                                 }
                             });
                         }
@@ -153,11 +149,6 @@ public class D_E_Requests extends Fragment {
                     callback();
                 }
 
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
             }
         });
     }

@@ -25,6 +25,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.enums.EventStatus;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 /**
  * Created by Chester on 12/07/2016.
@@ -137,7 +138,7 @@ public class ChangeStatusDialog extends DialogFragment {
 
 
                 // TODO: Remove all old details. Somehow notify those affected.
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+                fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
 
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
@@ -150,16 +151,11 @@ public class ChangeStatusDialog extends DialogFragment {
 
                         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Name").setValue(usersName);
                         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
-                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue("False");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(false);
 
 
                         getActivity().finish();
                         startActivity(getActivity().getIntent());
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError firebaseError) {
-                        Log.e("firebase - error", firebaseError.getMessage());
                     }
                 });
             }

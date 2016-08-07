@@ -104,46 +104,67 @@ public class D_E_Offers extends Fragment {
         });
     }
 
+    /**
+     * Discovers all the passengers the driver can offer services to.
+     * Ignores Approved/Declined requests
+     * Ignores passengers who already belong to a carpool (isPublic==false)
+     * Ignores passengers who's count is higher than the driver's remaining capacity
+     * TODO: Filters could be added in the future. These would be based around ArrivalTimes, LeaveTimes, MaxDetourTime, MaxDetourDistance.
+     */
     public void DiscoverOffers() {
 
         listOfAvailablePassengers.clear();
-        // CURRENT: all public passengers of event
-        // TODO: check to make sure they are not on current passenger list
-        // todo: add filters later (eg capacity, location....blah blah blah)
 
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
+                // Calculate the number of spaces left in the drivers car
+                int passengerSpaceAvailable = (int)(long)snapshot.child(userID).child("Passengers").child("PassengerCapacity").getValue();
+                for (DataSnapshot child : snapshot.child(userID).child("Passengers").getChildren()) {
+                    if (!child.getKey().equals("PassengerCapacity")) {
+                        int passengerCount = (int) child.getValue();
+                        passengerSpaceAvailable -= passengerCount;
+                    }
+                }
+
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (child.child("Status").getValue().equals("Passenger") && child.child("isPublic").getValue().equals("True")) {
 
-                        String passengerID = child.getKey();
-                        String passengerName = child.child("Name").getValue().toString();
-//                        String pickupName = child.child("PickupName").getValue().toString();
-                        String pickupLongitude = child.child("PickupLong").getValue().toString();
-                        String pickupLatitude = child.child("PickupLat").getValue().toString();
+                    // Only display Passengers who are public
+                    if (child.child("Status").getValue().equals("Passenger") && (boolean) child.child("isPublic").getValue()) {
 
-                        Place pickupLocation = new Place("", Double.parseDouble(pickupLongitude), Double.parseDouble(pickupLatitude));
+                        // Make sure that the driver can actually carry this person + additions in car
+                        int passengerCount = (int) child.child("PassengerCount").getValue();
+                        if (passengerSpaceAvailable - passengerCount >= 0) {
 
-                        String passengerCount = child.child("PassengerCount").getValue().toString();
+                            // Fetch the passengers details
+                            String passengerID = child.getKey();
+                            String passengerName = child.child("Name").getValue().toString();
 
-                        String isPending = "False";
-                        if (child.child("Offers").exists()) {
-                            for (DataSnapshot UID : child.child("Offers").getChildren()) {
-                                if (UID.getKey().equals(userID)) {
-                                    if (UID.getValue().equals("Pending")) {
-                                        isPending = "True";
-                                    }
-                                    //Might consider adding something for "Decline" here? Not sure?
+                            double pickupLongitude = (double) child.child("PickupLong").getValue();
+                            double pickupLatitude = (double) child.child("PickupLat").getValue();
+                            Place pickupLocation = new Place("", pickupLongitude, pickupLatitude);
+
+                            boolean isPending = false;
+                            boolean hasResponse = false;
+
+                            // Check to see if they've already been requested before
+                            if (child.child("Offers").child(userID).exists()) {
+                                String requestStatus = child.child("Offers").child(userID).getValue().toString();
+                                if (requestStatus.equals("Pending")) {
+                                    isPending = true;
+                                } else if (requestStatus.equals("Decline") || requestStatus.equals("Approve")) {
+                                    hasResponse = true;
                                 }
+                            }
 
+                            // Do not add if the passenger has already Approved or Declined the offer.
+                            if (!hasResponse) {
+                                // Make passenger entity and add it to the list
+                                PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
+                                listOfAvailablePassengers.add(passenger);
                             }
                         }
-
-                        // Make passenger entity and add it to the list
-                        PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
-                        listOfAvailablePassengers.add(passenger);
                     }
                 }
                 PopulateOffers();

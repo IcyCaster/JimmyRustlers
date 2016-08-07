@@ -27,7 +27,18 @@ public class ComplexEventEntity {
         this.ID = ID;
         this.name = name;
         this.description = description;
-        this.location = new Place(placeName, Double.parseDouble(longitude), Double.parseDouble(latitude));
+
+        double longitudeAsDouble = 0.0;
+        double latitudeAsDouble = 0.0;
+
+        try {
+            longitudeAsDouble = Double.parseDouble(longitude);
+            latitudeAsDouble = Double.parseDouble(latitude);
+        } catch (NumberFormatException e) {
+
+        }
+
+        this.location = new Place(placeName, longitudeAsDouble, latitudeAsDouble);
 
         DateFormat facebookTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
         DateFormat prettyFormat = new SimpleDateFormat("MMM d, h:mmaa", Locale.ENGLISH);
@@ -39,7 +50,7 @@ public class ComplexEventEntity {
             startCalendar.setTime(facebookTimeFormat.parse(startTime));
             prettyStartTime = prettyFormat.format(startCalendar.getTime());
 
-            if(!endTime.equals("")) {
+            if (!endTime.equals("")) {
                 endCalendar.setTime(facebookTimeFormat.parse(endTime));
                 prettyEndTime = prettyFormat.format(endCalendar.getTime());
             }

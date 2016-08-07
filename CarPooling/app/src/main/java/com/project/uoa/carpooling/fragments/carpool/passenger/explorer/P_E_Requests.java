@@ -21,6 +21,7 @@ import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.DriverComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,12 +104,12 @@ public class P_E_Requests extends Fragment {
 
         listOfPotentialDrivers.clear();
 
-        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals("True")) {
+                    if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals(true)) {
 
                         String driverID = child.getKey();
                         String driverName = child.child("Name").getValue().toString();
@@ -121,12 +122,12 @@ public class P_E_Requests extends Fragment {
                         String carCapacity = child.child("Passengers").child("PassengerCapacity").getValue().toString();
                         //TODO: Calculate total space and compare it with number of passengers
 
-                        String isPending = "False";
+                        boolean isPending = false;
                         if (child.child("Requests").exists()) {
                             for (DataSnapshot UID : child.child("Requests").getChildren()) {
                                 if (UID.getKey().equals(userID)) {
                                     if (UID.getValue().equals("Pending")) {
-                                        isPending = "True";
+                                        isPending = true;
                                     }
                                     //Might consider adding something for "Decline" here? Not sure?
                                 }
@@ -142,10 +143,6 @@ public class P_E_Requests extends Fragment {
                 callback();
             }
 
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
         });
     }
 
