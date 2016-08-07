@@ -17,6 +17,7 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,7 +25,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.helpers.FacebookConnector;
+import com.project.uoa.carpooling.helpers.comparators.FacebookConnector;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialise FbSDK before setContentView, as the view uses Facebook components
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         setContentView(R.layout.activity__login);
 
         // Initialise shared preferences
@@ -75,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//                startActivity(new Intent(LoginActivity.this, MainActivity.class));
             }
         });
     }
@@ -145,7 +148,7 @@ public class LoginActivity extends AppCompatActivity {
                             sharedPreferences.edit().putString("Current Facebook App-scoped ID", userId).apply();
 
                             // Checks DB/users/{user-id}
-                            fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            fireBaseReference.child("users").child(userId).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
 
@@ -159,10 +162,6 @@ public class LoginActivity extends AppCompatActivity {
                                         fireBaseReference.child("users").child(userId).child("Name").setValue(userName);
                                         Log.d("firebase - user created", userId);
                                     }
-                                }
-                                @Override
-                                public void onCancelled(DatabaseError firebaseError) {
-                                    Log.e("firebase - error", firebaseError.getMessage());
                                 }
                             });
 

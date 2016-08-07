@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -25,12 +27,15 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.recyclers.ExploreCarpoolEventAdapter;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
-import com.project.uoa.carpooling.jsonparsers.Facebook_ID_Response;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ID_Parser;
+import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Chester on 30/06/2016.
@@ -39,6 +44,7 @@ public class JoinEventDialog extends DialogFragment {
 
     private View view;
     private RecyclerView recyclerView;
+    private ProgressBar mProgressBar;
 
     private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
     private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
@@ -66,8 +72,13 @@ public class JoinEventDialog extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+//        // Set no title bar:
+//        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
+        getDialog().setTitle("Join an Event's carpool:");
         view = inflater.inflate(R.layout.dialog__explore_carpool_events, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.popup_fb_event_recycler);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         adapter = new ExploreCarpoolEventAdapter(listOfEventCardEntities, getActivity());
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
@@ -93,10 +104,9 @@ public class JoinEventDialog extends DialogFragment {
                     @Override
                     public void onCompleted(GraphResponse response) {
 
+                        listOfSubscribedEvents = Facebook_ID_Parser.parse(response.getJSONObject());
 
-                        listOfSubscribedEvents = Facebook_ID_Response.parse(response.getJSONObject());
-
-                        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+                        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
@@ -106,17 +116,14 @@ public class JoinEventDialog extends DialogFragment {
                                 }
                                 if (listOfSubscribedEvents.size() == 0) {
                                     Log.d("firebase", "No event left to subscribe to");
-                                    Toast.makeText(getActivity().getApplicationContext(), "No Facebook event left to join :(",
+                                    Toast.makeText(getActivity().getApplicationContext(), "No Facebook events left to join.",
                                             Toast.LENGTH_SHORT).show();
                                 } else {
                                     GetEventDetails();
                                 }
                             }
 
-                            @Override
-                            public void onCancelled(DatabaseError firebaseError) {
-                                Log.e("firebase - error", firebaseError.getMessage());
-                            }
+
                         });
                     }
                 });
@@ -146,10 +153,10 @@ public class JoinEventDialog extends DialogFragment {
                         public void onCompleted(GraphResponse response) {
                             try {
 
-                                listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
+
 
                                 final String id = response.getJSONObject().getString("id");
-
 
                                 GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
                                         AccessToken.getCurrentAccessToken(),
@@ -165,7 +172,7 @@ public class JoinEventDialog extends DialogFragment {
                                                     url = response.getJSONObject().getJSONObject("data").getString("url");
 
                                                     for (SimpleEventEntity e : listOfEventCardEntities) {
-                                                        if (e.eventID.equals(id)) {
+                                                        if (e.getEventID().equals(id)) {
                                                             listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                         }
                                                     }
@@ -211,10 +218,16 @@ public class JoinEventDialog extends DialogFragment {
     public synchronized void callback() {
         subbedEvents--;
         if (subbedEvents == 0) {
+
+            Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
+
             adapter = new ExploreCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
         }
+
+        // Set progress bar to invisible.
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
     }
 }
 

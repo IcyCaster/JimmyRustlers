@@ -13,25 +13,27 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.fragments.main.ArchivedCarpools;
-import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
-import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
-import com.project.uoa.carpooling.fragments.carpool.Event_Details;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
-import com.project.uoa.carpooling.fragments.main.FriendGroups;
+import com.project.uoa.carpooling.fragments.main.ArchivedCarpools;
 import com.project.uoa.carpooling.fragments.main.CurrentCarpools;
+import com.project.uoa.carpooling.fragments.main.FriendGroups;
+import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, CurrentCarpools.OnFragmentInteractionListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, SimpleMessenger.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, CurrentCarpools.OnFragmentInteractionListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, SimpleMessenger.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
 
     private String userID;
 
@@ -42,6 +44,25 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//TODO: REMOVE
+        DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
+        // users/{user-ID}/events/{event-ID}
+        fireBaseReference.child("ObjTest").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                Log.d("placeTest", "TRACK");
+                Place place = snapshot.getValue(Place.class);
+                Log.d("placeTest", place.getPlaceName() + ", " + place.getLatitude() + ", " + place.getLongitude());
+                Log.d("hasLatLong", Boolean.toString(place.hasLatLong()));
+                Log.d("hasPlaceName", Boolean.toString(place.hasPlaceName()));
+            }
+        });
+
+
+        Place addPlace = new Place(null, 321, 123);
+        fireBaseReference.child("ObjTest2").setValue(addPlace);
+
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -107,7 +128,7 @@ public class MainActivity extends AppCompatActivity
     public void displayView(int viewId) {
 
         Fragment fragment = null;
-        String title = getString(R.string.app_name);
+        String title = getString(R.string.app_name_short);
 
         switch (viewId) {
             case R.id.nav_subscribed_carpools:
@@ -127,7 +148,7 @@ public class MainActivity extends AppCompatActivity
 
             case R.id.nav_settings:
                 fragment = new SimpleMessenger();
-                title = "TEMP CAR POOL EVENT";
+                title = "Global Messenger";
                 break;
 
             case R.id.nav_help:

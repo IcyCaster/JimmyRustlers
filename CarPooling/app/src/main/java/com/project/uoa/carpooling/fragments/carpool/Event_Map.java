@@ -1,8 +1,10 @@
 package com.project.uoa.carpooling.fragments.carpool;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -86,7 +88,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     private String mEventLocation = "University Of Auckland";
 
     // Temporary, I don't think this works, not the correct reference (cuz its java which has no reference).
-    private DirectionFinderListener tempListener = this;
+//    private DirectionFinderListener tempListener = this;
 
     public Event_Map() {
         // Required empty public constructor
@@ -115,10 +117,13 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
             eventId = getArguments().getLong(EVENT_ID);
         }
 
-        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity) getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
+        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
+        userID = ((CarpoolEventActivity)getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
+
+        recieverTest();
+
     }
 
     @Override
@@ -136,9 +141,20 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
 
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
-        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity) getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
+        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
+        userID = ((CarpoolEventActivity)getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
+
+//        double latitude = 40.714728;
+//        double longitude = -73.998672;
+//        String label = "ABC Label";
+//        String uriBegin = "geo:" + latitude + "," + longitude;
+//        String query = latitude + "," + longitude + "(" + label + ")";
+//        String encodedQuery = Uri.encode(query);
+//        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
+//        Uri uri = Uri.parse(uriString);
+//        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
+//        startActivity(intent);
 
         // Map Initialization
         mMapView = (MapView) view.findViewById(R.id.mapView);
@@ -269,14 +285,12 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         }
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
 
-        updateEventLocation(eventID);
-
-//        try {
-//            // Start request for getting route information.
-//            new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            // Start request for getting route information.
+            new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -341,6 +355,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         mMapView.onLowMemory();
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -355,33 +370,54 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         }
     }
 
-    private void updateEventLocation(String eventID) {
-        Log.d(TAG, "updateEventLocation() executed.");
+//    private void updateEventLocation(String eventID) {
+//        Log.d(TAG, "updateEventLocation() executed.");
+//
+//        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "Event location is being extracted.");
+//                if (dataSnapshot.hasChild("latitude") && dataSnapshot.hasChild("longitude")) {
+//                    mEventLocation = dataSnapshot.child("latitude").getValue().toString()
+//                            + ","
+//                            + dataSnapshot.child("longitude").getValue().toString();
+//                } else if (dataSnapshot.hasChild("location")) {
+//                    mEventLocation = dataSnapshot.child("location").getValue().toString();
+//                }
+//
+//                try {
+//                    // Start request for getting route information.
+//                    new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.e(TAG, "Could not retrieve event location.");
+//            }
+//        });
+//    }
 
-        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Event location is being extracted.");
-                if (dataSnapshot.hasChild("latitude") && dataSnapshot.hasChild("longitude")){
-                    mEventLocation = dataSnapshot.child("latitude").getValue().toString()
-                            + ","
-                            + dataSnapshot.child("longitude").getValue().toString();
-                } else if (dataSnapshot.hasChild("location")){
-                    mEventLocation = dataSnapshot.child("location").getValue().toString();
-                }
+    //TODO: This is recieving the updates from the drivers who are driving
+    private void recieverTest() {
 
-                try {
-                    // Start request for getting route information.
-                    new DirectionFinder(tempListener, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
+        // TODO: Filter will be EventID-DriverID
+        IntentFilter filter = new IntentFilter("com.example.Broadcast");
+        MyReceiver receiver = new MyReceiver();
+        getActivity().registerReceiver(receiver, filter);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Could not retrieve event location.");
-            }
-        });
+    }
+
+    class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context arg0, Intent intent) {
+            long latitude = intent.getLongExtra("Latitude", 0);
+            long longitude = intent.getLongExtra("Longitude", 0);
+
+            Log.d("Broadcast recieved", "Lat: " + latitude + ", Long: " + longitude);
+
+        }
     }
 }
