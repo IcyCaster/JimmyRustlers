@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +15,13 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
+import com.project.uoa.carpooling.entities.shared.Place;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -54,15 +53,15 @@ public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarp
     @Override
     public void onBindViewHolder(ExploreCarpoolEventViewHolder holder, int position) {
 
-        holder.eventId = list.get(position).eventID;
-        holder.eventName.setText(list.get(position).eventName);
-        holder.eventStartDate.setText(list.get(position).startDate);
+        holder.eventID = list.get(position).getEventID();
+        holder.eventName.setText(list.get(position).getEventName());
+        holder.eventStartDate.setText(list.get(position).getPrettyStartTime());
 
 
         // Picasso loads image from the URL
-        if (list.get(position).eventImageURL != null) {
+        if (list.get(position).getEventImageURL() != null) {
             Picasso.with(context)
-                    .load(list.get(position).eventImageURL)
+                    .load(list.get(position).getEventImageURL())
                     .placeholder(R.drawable.placeholder_image)
                     .error(R.drawable.error_no_image)
                     .fit()
@@ -92,7 +91,7 @@ public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarp
 }
 
 class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
-    protected String eventId;
+    protected String eventID;
     protected TextView eventName;
     protected TextView eventStartDate;
     protected ImageView eventThumbnail;
@@ -120,75 +119,84 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
 
                 // Checks events/{event-id} to see if the event exists in the database as this may be the first user subscribing
-                fireBaseReference.child("events").child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
+                fireBaseReference.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
 
+
+
                         // If it does not exist it needs to be added
-                        if (!snapshot.exists()) {
+                        if (!snapshot.child("events").child(eventID).exists()) {
 
                             // Add a /users branch
-                            fireBaseReference.child("events").child(eventId).child("users").push();
+                            fireBaseReference.child("events").child(eventID).child("users").push();
 
                             GraphRequest request = GraphRequest.newGraphPathRequest(
                                     AccessToken.getCurrentAccessToken(),
-                                    "/" + eventId,
+                                    "/" + eventID,
                                     new GraphRequest.Callback() {
                                         @Override
                                         public void onCompleted(GraphResponse response) {
                                             try {
+
+                                                String placeName = null;
+                                                double latitude = 0.0;
+                                                double longitude = 0.0;
+
                                                 // If the event contains a location-name, add it.
                                                 if (response.getJSONObject().has("place") && response.getJSONObject().getJSONObject("place").has("name")) {
-                                                    Log.d("facebook - event", "place added: " + response.getJSONObject().getJSONObject("place").getString("name"));
-                                                    fireBaseReference.child("events").child(eventId).child("location").push();
-                                                    fireBaseReference.child("events").child(eventId).child("location").setValue(response.getJSONObject().getJSONObject("place").getString("name"));
+                                                    placeName = response.getJSONObject().getJSONObject("place").getString("name");
+                                                    Log.d("facebook - event", "place added: " + placeName);
                                                 }
                                                 if (response.getJSONObject().has("place") && response.getJSONObject().getJSONObject("place").has("location")) {
                                                     // If the event contains a location-longitude, add it.
                                                     if (response.getJSONObject().getJSONObject("place").getJSONObject("location").has("latitude")) {
-                                                        Log.d("facebook - event", "latitude added: " + response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("latitude"));
-                                                        fireBaseReference.child("events").child(eventId).child("latitude").push();
-                                                        fireBaseReference.child("events").child(eventId).child("latitude").setValue(response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("latitude"));
+                                                        String lat = response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("latitude");
+                                                        latitude = Double.parseDouble(lat);
+                                                        Log.d("facebook - event", "latitude added: " + lat);
                                                     }
                                                     // If the event contains a location-latitude, add it.
                                                     if (response.getJSONObject().getJSONObject("place").getJSONObject("location").has("longitude")) {
-                                                        Log.d("facebook - event", "longitude added: " + response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("longitude"));
-                                                        fireBaseReference.child("events").child(eventId).child("longitude").push();
-                                                        fireBaseReference.child("events").child(eventId).child("longitude").setValue(response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("longitude"));
+                                                        String lng = response.getJSONObject().getJSONObject("place").getJSONObject("location").getString("longitude");
+                                                        Log.d("facebook - event", "longitude added: " + lng);
+                                                        longitude = Double.parseDouble(lng);
                                                     }
                                                 }
+
+                                                Place destinationLocation = new Place(placeName, latitude, longitude);
+                                                fireBaseReference.child("events").child(eventID).child("destination").setValue(destinationLocation);
+
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
                                         }
                                     });
-
                             // Facebook parameters for getting the event's place
                             Bundle parameters = new Bundle();
                             parameters.putString("fields", "place");
                             request.setParameters(parameters);
                             request.executeAsync();
+
+
+
+
+
                         }
 
-                        // Add {user-ID} to events/{event-ID}/users/ and set as an observer
-                        fireBaseReference.child("events").child(eventId).child("users").child(userId).child("Status").setValue("Observer");
-                        fireBaseReference.child("events").child(eventId).child("users").child(userId).child("isPublic").setValue("False");
+                        // Add {user-ID} to events/{event-ID}/users/, set as an observer and add users name
+                        fireBaseReference.child("events").child(eventID).child("users").child(userId).child("Status").setValue("Observer");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userId).child("isPublic").setValue(false);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userId).child("Name").setValue(snapshot.child("users").child(userId).child("Name").getValue());
 
                         // Add {event-ID} to users/{user-ID}/events/ and set as an observer
-                        fireBaseReference.child("users").child(userId).child("events").child(eventId).push();
-                        fireBaseReference.child("users").child(userId).child("events").child(eventId).setValue("Observer");
+                        fireBaseReference.child("users").child(userId).child("events").child(eventID).push();
+                        fireBaseReference.child("users").child(userId).child("events").child(eventID).setValue("Observer");
 
-                        Log.d("firebase - event", "Subscribed to: " + eventId);
 
 //                        // Execute back functionality. TODO Find a better way to do this.
 //                        ((MainActivity) context).onBackPressed();
 
                         // TODO: Remove it from the list? Or acknowledge that the event has been subscribed somehow?
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError firebaseError) {
-                        Log.e("firebase - error", firebaseError.getMessage());
                     }
                 });
             }

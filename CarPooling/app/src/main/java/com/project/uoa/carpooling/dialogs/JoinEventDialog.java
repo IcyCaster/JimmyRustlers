@@ -27,12 +27,15 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.recyclers.ExploreCarpoolEventAdapter;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
-import com.project.uoa.carpooling.jsonparsers.Facebook_ID_Response;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ID_Parser;
+import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Chester on 30/06/2016.
@@ -100,9 +103,10 @@ public class JoinEventDialog extends DialogFragment {
                 new GraphRequest.Callback() {
                     @Override
                     public void onCompleted(GraphResponse response) {
-                        listOfSubscribedEvents = Facebook_ID_Response.parse(response.getJSONObject());
 
-                        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+                        listOfSubscribedEvents = Facebook_ID_Parser.parse(response.getJSONObject());
+
+                        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
 
@@ -119,10 +123,7 @@ public class JoinEventDialog extends DialogFragment {
                                 }
                             }
 
-                            @Override
-                            public void onCancelled(DatabaseError firebaseError) {
-                                Log.e("firebase - error", firebaseError.getMessage());
-                            }
+
                         });
                     }
                 });
@@ -151,7 +152,9 @@ public class JoinEventDialog extends DialogFragment {
                         @Override
                         public void onCompleted(GraphResponse response) {
                             try {
-                                listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+
+                                listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
+
 
                                 final String id = response.getJSONObject().getString("id");
 
@@ -169,7 +172,7 @@ public class JoinEventDialog extends DialogFragment {
                                                     url = response.getJSONObject().getJSONObject("data").getString("url");
 
                                                     for (SimpleEventEntity e : listOfEventCardEntities) {
-                                                        if (e.eventID.equals(id)) {
+                                                        if (e.getEventID().equals(id)) {
                                                             listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                         }
                                                     }
@@ -215,6 +218,9 @@ public class JoinEventDialog extends DialogFragment {
     public synchronized void callback() {
         subbedEvents--;
         if (subbedEvents == 0) {
+
+            Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
+
             adapter = new ExploreCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);

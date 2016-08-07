@@ -1,12 +1,17 @@
 package com.project.uoa.carpooling.fragments.main;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -31,11 +36,15 @@ import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
 import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.jsonparsers.Facebook_Event_Response;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
+import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
+import com.project.uoa.carpooling.services.TutorialService;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class CurrentCarpools extends Fragment {
@@ -86,7 +95,7 @@ public class CurrentCarpools extends Fragment {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                swipeContainer.setRefreshing(false);
+                swipeContainer.setRefreshing(true);
                 fetchTimelineAsync();
             }
         });
@@ -118,23 +127,71 @@ public class CurrentCarpools extends Fragment {
 
         });
 
+        // TODO: Needs to be added to all subscribed events
+        fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // Detect that the driver is driving, trigger notification and
+                if((boolean)dataSnapshot.getValue()) {
+                    Log.d("Firebase", "isDriving true");
+                    Toast.makeText(getActivity().getApplicationContext(), "Driver is: " + dataSnapshot.getValue().toString(),
+                            Toast.LENGTH_SHORT).show();
+
+                    showNotification();
+
+
+                    getActivity().startService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+
+                }
+                else {
+                    Log.d("Firebase", "isDriving false");
+                    //TODO: check if background service is running, and cancel it.
+
+                    getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+
+                }
+            }
+
+        });
 
         return view;
+    }
+
+    private void showNotification() {
+
+        // Reference: http://stackoverflow.com/questions/13902115/how-to-create-a-notification-with-notificationcompat-builder
+
+        int mID = 100;
+        final Intent emptyIntent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, emptyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getActivity())
+                        .setSmallIcon(R.drawable.driving_icon)
+                        .setContentTitle("[Driver] is Driving!")
+                        .setContentText("Touch to see how far away he is from you!")
+                        .setContentIntent(pendingIntent); //Required on Gingerbread and below
+
+        //TODO: Add click to launch carpool event on map page.
+
+        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(mID, mBuilder.build());
+
     }
 
 
     public void fetchTimelineAsync() {
 
 
-        // Send the network request to fetch the updated data
-        // `client` here is an instance of Android Async HTTP
+
         Handler h = new Handler();
         //later to update UI
         h.post(new Runnable() {
             @Override
             public void run() {
                 PopulateViewWithSubscribedEvents();
-
             }
         });
     }
@@ -182,7 +239,7 @@ public class CurrentCarpools extends Fragment {
         listOfSubscribedEvents.clear();
 
 
-        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
@@ -194,10 +251,7 @@ public class CurrentCarpools extends Fragment {
 
             }
 
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
+
         });
 
 
@@ -217,6 +271,7 @@ public class CurrentCarpools extends Fragment {
             toast.show();
 
             recyclerView.setVisibility(View.GONE);
+            swipeContainer.setRefreshing(false);
 
         } else {
 
@@ -234,7 +289,7 @@ public class CurrentCarpools extends Fragment {
                             public void onCompleted(GraphResponse response) {
                                 try {
 
-                                    listOfEventCardEntities.add(Facebook_Event_Response.parse(response.getJSONObject()));
+                                    listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
                                     final String id = response.getJSONObject().getString("id");
 
                                     GraphRequest innerRequest = GraphRequest.newGraphPathRequest(
@@ -255,7 +310,7 @@ public class CurrentCarpools extends Fragment {
 
 
                                                         for (SimpleEventEntity e : listOfEventCardEntities) {
-                                                            if (e.eventID.equals(id)) {
+                                                            if (e.getEventID().equals(id)) {
                                                                 listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                             }
                                                         }
@@ -290,12 +345,15 @@ public class CurrentCarpools extends Fragment {
 
     public synchronized void callback() {
         subbedEvents--;
-        if (subbedEvents == 0) {
-            swipeContainer.setRefreshing(false);
+        if (subbedEvents <= 0) {
+
+            Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
+
+
             adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
-
+            swipeContainer.setRefreshing(false);
         }
     }
 

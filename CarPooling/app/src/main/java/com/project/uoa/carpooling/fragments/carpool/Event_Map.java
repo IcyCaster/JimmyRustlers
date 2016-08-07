@@ -1,20 +1,22 @@
 package com.project.uoa.carpooling.fragments.carpool;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.facebook.FacebookSdk;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -92,10 +94,13 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
             eventId = getArguments().getLong(EVENT_ID);
         }
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
+        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
+
+        recieverTest();
+
     }
 
     @Override
@@ -104,7 +109,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
 
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
+        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
 
@@ -289,5 +294,26 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    //TODO: This is recieving the updates from the drivers who are driving
+    private void recieverTest() {
+
+        // TODO: Filter will be EventID-DriverID
+        IntentFilter filter = new IntentFilter("com.example.Broadcast");
+        MyReceiver receiver = new MyReceiver();
+        getActivity().registerReceiver(receiver, filter);
+
+    }
+
+    class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context arg0, Intent intent) {
+            long latitude = intent.getLongExtra("Latitude", 0);
+            long longitude = intent.getLongExtra("Longitude", 0);
+
+            Log.d("Broadcast recieved", "Lat: " + latitude + ", Long: " + longitude);
+
+        }
     }
 }

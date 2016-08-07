@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.entities.shared.Place;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -102,30 +104,49 @@ public class UpdateStatusDialog extends DialogFragment {
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 
-                DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-                if(status.equals("Driver")) {
-                    fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Driver");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Driver");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue("True");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("StartLat").setValue("tempLat:" + locationResult.getText());
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("StartLong").setValue("tempLong:" + locationResult.getText());
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue("False");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLat").setValue("null");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLong").setValue("null");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").child("PassengerCapacity").setValue(np.getValue());
+                if(locationResult.getText().toString().equals("")) {
+                    Log.d("TODO:", "Warn user they have not put a location");
                 }
                 else {
-                    fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Passenger");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Passenger");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue("True");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Driver").setValue("null");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PassengerCount").setValue(np.getValue());
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PickupLat").setValue("tempLat:" + locationResult.getText());
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PickupLong").setValue("tempLong:" + locationResult.getText());
-                }
 
-                getActivity().finish();
-                startActivity(getActivity().getIntent());
+                    double longitude = 0.0;
+                    double latitude = 0.0;
+
+                    try {
+                        longitude = Double.parseDouble(locationResult.getText().toString());
+                        latitude = Double.parseDouble(locationResult.getText().toString());
+                    } catch( NumberFormatException e) {
+                        Log.d("TODO:", "Only accepts numbers atm");
+                    }
+
+                    DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
+                    if (status.equals("Driver")) {
+                        fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Driver");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Driver");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(true);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue(false);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").child("PassengerCapacity").setValue(np.getValue());
+
+                        Place startLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("StartLocation").setValue(startLocation);
+
+                        Place currentLocation = new Place(null, 0.0, 0.0);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").setValue(currentLocation);
+
+                    } else {
+                        fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Passenger");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Passenger");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(true);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Driver").setValue("null");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PassengerCount").setValue(np.getValue());
+
+                        Place pickupLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PickupLocation").setValue(pickupLocation);
+                    }
+
+                    getActivity().finish();
+                    startActivity(getActivity().getIntent());
+                }
             }
         });
 
