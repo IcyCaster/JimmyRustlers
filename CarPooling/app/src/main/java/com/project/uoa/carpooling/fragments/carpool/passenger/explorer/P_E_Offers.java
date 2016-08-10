@@ -128,7 +128,9 @@ public class P_E_Offers extends Fragment {
 //                                    String pickupLatitude = snapshot.child("PickupLat").getValue().toString();
 //                                    Place pickupLocation = new Place(pickupName, pickupLongitude, pickupLatitude);
 
-                                    String carCapacity = snapshot.child("Passengers").child("PassengerCapacity").getValue().toString();
+
+
+                                    int carCapacity = (int)(long)snapshot.child("Passengers").child("PassengerCapacity").getValue();
                                     //TODO: Calculate total space and compare it with number of passengers
 
                                     boolean isPending = true;

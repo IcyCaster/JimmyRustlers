@@ -16,15 +16,16 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 
 
-public class O_Details extends Fragment {
+public class O_Details extends DetailsFragment {
 
     private DatabaseReference fireBaseReference;
 
     private String eventID;
     private String userID;
-    private ComplexEventEntity facebookEvent;
+
 
     private View view;
 
@@ -36,38 +37,16 @@ public class O_Details extends Fragment {
 
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
-        facebookEvent = ((CarpoolEventActivity) getActivity()).getFacebookEvent();
+
+        super.addEventDetails(view);
+
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         // TODO: Make a helper, DisplayEventDetails(view, facebookEvent), as this can be called by Observer, Driver and Passenger
         // TODO: Reuse a details section kappa
 
-        // EventDetails:
-        // EVENT_NAME
-        TextView name = (TextView) view.findViewById(R.id.event_name);
-        name.setText("Name: " + facebookEvent.getName());
 
-        // EVENT_START_TIME
-        TextView startTime = (TextView) view.findViewById(R.id.event_start_datetime);
-        startTime.setText("Start Time: " + facebookEvent.getPrettyStartTime());
-
-        // EVENT_DESCRIPTION
-        TextView description = (TextView) view.findViewById(R.id.event_description);
-        if (facebookEvent.getDescription().equals("")) {
-            description.setText("Description: No description set");
-        } else {
-            description.setText("Description: " + facebookEvent.getDescription());
-        }
-
-        // EVENT_LOCATION
-        TextView location = (TextView) view.findViewById(R.id.event_location);
-        if (facebookEvent.getLocation().toString().equals("")) {
-            location.setText("Location: No location set");
-        } else {
-            location.setText("Location: " + facebookEvent.getLocation().toString());
-        }
-        // END OF EVENT_DETAILS
 
 
 

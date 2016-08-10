@@ -119,7 +119,7 @@ public class P_E_Requests extends Fragment {
                         String startLatitude = child.child("StartLat").getValue().toString();
                         Place startLocation = new Place("", Double.parseDouble(startLongitude), Double.parseDouble(startLatitude));
 
-                        String carCapacity = child.child("Passengers").child("PassengerCapacity").getValue().toString();
+                        int carCapacity = (int)child.child("Passengers").child("PassengerCapacity").getValue();
                         //TODO: Calculate total space and compare it with number of passengers
 
                         boolean isPending = false;

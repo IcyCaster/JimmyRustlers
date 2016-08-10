@@ -3,9 +3,14 @@ package com.project.uoa.carpooling.activities;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -63,6 +68,9 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+
         // Facebook and Firebase
         FacebookSdk.sdkInitialize(getApplicationContext());
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
@@ -109,15 +117,27 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                     eventStatus = EventStatus.PASSENGER;
                                 }
 
+                                TextView statusText = (TextView)findViewById(R.id.status_text);
+                                statusText.setText(eventStatus.toString());
+
                                 // Create Pager and Adapter
-                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus);
+                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus, getApplicationContext());
                                 ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
                                 viewPager.setAdapter(pagerAdapter);
 
                                 // Add tabs to the pageViewer
                                 TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
                                 tabLayout.setupWithViewPager(viewPager);
-                                tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+
+                                tabLayout.getTabAt(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.details_icon));
+                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.map_icon));
+                                tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_arrows_icon));
+
+
+                                if(eventStatus == EventStatus.OBSERVER) {
+                                    tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_o_icon));
+                                }
                             }
                         });
                     }

@@ -135,8 +135,7 @@ public class CurrentCarpools extends Fragment {
                 // Detect that the driver is driving, trigger notification and
                 if((boolean)dataSnapshot.getValue()) {
                     Log.d("Firebase", "isDriving true");
-                    Toast.makeText(getActivity().getApplicationContext(), "Driver is: " + dataSnapshot.getValue().toString(),
-                            Toast.LENGTH_SHORT).show();
+
 
                     showNotification();
 

@@ -73,15 +73,15 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
             public void onDataChange(DataSnapshot snapshot) {
                 // Set the observer temp_placeholder_indicator
                 if (snapshot.getValue().equals("Observer")) {
-                    holder.eventStatusImage.setImageResource(R.drawable.observer_icon);
+                    holder.eventStatusImage.setImageResource(R.drawable.observer_grey_circle);
                 }
                 // Set the driver temp_placeholder_indicator
                 else if (snapshot.getValue().equals("Driver")) {
-                    holder.eventStatusImage.setImageResource(R.drawable.driver_icon);
+                    holder.eventStatusImage.setImageResource(R.drawable.driver_grey_circle);
                 }
                 // Set the passenger temp_placeholder_indicator
                 else if (snapshot.getValue().equals("Passenger")) {
-                    holder.eventStatusImage.setImageResource(R.drawable.passenger_icon);
+                    holder.eventStatusImage.setImageResource(R.drawable.passenger_grey_circle);
                 } else {
                     holder.eventStatusImage.setImageResource(R.drawable.temp_placeholder_indicator);
                 }

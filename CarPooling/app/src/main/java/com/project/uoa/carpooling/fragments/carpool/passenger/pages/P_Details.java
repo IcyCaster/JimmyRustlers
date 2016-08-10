@@ -93,7 +93,7 @@ public class P_Details extends Fragment {
                 countText.setText("Passenger Total: " + snapshot.child("PassengerCount").getValue().toString());
 
                 TextView locationText = (TextView) view.findViewById(R.id.information_location);
-                locationText.setText("Leave location: " + snapshot.child("PickupLat").getValue().toString() + "   " + snapshot.child("PickupLong").getValue().toString());
+                locationText.setText("Leave location: " + snapshot.child("PickupLocation").child("latitude").getValue().toString() + "   " + snapshot.child("PickupLocation").child("longitude").getValue().toString());
             }
 
 

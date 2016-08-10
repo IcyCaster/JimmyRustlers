@@ -2,13 +2,17 @@
 <resources>
     <!--<color name="colorPrimary">#3F51B5</color>-->
     <!--<color name="colorPrimaryDark">#303F9F</color>-->
-    <!--<color name="colorAccent">#FF4081</color>-->
+    <color name="colorAnotherAccent">#FF4081</color>
 
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorPrimaryLight">#5C6BC0</color>
+    <color name="colorPrimaryVeryLight">#7986CB</color>
+    <color name="colorPrimaryVeryVeryLight">#9FA8DA</color>
 
     <color name="colorAccent">#FF5722</color>
+    <color name="colorAccentLight">#FF8A65</color>
+    <color name="colorAccentVeryLight">#FFCCBC</color>
 
     <!--<color name="primary_text">#212121</color>-->
     <!--<color name="secondary_text">#757575</color>-->
