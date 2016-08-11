@@ -1,30 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:cardview="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <!-- Header aligned to top -->
-
-    <RelativeLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/status_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10sp"
-            android:text="Status: Driver"
-            android:textAllCaps="true"
-            android:textColor="@color/colorPrimary"
-            android:textSize="20sp" />
-
-    </RelativeLayout>
+    android:layout_height="match_parent"
+    xmlns:cardview="http://schemas.android.com/apk/res-auto">
 
     <!-- Footer aligned to bottom -->
 
@@ -91,13 +68,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <LinearLayout
+                    android:id="@+id/event_name_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="25dp">
+
+                    <TextView
+                        android:id="@+id/event_name"
+                        style="@style/Base.TextAppearance.AppCompat.Title"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="Loading..." />
+
+                </LinearLayout>
+
                 <android.support.v7.widget.CardView
-                    android:id="@+id/card_view"
+                    android:layout_below="@+id/event_name_container"
+                    android:id="@+id/passenger_information_card"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     cardview:cardCornerRadius="5dp"
-                    cardview:cardElevation="4dp">
+                    cardview:cardElevation="4dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="0dp"
+                    >
 
                     <LinearLayout
                         android:layout_width="fill_parent"
@@ -105,152 +112,207 @@
                         android:orientation="vertical"
                         android:padding="8dp">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:gravity="center_vertical"
-                            android:paddingLeft="25dp">
-
-                            <TextView
-                                style="@style/Base.TextAppearance.AppCompat.Headline"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Event Information" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
+                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:paddingBottom="10dp"
-                            android:paddingLeft="30dp">
+                            android:layout_marginRight="24dp"
+                            android:fontFamily="sans-serif-medium"
+                            android:gravity="center_vertical"
+                            android:text="Carpool Information"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
+                            android:textColor="?attr/colorAccent"
+                            android:textSize="14sp" />
 
-                            <TextView
-                                android:id="@+id/event_name"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
+                        <RelativeLayout
+                            xmlns:android="http://schemas.android.com/apk/res/android"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:minHeight="64dp">
+
+                            <ImageView
+                                android:id="@+id/location_imageview"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentLeft="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginTop="16dp"
+                                android:src="@drawable/evt_loc_icon"/>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Name: -Name of event-" />
+                                android:layout_alignWithParentIfMissing="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginRight="16dp"
+                                android:layout_toRightOf="@+id/location_imageview"
+                                android:orientation="vertical"
+                                android:paddingBottom="16dp"
+                                android:paddingTop="16dp">
 
-                            <TextView
-                                android:id="@+id/event_description"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Description: -Description of event-" />
+                                <TextView
+                                    android:id="@+id/starting_location_title"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Starting Location"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
-                            <TextView
-                                android:id="@+id/event_start_datetime"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Start Time: -start date/time-" />
+                                <TextView
+                                    android:id="@+id/starting_location_placename"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Loading..."
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
-                            <TextView
-                                android:id="@+id/event_location"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Location: -location-" />
+                            </LinearLayout>
 
-                        </LinearLayout>
+                        </RelativeLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="2dp"
                             android:background="@android:color/darker_gray" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:gravity="center_vertical"
-                            android:paddingLeft="25dp">
-
-                            <TextView
-                                style="@style/Base.TextAppearance.AppCompat.Headline"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Carpool Overview" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
+                        <RelativeLayout
+                            xmlns:android="http://schemas.android.com/apk/res/android"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:paddingBottom="10dp"
-                            android:paddingLeft="30dp">
+                            android:minHeight="64dp">
 
-                            <TextView
-                                android:id="@+id/passenger_names"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
+                            <ImageView
+                                android:id="@+id/date_imageview"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentLeft="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginTop="16dp"
+                                android:src="@drawable/route_icon"/>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Passengers: -passengers-" />
+                                android:layout_alignWithParentIfMissing="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginRight="16dp"
+                                android:layout_toRightOf="@+id/date_imageview"
+                                android:orientation="vertical"
+                                android:paddingBottom="16dp"
+                                android:paddingTop="16dp">
 
-                            <TextView
-                                android:id="@+id/driver_start"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Start Route Time: -time-" />
+                                <TextView
+                                    android:id="@+id/route_title_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Route Details:"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
-                            <TextView
-                                android:id="@+id/driver_arrival"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Estimated Arrival Time: -time-" />
+                                <TextView
+                                    android:id="@+id/route_time_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Time Loading... TODO"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/route_distance_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Distance Loading... TODO"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+                            </LinearLayout>
+
+                        </RelativeLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="2dp"
                             android:background="@android:color/darker_gray" />
 
-                        <LinearLayout
-                            android:id="@+id/first_title"
-                            android:layout_width="match_parent"
-                            android:layout_height="50dp"
-                            android:gravity="center_vertical"
-                            android:paddingLeft="25dp">
-
-                            <TextView
-                                style="@style/Base.TextAppearance.AppCompat.Headline"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Your Information" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
+                        <RelativeLayout
+                            xmlns:android="http://schemas.android.com/apk/res/android"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:paddingBottom="10dp"
-                            android:paddingLeft="30dp">
+                            android:minHeight="64dp">
 
-                            <TextView
-                                android:id="@+id/information_location"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
+                            <ImageView
+                                android:id="@+id/passenger_imageview"
+                                android:layout_width="25dp"
+                                android:layout_height="25dp"
+                                android:layout_alignParentLeft="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginTop="16dp"
+                                android:src="@drawable/passenger_blue"/>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Starting Location: -location-" />
+                                android:layout_alignWithParentIfMissing="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="16dp"
+                                android:layout_marginRight="16dp"
+                                android:layout_toRightOf="@+id/passenger_imageview"
+                                android:orientation="vertical"
+                                android:paddingBottom="16dp"
+                                android:paddingTop="16dp">
 
-                            <TextView
-                                android:id="@+id/information_count"
-                                style="@style/Base.TextAppearance.AppCompat.Body1"
-                                android:layout_width="fill_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Avaliable Capacity: -number-" />
+                                <TextView
+                                    android:id="@+id/passenger_title_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Passenger Details:"
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
-                        </LinearLayout>
+                                <TextView
+                                    android:id="@+id/passenger_capacity_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Fetching Car Capacity..."
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+                                <TextView
+                                    android:id="@+id/passengers_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Fetching Passengers..."
+                                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+
+                                <!--<ListView-->
+                                    <!--android:id="@+id/passenger_list"-->
+                                    <!--android:layout_width="match_parent"-->
+                                    <!--android:layout_height="wrap_content">-->
+
+
+                                <!--</ListView>-->
+
+                                <!--<Button-->
+                                    <!--android:layout_width="match_parent"-->
+                                    <!--android:layout_height="wrap_content"-->
+                                    <!--android:minHeight="32dp"-->
+                                    <!--android:text="Manage Passengers"-->
+                                    <!--android:textColor="#FFF"-->
+                                    <!--android:background="@color/colorPrimaryVeryVeryLight"/>-->
+
+                            </LinearLayout>
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
                 </android.support.v7.widget.CardView>
+
+                <include
+                    android:id="@+id/card_event_description"
+                    layout="@layout/card__event_description"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/passenger_information_card" />
 
             </RelativeLayout>
 
@@ -258,7 +320,9 @@
 
     </ScrollView>
 
+
 </RelativeLayout>
+
 
 
 

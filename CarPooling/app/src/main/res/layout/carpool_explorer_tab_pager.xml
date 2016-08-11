@@ -6,26 +6,6 @@
 
     <!-- Header aligned to top -->
 
-    <RelativeLayout
-        android:id="@+id/header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:background="@color/colorPrimaryLight"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/status_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_margin="10sp"
-            android:text="Status: ???"
-            android:textAllCaps="true"
-            android:textColor="@android:color/white"
-            android:textSize="20sp" />
-    </RelativeLayout>
-
     <android.support.design.widget.TabLayout
         android:id="@+id/explorer_tab"
         android:layout_width="match_parent"

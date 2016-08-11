@@ -2,7 +2,6 @@ package com.project.uoa.carpooling.fragments.carpool;
 
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -18,7 +17,9 @@ public class DetailsFragment extends Fragment {
     private TextView description;
     private TextView expText;
     private boolean isExpanded = false;
+    private CardView eventInfoCard;
 
+    // This adds to the EVENT INFORMATION card
     public void addEventDetails(View view) {
 
         ComplexEventEntity facebookEvent = ((CarpoolEventActivity) getActivity()).getFacebookEvent();
@@ -53,27 +54,34 @@ public class DetailsFragment extends Fragment {
 
         expText = (TextView) view.findViewById(R.id.expand_text);
 
-        CardView eventInfoCard = (CardView) view.findViewById(R.id.event_information_card);
-        eventInfoCard.setOnClickListener(new View.OnClickListener() {
+        eventInfoCard = (CardView) view.findViewById(R.id.event_information_card);
 
+        description.post(new Runnable() {
             @Override
-            public void onClick(View v) {
+            public void run() {
 
-                if (isExpanded == false) {
-                    isExpanded = true;
-                    description.setMaxLines(Integer.MAX_VALUE);
-//                    description.setEllipsize(null);
+                int lineCount = description.getLineCount();
+                if (lineCount > 2) {
+                    eventInfoCard.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View v) {
+
+                            if (isExpanded == false) {
+                                isExpanded = true;
+                                description.setMaxLines(Integer.MAX_VALUE);
+                                expText.setVisibility(View.GONE);
+                            } else {
+                                isExpanded = false;
+                                description.setMaxLines(2);
+                                expText.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                } else {
                     expText.setVisibility(View.GONE);
-                }
-                else {
-                    isExpanded = false;
-                    description.setMaxLines(2);
-//                    description.setEllipsize(TextUtils.TruncateAt.END);
-                    expText.setVisibility(View.VISIBLE);
                 }
             }
         });
-
     }
-
 }

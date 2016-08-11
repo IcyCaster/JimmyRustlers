@@ -45,7 +45,9 @@ public class ComplexEventEntity {
         DateFormat facebookTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
         DateFormat prettyFormat = new SimpleDateFormat("MMM d, h:mmaa", Locale.ENGLISH);
 
-        DateFormat longDateFormat = new SimpleDateFormat("E, d M y", Locale.ENGLISH);
+        DateFormat longDateFormat = new SimpleDateFormat("EEEE, d MMMM y", Locale.ENGLISH);
+
+
         DateFormat longTimeFormat = new SimpleDateFormat("h:mmaa", Locale.ENGLISH);
 
         startCalendar = Calendar.getInstance();
