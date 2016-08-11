@@ -39,8 +39,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.entities.maps.Leg;
 import com.project.uoa.carpooling.entities.maps.Route;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
 import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
 
@@ -144,17 +146,6 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
         userID = ((CarpoolEventActivity)getActivity()).getUserID();
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
-
-//        double latitude = 40.714728;
-//        double longitude = -73.998672;
-//        String label = "ABC Label";
-//        String uriBegin = "geo:" + latitude + "," + longitude;
-//        String query = latitude + "," + longitude + "(" + label + ")";
-//        String encodedQuery = Uri.encode(query);
-//        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-//        Uri uri = Uri.parse(uriString);
-//        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-//        startActivity(intent);
 
         // Map Initialization
         mMapView = (MapView) view.findViewById(R.id.mapView);
@@ -283,7 +274,13 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
+        Log.i(TAG, "Connection Started");
         mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        // Check event entity for address
+        Place eventLocation = ((CarpoolEventActivity)getActivity()).getFacebookEvent().getLocation();
+        mEventLocation = eventLocation.toString();
 
         try {
             // Start request for getting route information.
