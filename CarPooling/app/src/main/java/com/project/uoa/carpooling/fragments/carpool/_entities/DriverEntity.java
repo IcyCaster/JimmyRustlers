@@ -12,17 +12,17 @@ public class DriverEntity {
     private boolean isPending;
     private int carCapacity;
 
-    public DriverEntity(String ID, String name, boolean isPending, String carCapacity ) {
+    public DriverEntity(String ID, String name, boolean isPending, int carCapacity ) {
         this.ID = ID;
         this.name = name;
         this.isPending = isPending;
-        this.carCapacity = Integer.parseInt(carCapacity);
+        this.carCapacity = carCapacity;
     }
 
-    public DriverEntity(String ID, String name, String carCapacity ) {
+    public DriverEntity(String ID, String name, int carCapacity ) {
         this.ID = ID;
         this.name = name;
-        this.carCapacity = Integer.parseInt(carCapacity);
+        this.carCapacity = carCapacity;
     }
 
     public String getID() {

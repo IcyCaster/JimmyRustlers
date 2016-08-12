@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
+import com.project.uoa.carpooling.helpers.firebase.CarpoolMatch;
 
 import java.util.Collections;
 import java.util.List;
@@ -72,7 +73,7 @@ class P_E_OffersViewHolder extends RecyclerView.ViewHolder {
     private String userID;
     private String eventID;
 
-    public P_E_OffersViewHolder(View itemView, Context context) {
+    public P_E_OffersViewHolder(View itemView, final Context context) {
         super(itemView);
 
         final CarpoolEventActivity carpoolActivity = (CarpoolEventActivity) context;
@@ -92,11 +93,7 @@ class P_E_OffersViewHolder extends RecyclerView.ViewHolder {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // TODO: ADD USER TO YOUR CARPOOL
-
-                acceptButton.setEnabled(false);
-                declineButton.setEnabled(false);
+                CarpoolMatch.TryJoin(eventID, driverID, userID, carpoolActivity, acceptButton, declineButton);
             }
         });
 

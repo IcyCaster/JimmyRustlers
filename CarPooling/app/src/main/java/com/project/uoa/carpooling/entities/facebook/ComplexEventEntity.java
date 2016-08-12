@@ -21,6 +21,8 @@ public class ComplexEventEntity {
     private Calendar endCalendar;
     private String prettyStartTime;
     private String prettyEndTime;
+    private String longStartDate;
+    private String longStartTime;
     private double unixStartTime;
 
     public ComplexEventEntity(String ID, String name, String description, String longitude, String latitude, String placeName, String startTime, String endTime) {
@@ -43,12 +45,20 @@ public class ComplexEventEntity {
         DateFormat facebookTimeFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
         DateFormat prettyFormat = new SimpleDateFormat("MMM d, h:mmaa", Locale.ENGLISH);
 
+        DateFormat longDateFormat = new SimpleDateFormat("EEEE, d MMMM y", Locale.ENGLISH);
+
+
+        DateFormat longTimeFormat = new SimpleDateFormat("h:mmaa", Locale.ENGLISH);
+
         startCalendar = Calendar.getInstance();
         endCalendar = Calendar.getInstance();
         try {
 
             startCalendar.setTime(facebookTimeFormat.parse(startTime));
             prettyStartTime = prettyFormat.format(startCalendar.getTime());
+
+            longStartDate = longDateFormat.format(startCalendar.getTime());
+            longStartTime = longTimeFormat.format(startCalendar.getTime());
 
             if (!endTime.equals("")) {
                 endCalendar.setTime(facebookTimeFormat.parse(endTime));
@@ -132,5 +142,21 @@ public class ComplexEventEntity {
 
     public void setID(String ID) {
         this.ID = ID;
+    }
+
+    public String getLongStartDate() {
+        return longStartDate;
+    }
+
+    public void setLongStartDate(String longStartDate) {
+        this.longStartDate = longStartDate;
+    }
+
+    public String getLongStartTime() {
+        return longStartTime;
+    }
+
+    public void setLongStartTime(String longStartTime) {
+        this.longStartTime = longStartTime;
     }
 }

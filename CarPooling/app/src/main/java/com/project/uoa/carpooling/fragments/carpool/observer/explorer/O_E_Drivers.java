@@ -52,7 +52,6 @@ public class O_E_Drivers extends Fragment {
         }
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -114,16 +113,20 @@ public class O_E_Drivers extends Fragment {
                         String driverID = child.getKey();
                         String driverName = child.child("Name").getValue().toString();
 
-                        // Location currently not used for driverEntity
-                        String startLongitude = child.child("StartLong").getValue().toString();
-                        String startLatitude = child.child("StartLat").getValue().toString();
-                        Place startLocation = new Place("", Double.parseDouble(startLongitude), Double.parseDouble(startLatitude));
+                        // Location CURRENTLY NOT USED in driverEntity constructor
+                        // Place startLocation = child.child("StartLocation").getValue(Place.class);
 
-                        String carCapacity = child.child("Passengers").child("PassengerCapacity").getValue().toString();
-                        //TODO: Calculate total space and compare it with number of passengers
+                        // Calculates the amount of spaces left in the driver's car
+                        int passengerSpaceAvailable = (int)(long)child.child("Passengers").child("PassengerCapacity").getValue();
+                        for (DataSnapshot passengers : child.child("Passengers").getChildren()) {
+                            if (!passengers.getKey().equals("PassengerCapacity")) {
+                                int passengerCount = (int)(long) passengers.getValue();
+                                passengerSpaceAvailable -= passengerCount;
+                            }
+                        }
 
-                        // Make driver entity and add it to the list
-                        DriverEntity driver = new DriverEntity(driverID, driverName, carCapacity);
+                        // Instantiates DriverEntity; Adds it to display list.
+                        DriverEntity driver = new DriverEntity(driverID, driverName, passengerSpaceAvailable);
                         listOfDrivers.add(driver);
                     }
                 }

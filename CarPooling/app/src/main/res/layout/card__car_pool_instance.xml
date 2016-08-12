@@ -59,7 +59,7 @@
                 android:id="@+id/status_photo"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:layout_width="25dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
                 />
 

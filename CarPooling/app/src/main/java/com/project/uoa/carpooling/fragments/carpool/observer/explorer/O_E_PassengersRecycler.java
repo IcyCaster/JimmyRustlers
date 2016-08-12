@@ -47,8 +47,6 @@ public class O_E_PassengersRecycler extends RecyclerView.Adapter<O_E_PassengersV
         holder.passengerName.setText(list.get(position).getName());
         holder.passengerLocation.setText("Location: " + list.get(position).getPickupLocation().toString());
         holder.passengerCount.setText("Passenger Count: " + Integer.toString(list.get(position).getPassengerCount()));
-        holder.offerButton.setText("Approve");
-        holder.cancelButton.setText("Decline");
     }
 
     @Override
@@ -62,8 +60,6 @@ class O_E_PassengersViewHolder extends RecyclerView.ViewHolder {
     protected TextView passengerName;
     protected TextView passengerLocation;
     protected TextView passengerCount;
-    protected Button offerButton;
-    protected Button cancelButton;
     protected Button mapButton;
     private DatabaseReference fireBaseReference;
     private String userID;
@@ -81,32 +77,16 @@ class O_E_PassengersViewHolder extends RecyclerView.ViewHolder {
         passengerName = (TextView) itemView.findViewById(R.id.passenger_name);
         passengerLocation = (TextView) itemView.findViewById(R.id.passenger_location);
         passengerCount = (TextView) itemView.findViewById(R.id.passenger_count);
-        offerButton = (Button) itemView.findViewById(R.id.request_button);
-        cancelButton = (Button) itemView.findViewById(R.id.cancel_button);
+
+
+        // These buttons are not used on the reused passenger cards
+        Button offerButton = (Button) itemView.findViewById(R.id.request_button);
+        Button cancelButton = (Button) itemView.findViewById(R.id.cancel_button);
+        offerButton.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
+
         mapButton = (Button) itemView.findViewById(R.id.map_button);
-
-        // Offers a ride to a passenger
-        offerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // TODO: ADD USER TO YOUR CARPOOL
-
-                offerButton.setEnabled(false);
-                cancelButton.setEnabled(false);
-            }
-        });
-
-        // Cancels the offer
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Requests").child(passengerID).removeValue();
-                offerButton.setEnabled(false);
-                cancelButton.setEnabled(false);
-            }
-        });
-
+        mapButton.setText("Observe on map");
         // Shows passenger's location respective to driver and their route
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override

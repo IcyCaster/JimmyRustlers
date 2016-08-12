@@ -19,10 +19,11 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 
-public class D_Details extends Fragment {
+public class D_Details extends DetailsFragment {
 
     private DatabaseReference fireBaseReference;
 
@@ -44,63 +45,45 @@ public class D_Details extends Fragment {
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        // TODO: Make a helper, DisplayEventDetails(view, facebookEvent), as this can be called by Observer, Driver and Passenger
-        // TODO: Reuse a details section kappa
-
-        // EventDetails:
-        // EVENT_NAME
-        TextView name = (TextView) view.findViewById(R.id.event_name);
-        name.setText("Name: " + facebookEvent.getName());
-
-        // EVENT_START_TIME
-        TextView startTime = (TextView) view.findViewById(R.id.event_start_datetime);
-        startTime.setText("Start Time: " + facebookEvent.getPrettyStartTime());
-
-        // EVENT_DESCRIPTION
-        TextView description = (TextView) view.findViewById(R.id.event_description);
-        if (facebookEvent.getDescription().equals("")) {
-            description.setText("Description: No description set");
-        } else {
-            description.setText("Description: " + facebookEvent.getDescription());
-        }
-
-        // EVENT_LOCATION
-        TextView location = (TextView) view.findViewById(R.id.event_location);
-        if (facebookEvent.getLocation().toString().equals("")) {
-            location.setText("Location: No location set");
-        } else {
-            location.setText("Location: " + facebookEvent.getLocation().toString());
-        }
-        // END OF EVENT_DETAILS
-
+        super.addEventDetails(view);
 
         // driver specific details
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                TextView passengerText = (TextView) view.findViewById(R.id.passenger_names);
+                DataSnapshot userSnapshot = snapshot.child("users").child(userID);
+
+                TextView passengerText = (TextView) view.findViewById(R.id.passengers_text);
 
                 String passengers = "";
-                for (DataSnapshot child : snapshot.child("Passengers").getChildren()) {
+                int passengerNumber = 0;
+                for (DataSnapshot child : userSnapshot.child("Passengers").getChildren()) {
                     if (!child.getKey().equals("PassengerCapacity")) {
-                        passengers = passengers + child.getKey() + "(" + child.getValue() + "); ";
+                        String passengerName = snapshot.child("users").child(child.getKey()).child("Name").getValue().toString();
+                        passengers = passengers + passengerName + "(" + child.getValue() + "); ";
+                        passengerNumber += (int)(long)child.getValue();
                     }
                 }
-                if (passengers.equals("")) {
-                    passengerText.setText("Passengers: No current passengers");
+                if (passengerNumber == 0) {
+                    passengerText.setText("No Passengers");
                 } else {
-                    passengerText.setText("Passengers: " + passengers);
+                    passengerText.setText(passengers);
                 }
 
 
                 // Starting Route Time AND Estimated Arrival Time will need to be calculated based on start destination, passengers destination and the event's start time.
 
-                TextView countText = (TextView) view.findViewById(R.id.information_count);
-                countText.setText("Passenger Capacity: " + snapshot.child("Passengers").child("PassengerCapacity").getValue().toString());
+                TextView countText = (TextView) view.findViewById(R.id.passenger_capacity_text);
+                if((int)(long)userSnapshot.child("Passengers").child("PassengerCapacity").getValue() == passengerNumber) {
+                    countText.setText("Capacity: FULL");
+                }else {
+                    countText.setText("Capacity: (" + passengerNumber + "/" + userSnapshot.child("Passengers").child("PassengerCapacity").getValue().toString() + ")");
+                }
 
-                TextView locationText = (TextView) view.findViewById(R.id.information_location);
-                locationText.setText("Leave location: " + snapshot.child("StartLocation").child("latitude").getValue().toString() + "   " + snapshot.child("StartLocation").child("longitude").getValue().toString());
+
+                TextView locationText = (TextView) view.findViewById(R.id.starting_location_placename);
+                locationText.setText(userSnapshot.child("StartLocation").child("latitude").getValue().toString() + "   " + userSnapshot.child("StartLocation").child("longitude").getValue().toString());
             }
 
 

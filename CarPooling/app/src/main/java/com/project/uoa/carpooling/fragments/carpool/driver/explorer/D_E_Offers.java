@@ -123,7 +123,7 @@ public class D_E_Offers extends Fragment {
                 int passengerSpaceAvailable = (int)(long)snapshot.child(userID).child("Passengers").child("PassengerCapacity").getValue();
                 for (DataSnapshot child : snapshot.child(userID).child("Passengers").getChildren()) {
                     if (!child.getKey().equals("PassengerCapacity")) {
-                        int passengerCount = (int) child.getValue();
+                        int passengerCount = (int)(long) child.getValue();
                         passengerSpaceAvailable -= passengerCount;
                     }
                 }
@@ -134,16 +134,14 @@ public class D_E_Offers extends Fragment {
                     if (child.child("Status").getValue().equals("Passenger") && (boolean) child.child("isPublic").getValue()) {
 
                         // Make sure that the driver can actually carry this person + additions in car
-                        int passengerCount = (int) child.child("PassengerCount").getValue();
+                        int passengerCount = (int)(long)child.child("PassengerCount").getValue();
                         if (passengerSpaceAvailable - passengerCount >= 0) {
 
                             // Fetch the passengers details
                             String passengerID = child.getKey();
                             String passengerName = child.child("Name").getValue().toString();
 
-                            double pickupLongitude = (double) child.child("PickupLong").getValue();
-                            double pickupLatitude = (double) child.child("PickupLat").getValue();
-                            Place pickupLocation = new Place("", pickupLongitude, pickupLatitude);
+                            Place pickupLocation = child.child("PickupLocation").getValue(Place.class);
 
                             boolean isPending = false;
                             boolean hasResponse = false;

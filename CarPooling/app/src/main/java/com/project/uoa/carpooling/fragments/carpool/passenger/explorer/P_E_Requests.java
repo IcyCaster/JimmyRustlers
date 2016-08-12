@@ -6,20 +6,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
-import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.DriverComparator;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -108,36 +104,37 @@ public class P_E_Requests extends Fragment {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals(true)) {
+                // Check to make sure they don't have a driver
+                if (snapshot.child(userID).child("Driver").equals("null")) {
 
-                        String driverID = child.getKey();
-                        String driverName = child.child("Name").getValue().toString();
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals(true)) {
 
-                        // Location currently not used for driverEntity
-                        String startLongitude = child.child("StartLong").getValue().toString();
-                        String startLatitude = child.child("StartLat").getValue().toString();
-                        Place startLocation = new Place("", Double.parseDouble(startLongitude), Double.parseDouble(startLatitude));
+                            String driverID = child.getKey();
+                            String driverName = child.child("Name").getValue().toString();
 
-                        String carCapacity = child.child("Passengers").child("PassengerCapacity").getValue().toString();
-                        //TODO: Calculate total space and compare it with number of passengers
+                            // Location CURRENTLY NOT USED in driverEntity constructor
+                            // Place startLocation = child.child("StartLocation").getValue(Place.class);
 
-                        boolean isPending = false;
-                        if (child.child("Requests").exists()) {
-                            for (DataSnapshot UID : child.child("Requests").getChildren()) {
-                                if (UID.getKey().equals(userID)) {
-                                    if (UID.getValue().equals("Pending")) {
-                                        isPending = true;
+                            int carCapacity = (int) (long) child.child("Passengers").child("PassengerCapacity").getValue();
+                            //TODO: Calculate total space and compare it with number of passengers
+
+                            boolean isPending = false;
+                            if (child.child("Requests").exists()) {
+                                for (DataSnapshot UID : child.child("Requests").getChildren()) {
+                                    if (UID.getKey().equals(userID)) {
+                                        if (UID.getValue().equals("Pending") || UID.getValue().equals("Decline")) {
+                                            isPending = true;
+                                        }
                                     }
-                                    //Might consider adding something for "Decline" here? Not sure?
+
                                 }
-
                             }
-                        }
 
-                        // Make driver entity and add it to the list
-                        DriverEntity driver = new DriverEntity(driverID, driverName, isPending, carCapacity);
-                        listOfPotentialDrivers.add(driver);
+                            // Make driver entity and add it to the list
+                            DriverEntity driver = new DriverEntity(driverID, driverName, isPending, carCapacity);
+                            listOfPotentialDrivers.add(driver);
+                        }
                     }
                 }
                 callback();

@@ -29,10 +29,10 @@ public class D_Explorer extends Fragment{
 
         pagerAdapter = new D_PagerAdapter(getChildFragmentManager());
 
-        viewPager = (ViewPager) view.findViewById(R.id.driver_explorer_viewpager);
+        viewPager = (ViewPager) view.findViewById(R.id.explorer_viewpager);
         viewPager.setAdapter(pagerAdapter);
 
-        tabLayout = (TabLayout) view.findViewById(R.id.driver_explorer_tab);
+        tabLayout = (TabLayout) view.findViewById(R.id.explorer_tab);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
