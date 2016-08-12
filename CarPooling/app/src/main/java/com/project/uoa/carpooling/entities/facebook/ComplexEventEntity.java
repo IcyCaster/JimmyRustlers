@@ -1,5 +1,6 @@
 package com.project.uoa.carpooling.entities.facebook;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.project.uoa.carpooling.entities.shared.Place;
 
 import java.text.DateFormat;

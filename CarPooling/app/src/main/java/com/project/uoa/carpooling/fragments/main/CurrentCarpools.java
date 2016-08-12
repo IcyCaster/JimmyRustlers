@@ -206,12 +206,16 @@ public class CurrentCarpools extends Fragment {
 
     @Override
     public void onAttach(Context context) {
+        Log.d("CurrentCarpools", "onAttach");
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
+        }
+        if (getActivity() == null) {
+            Log.d("CurrentCarpools", "Activity not attached");
         }
     }
 

@@ -36,7 +36,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 0:
                         return new O_Details();
                     case 1:
-                        return new Event_Map();
+                        return new O_Map();
                     case 2:
                         return new O_Explorer();
                 }
