@@ -10,15 +10,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
@@ -29,6 +29,11 @@ import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
+
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import android.view.View.OnClickListener;
 
 /**
  * CarpoolEventActivity is the created when a user wishes to see a specific carpool they have subscribed to.
@@ -63,6 +68,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     public ComplexEventEntity getFacebookEvent() {
         return facebookEventObject;
     }
+
+    public FloatingActionsMenu floatingActionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,15 +142,63 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_arrows_icon));
 
 
+
+
+
+                                final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
+                                floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
+                                final FloatingActionButton actionC = new FloatingActionButton(getBaseContext());
+
                                 if(eventStatus == EventStatus.OBSERVER) {
                                     tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_o_icon));
                                 }
+                                else if(eventStatus == EventStatus.DRIVER) {
+
+
+                                    actionC.setTitle("Manage Passengers");
+                                    actionC.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+//
+                                        }
+                                    });
+                                    floatingActionsMenu.addButton(actionC);
+                                }
+                                else if(eventStatus == EventStatus.PASSENGER) {
+
+                                    actionC.setTitle("Manage Driver");
+                                    actionC.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+//
+                                        }
+                                    });
+                                    floatingActionsMenu.addButton(actionC);
+                                }
+
+                                floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+                                    @Override
+                                    public void onMenuExpanded() {
+                                        bg.setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onMenuCollapsed() {
+                                        bg.setVisibility(View.GONE);
+                                    }
+                                });
+
                             }
                         });
                     }
                 });
         // Execute Facebook request
         request.executeAsync();
+
+
+
+
+
     }
 
     @Override
@@ -165,5 +220,15 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
     public void onFragmentInteraction(Uri uri) {
         // Kept Empty
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(floatingActionsMenu.isExpanded()) {
+            floatingActionsMenu.collapse();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }

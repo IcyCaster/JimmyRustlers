@@ -147,7 +147,7 @@ public class CurrentCarpools extends Fragment {
                     Log.d("Firebase", "isDriving false");
                     //TODO: check if background service is running, and cancel it.
 
-                    getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+                    //getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
 
                 }
             }

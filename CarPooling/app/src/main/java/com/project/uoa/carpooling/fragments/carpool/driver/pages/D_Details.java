@@ -48,17 +48,20 @@ public class D_Details extends DetailsFragment {
         super.addEventDetails(view);
 
         // driver specific details
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+
+                DataSnapshot userSnapshot = snapshot.child("users").child(userID);
 
                 TextView passengerText = (TextView) view.findViewById(R.id.passengers_text);
 
                 String passengers = "";
                 int passengerNumber = 0;
-                for (DataSnapshot child : snapshot.child("Passengers").getChildren()) {
+                for (DataSnapshot child : userSnapshot.child("Passengers").getChildren()) {
                     if (!child.getKey().equals("PassengerCapacity")) {
-                        passengers = passengers + child.getKey() + "(" + child.getValue() + "); ";
+                        String passengerName = snapshot.child("users").child(child.getKey()).child("Name").getValue().toString();
+                        passengers = passengers + passengerName + "(" + child.getValue() + "); ";
                         passengerNumber += (int)(long)child.getValue();
                     }
                 }
@@ -72,15 +75,15 @@ public class D_Details extends DetailsFragment {
                 // Starting Route Time AND Estimated Arrival Time will need to be calculated based on start destination, passengers destination and the event's start time.
 
                 TextView countText = (TextView) view.findViewById(R.id.passenger_capacity_text);
-                if((int)(long)snapshot.child("Passengers").child("PassengerCapacity").getValue() == passengerNumber) {
+                if((int)(long)userSnapshot.child("Passengers").child("PassengerCapacity").getValue() == passengerNumber) {
                     countText.setText("Capacity: FULL");
                 }else {
-                    countText.setText("Capacity: (" + passengerNumber + "/" + snapshot.child("Passengers").child("PassengerCapacity").getValue().toString() + ")");
+                    countText.setText("Capacity: (" + passengerNumber + "/" + userSnapshot.child("Passengers").child("PassengerCapacity").getValue().toString() + ")");
                 }
 
 
                 TextView locationText = (TextView) view.findViewById(R.id.starting_location_placename);
-                locationText.setText(snapshot.child("StartLocation").child("latitude").getValue().toString() + "   " + snapshot.child("StartLocation").child("longitude").getValue().toString());
+                locationText.setText(userSnapshot.child("StartLocation").child("latitude").getValue().toString() + "   " + userSnapshot.child("StartLocation").child("longitude").getValue().toString());
             }
 
 

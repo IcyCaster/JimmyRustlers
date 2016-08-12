@@ -207,7 +207,7 @@
                                     android:id="@+id/route_title_text"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Route Details:"
+                                    android:text="Route Details"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
                                 <TextView
@@ -247,7 +247,7 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="16dp"
                                 android:layout_marginTop="16dp"
-                                android:src="@drawable/passenger_blue"/>
+                                android:src="@drawable/passenger_grey_circle"/>
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -265,7 +265,7 @@
                                     android:id="@+id/passenger_title_text"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Passenger Details:"
+                                    android:text="Passenger Details"
                                     android:textAppearance="@style/TextAppearance.AppCompat.Body2"/>
 
                                 <TextView

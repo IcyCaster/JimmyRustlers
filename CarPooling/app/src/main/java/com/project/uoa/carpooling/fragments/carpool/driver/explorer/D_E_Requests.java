@@ -6,20 +6,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.entities.shared.Place;
+import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -120,25 +117,24 @@ public class D_E_Requests extends Fragment {
                                 @Override
                                 public void onDataChange(DataSnapshot snapshot) {
 
-                                    String passengerID = snapshot.getKey();
-                                    String passengerName = snapshot.child("Name").getValue().toString();
+                                    // Only display Passengers who are public
+                                    if (snapshot.child("Status").getValue().equals("Passenger") && (boolean) snapshot.child("isPublic").getValue()) {
 
-                                    String pickupName = snapshot.child("PickupName").getValue().toString();
-                                    String pickupLongitude = snapshot.child("PickupLong").getValue().toString();
-                                    String pickupLatitude = snapshot.child("PickupLat").getValue().toString();
+                                        String passengerID = snapshot.getKey();
+                                        String passengerName = snapshot.child("Name").getValue().toString();
 
-                                    Place pickupLocation = new Place(pickupName, Double.parseDouble(pickupLongitude), Double.parseDouble(pickupLatitude));
+                                        Place pickupLocation = snapshot.child("PickupLocation").getValue(Place.class);
 
-                                    int passengerCount = (int)snapshot.child("PassengerCount").getValue();
+                                        int passengerCount = (int) (long) snapshot.child("PassengerCount").getValue();
 
-                                    boolean isPending = true;
+                                        boolean isPending = true;
 
-                                    // Make passenger entity and add it to the list
-                                    PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
-                                    listOfRequestingPassenger.add(passenger);
+                                        // Make passenger entity and add it to the list
+                                        PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount, isPending);
+                                        listOfRequestingPassenger.add(passenger);
 
+                                    }
                                     callback();
-
                                 }
                             });
                         }
@@ -156,9 +152,6 @@ public class D_E_Requests extends Fragment {
     public synchronized void callback() {
         requestNumber--;
         if (requestNumber <= 0) {
-
-            Log.d("T", listOfRequestingPassenger.toString());
-
             Collections.sort(listOfRequestingPassenger, new PassengerComparator());
             adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
