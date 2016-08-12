@@ -1,6 +1,9 @@
 package com.project.uoa.carpooling.fragments.carpool.driver.explorer;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,11 +105,8 @@ class D_E_OffersViewHolder extends RecyclerView.ViewHolder {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // TODO: ADD A POPUP TO CONFIRM CANCELLING "THE OFFER"
                 fireBaseReference.child("events").child(eventID).child("users").child(passengerID).child("Offers").child(userID).removeValue();
                 blankOffer();
-
             }
         });
 

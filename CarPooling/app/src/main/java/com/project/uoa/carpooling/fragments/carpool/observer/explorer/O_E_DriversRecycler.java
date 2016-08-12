@@ -41,10 +41,9 @@ public class O_E_DriversRecycler extends RecyclerView.Adapter<O_E_DriversViewHol
 
     @Override
     public void onBindViewHolder(O_E_DriversViewHolder holder, int position) {
-
         holder.driverID = list.get(position).getID();
         holder.driverName.setText(list.get(position).getName());
-
+        holder.carCapacity.setText("Remaining space in car: " + list.get(position).getCarCapacity());
     }
 
     @Override
@@ -57,7 +56,7 @@ class O_E_DriversViewHolder extends RecyclerView.ViewHolder {
     protected String driverID;
 
     protected TextView driverName;
-
+    protected TextView carCapacity;
     protected Button mapButton;
 
     private DatabaseReference fireBaseReference;
@@ -74,19 +73,32 @@ class O_E_DriversViewHolder extends RecyclerView.ViewHolder {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         driverName = (TextView) itemView.findViewById(R.id.driver_card_name);
+        carCapacity = (TextView) itemView.findViewById(R.id.driver_pickuptime);
+
+        // These buttons are not used on the reused driver cards
+        Button acceptButton = (Button) itemView.findViewById(R.id.request_button);
+        Button declineButton = (Button) itemView.findViewById(R.id.cancel_button);
+        acceptButton.setVisibility(View.GONE);
+        declineButton.setVisibility(View.GONE);
 
         mapButton = (Button) itemView.findViewById(R.id.map_button);
-
+        mapButton.setText("Observe on map");
         // Shows observers's location respective to driver and their route
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                // TODO: OPEN UP MAP, SHOW WHAT THE NEW ROUTE WILL LOOK LIKE WITH THE NEW PASSENGER + TOTAL TIME + TOTAL DISTANCE
+
+
+                // TODO: Make the observer map do stuff
+                // Link to what the map should do:
+                // http://puu.sh/qv6Sr/6a9b77bc2a.png
+
+
+
+
 
             }
         });
-
-
     }
 }

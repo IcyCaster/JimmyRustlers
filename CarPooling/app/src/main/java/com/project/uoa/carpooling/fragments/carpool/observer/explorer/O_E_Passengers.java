@@ -113,13 +113,10 @@ public class O_E_Passengers extends Fragment {
 
                         String passengerID = child.getKey();
                         String passengerName = child.child("Name").getValue().toString();
-                        String pickupName = child.child("PickupName").getValue().toString();
-                        String pickupLongitude = child.child("PickupLong").getValue().toString();
-                        String pickupLatitude = child.child("PickupLat").getValue().toString();
 
-                        Place pickupLocation = new Place(pickupName, Double.parseDouble(pickupLongitude), Double.parseDouble(pickupLatitude));
+                        Place pickupLocation = child.child("PickupLocation").getValue(Place.class);
 
-                        int passengerCount = (int)child.child("PassengerCount").getValue();
+                        int passengerCount = (int)(long)child.child("PassengerCount").getValue();
 
                         // Make passenger entity and add it to the list
                         PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount);

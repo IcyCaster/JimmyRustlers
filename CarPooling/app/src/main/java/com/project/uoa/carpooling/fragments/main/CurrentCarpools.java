@@ -135,8 +135,7 @@ public class CurrentCarpools extends Fragment {
                 // Detect that the driver is driving, trigger notification and
                 if((boolean)dataSnapshot.getValue()) {
                     Log.d("Firebase", "isDriving true");
-                    Toast.makeText(getActivity().getApplicationContext(), "Driver is: " + dataSnapshot.getValue().toString(),
-                            Toast.LENGTH_SHORT).show();
+
 
                     showNotification();
 
@@ -148,7 +147,7 @@ public class CurrentCarpools extends Fragment {
                     Log.d("Firebase", "isDriving false");
                     //TODO: check if background service is running, and cancel it.
 
-                    getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+                    //getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
 
                 }
             }

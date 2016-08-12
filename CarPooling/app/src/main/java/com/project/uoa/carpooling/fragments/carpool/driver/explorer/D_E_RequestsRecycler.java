@@ -13,6 +13,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
+import com.project.uoa.carpooling.helpers.firebase.CarpoolMatch;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +70,7 @@ class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
     private String userID;
     private String eventID;
 
-    public D_E_RequestsViewHolder(View itemView, Context context) {
+    public D_E_RequestsViewHolder(View itemView, final Context context) {
         super(itemView);
 
         final CarpoolEventActivity carpoolActivity = (CarpoolEventActivity) context;
@@ -89,11 +90,7 @@ class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
         offerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // TODO: ADD USER TO YOUR CARPOOL
-
-                offerButton.setEnabled(false);
-                cancelButton.setEnabled(false);
+                CarpoolMatch.TryJoin(eventID, userID, passengerID, carpoolActivity, offerButton, cancelButton);
             }
         });
 
@@ -101,7 +98,7 @@ class D_E_RequestsViewHolder extends RecyclerView.ViewHolder {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Requests").child(passengerID).removeValue();
+                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Requests").child(passengerID).setValue("Declined");
                 offerButton.setEnabled(false);
                 cancelButton.setEnabled(false);
             }

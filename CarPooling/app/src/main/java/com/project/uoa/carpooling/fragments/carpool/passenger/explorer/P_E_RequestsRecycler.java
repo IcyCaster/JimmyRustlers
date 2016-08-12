@@ -44,7 +44,7 @@ public class P_E_RequestsRecycler extends RecyclerView.Adapter<P_E_RequestsViewH
 
         holder.driverID = list.get(position).getID();
         holder.driverName.setText(list.get(position).getName());
-        holder.estimatedPickupTime.setText("TODO");
+        holder.estimatedPickupTime.setText("Estimated pickup time: TODO");
 
         if (list.get(position).isPending()) {
             holder.pendingOffer();
@@ -101,11 +101,8 @@ class P_E_RequestsViewHolder extends RecyclerView.ViewHolder {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // TODO: ADD A POPUP TO CONFIRM CANCELLING "THE OFFER"
                 fireBaseReference.child("events").child(eventID).child("users").child(driverID).child("Requests").child(userID).removeValue();
                 blankOffer();
-
             }
         });
 

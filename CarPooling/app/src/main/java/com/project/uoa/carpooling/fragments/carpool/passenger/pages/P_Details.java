@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -19,10 +20,11 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 
-public class P_Details extends Fragment {
+public class P_Details extends DetailsFragment {
 
     private DatabaseReference fireBaseReference;
 
@@ -44,56 +46,39 @@ public class P_Details extends Fragment {
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        // TODO: Make a helper, DisplayEventDetails(view, facebookEvent), as this can be called by Observer, Driver and Passenger
-        // TODO: Reuse a details section kappa
-
-        // EventDetails:
-        // EVENT_NAME
-        TextView name = (TextView) view.findViewById(R.id.event_name);
-        name.setText("Name: " + facebookEvent.getName());
-
-        // EVENT_START_TIME
-        TextView startTime = (TextView) view.findViewById(R.id.event_start_datetime);
-        startTime.setText("Start Time: " + facebookEvent.getPrettyStartTime());
-
-        // EVENT_DESCRIPTION
-        TextView description = (TextView) view.findViewById(R.id.event_description);
-        if (facebookEvent.getDescription().equals("")) {
-            description.setText("Description: No description set");
-        } else {
-            description.setText("Description: " + facebookEvent.getDescription());
-        }
-
-        // EVENT_LOCATION
-        TextView location = (TextView) view.findViewById(R.id.event_location);
-        if (facebookEvent.getLocation().toString().equals("")) {
-            location.setText("Location: No location set");
-        } else {
-            location.setText("Location: " + facebookEvent.getLocation().toString());
-        }
-        // END OF EVENT_DETAILS
-
+        super.addEventDetails(view);
 
         // passenger specific details
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
-                TextView driverText = (TextView) view.findViewById(R.id.driver_name);
+                DataSnapshot userSnapshot = snapshot.child("users").child(userID);
 
-                if (!snapshot.child("Driver").exists()) {
-                    driverText.setText("Driver: No driver yet");
+                TextView driverText = (TextView) view.findViewById(R.id.driver_name_text);
+
+                RelativeLayout routeDetails = (RelativeLayout) view.findViewById(R.id.route_details_container);
+                View routeDetailsBreak = view.findViewById(R.id.route_details_break);
+
+                if (userSnapshot.child("Driver").getValue().equals("null")) {
+                    driverText.setText("No Driver");
+                    routeDetails.setVisibility(View.GONE);
+                    routeDetailsBreak.setVisibility(View.GONE);
+
                 } else {
-                    driverText.setText("Driver: " + snapshot.child("Driver").getValue().toString());
+                    String driverID = userSnapshot.child("Driver").getValue().toString();
+                    String driverName = snapshot.child("users").child(driverID).child("Name").getValue().toString();
+                    driverText.setText(driverName);
+                    //TODO: Set route details
                 }
 
-                // Starting Route Time AND Estimated Arrival Time will need to be calculated based on start destination, passengers destination and the event's start time.
+                // TODO: Starting Route Time AND Estimated Arrival Time will need to be calculated based on start destination, passengers destination and the event's start time.
 
-                TextView countText = (TextView) view.findViewById(R.id.information_count);
-                countText.setText("Passenger Total: " + snapshot.child("PassengerCount").getValue().toString());
+                TextView countText = (TextView) view.findViewById(R.id.passenger_number_text);
+                countText.setText(userSnapshot.child("PassengerCount").getValue().toString());
 
-                TextView locationText = (TextView) view.findViewById(R.id.information_location);
-                locationText.setText("Leave location: " + snapshot.child("PickupLat").getValue().toString() + "   " + snapshot.child("PickupLong").getValue().toString());
+                TextView locationText = (TextView) view.findViewById(R.id.pickup_location_placename);
+                locationText.setText(userSnapshot.child("PickupLocation").child("latitude").getValue().toString() + "   " + userSnapshot.child("PickupLocation").child("longitude").getValue().toString());
             }
 
 

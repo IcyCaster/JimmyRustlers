@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.project.uoa.carpooling.fragments.carpool.MapFragment;
+
 /**
  * Created by Chester on 18/07/2016.
  */
