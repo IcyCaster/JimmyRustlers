@@ -5,96 +5,27 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
+import android.util.Log;
 
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.shared.Place;
+import com.project.uoa.carpooling.fragments.carpool.MapsFragment;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import com.project.uoa.carpooling.fragments.carpool.MapFragment;
 
 /**
  * Created by Chester on 18/07/2016.
  */
-public class O_Map extends Fragment implements OnMapReadyCallback {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String EVENT_ID = "param1";
-    private static final String TAG = "Event_Map";
-    private String GOOGLE_API_KEY;
+public class O_Map extends MapsFragment implements OnMapReadyCallback {
+    private static final String TAG = "O_Map";
 
-    // TODO: Rename and change types of parameters
-    private String eventID;
-    private String userID;
-    private String eventStatus;
-
-    // Routing components
-    private List<Marker> originMarkers = new ArrayList<>();
-    private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
-
-    //TODO Update string with actual address dynamically.
-    private String mSelectedAddress = "University Of Auckland";
-    private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
-    private Location mCurrentLocation;
-
-    private MapView mMapView;
-
-    // Firebase reference
-    private DatabaseReference fireBaseReference;
-    private String mEventLocation = "University Of Auckland";
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
-        GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
-
-        fireBaseReference = FirebaseDatabase.getInstance().getReference();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment_observer_map, container, false);
-
-        // Map Initialization
-        mMapView = (MapView) view.findViewById(R.id.mapView);
-        mMapView.onCreate(savedInstanceState);
-        mMapView.onResume(); // Needed to have map displayed.
-        mMapView.getMapAsync(this);
-
-        return view;
-    }
+    private LatLng eventLatLng;
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -111,8 +42,8 @@ public class O_Map extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setMyLocationEnabled(true);
 
-        Place eventLocation = ((CarpoolEventActivity)getActivity()).getFacebookEvent().getLocation();
-        LatLng eventLatLng = getLocationFromAddress(getActivity(), eventLocation);
+        // Get event lat lng pair.
+        eventLatLng = getLocationFromAddress(getActivity(), eventLocation);
 
         // Add Marker and move camera.
         mMap.addMarker(new MarkerOptions()
@@ -123,7 +54,11 @@ public class O_Map extends Fragment implements OnMapReadyCallback {
     }
 
     public LatLng getLocationFromAddress(Context context, Place eventLocation) {
-        // Check if Facebook Object has valid LatLng.
+        Log.d(TAG, "Placename: " + eventLocation.toString());
+        Log.d(TAG, "Placelat: " + eventLocation.getLatitude());
+        Log.d(TAG, "Placelng: " + eventLocation.getLongitude());
+
+        // Check if Facebook Object has valid LatLng, else geocode it.
         if (eventLocation.hasLatLong()){
             return new LatLng(eventLocation.getLatitude(), eventLocation.getLongitude());
 

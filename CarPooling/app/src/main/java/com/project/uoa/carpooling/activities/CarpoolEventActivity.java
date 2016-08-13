@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
@@ -53,6 +54,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     private String eventID;
     private EventStatus eventStatus;
     private ComplexEventEntity facebookEventObject;
+    private Place eventLocation;
 
     private DatabaseReference fireBaseReference;
 
@@ -68,6 +70,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     public ComplexEventEntity getFacebookEvent() {
         return facebookEventObject;
     }
+    public Place getEventLocation() {return  eventLocation; }
 
     public FloatingActionsMenu floatingActionsMenu;
 
@@ -82,10 +85,15 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         FacebookSdk.sdkInitialize(getApplicationContext());
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
-        // Set the userID and eventID
+        // Update values if savedInstanceState exists.
         if (savedInstanceState != null) {
             userID = savedInstanceState.getString("USER_ID");
             eventID = savedInstanceState.getString("EVENT_ID");
+            eventStatus = (EventStatus) savedInstanceState.getSerializable("EVENT_STATUS");
+            eventLocation = new Place(savedInstanceState.getString("EVENT_NAME"),
+                    savedInstanceState.getDouble("EVENT_LAT"),
+                    savedInstanceState.getDouble("EVENT_LNG"));
+            facebookEventObject = savedInstanceState.getParcelable("FACEBOOK_ENTITY");
         } else {
             Bundle bundle = getIntent().getExtras();
             userID = bundle.getString("userID");
@@ -103,13 +111,13 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                         // Parsing the event object
                         facebookEventObject = Facebook_ComplexEvent_Parser.parse(response.getJSONObject());
 
+                        // Save location as separate entity.
+                        eventLocation = facebookEventObject.getLocation();
+
                         // users/{user-ID}/events/{event-ID}
                         fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot snapshot) {
-
-                                // Set the activities view content
-                                setContentView(R.layout.activity__car_pool_instance);
 
                                 String status = snapshot.getValue().toString();
                                 Log.d("firebase - log", "Event Status: " + status);
@@ -123,6 +131,9 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 else if(status.equals("Passenger")) {
                                     eventStatus = EventStatus.PASSENGER;
                                 }
+
+                                // Set the activities view content
+                                setContentView(R.layout.activity__car_pool_instance);
 
                                 TextView statusText = (TextView)findViewById(R.id.status_text);
                                 statusText.setText(eventStatus.toString());
@@ -140,10 +151,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 tabLayout.getTabAt(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.details_icon));
                                 tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.map_icon));
                                 tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_arrows_icon));
-
-
-
-
 
                                 final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
                                 floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
@@ -194,28 +201,34 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                 });
         // Execute Facebook request
         request.executeAsync();
-
-
-
-
-
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save state members in saved instance
+        savedInstanceState.putSerializable("EVENT_STATUS", eventStatus);
         savedInstanceState.putString("USER_ID", userID);
         savedInstanceState.putString("EVENT_ID", eventID);
+        savedInstanceState.putString("EVENT_NAME", getFacebookEvent().getLocation().toString());
+        savedInstanceState.putDouble("EVENT_LAT", getFacebookEvent().getLocation().getLatitude());
+        savedInstanceState.putDouble("EVENT_LNG", getFacebookEvent().getLocation().getLongitude());
+        savedInstanceState.putParcelable("FACEBOOK_ENTITY", facebookEventObject);
+
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
+
         // Restore state members from saved instance
+        eventStatus = (EventStatus) savedInstanceState.getSerializable("EVENT_STATUS");
         userID = savedInstanceState.getString("USER_ID");
         eventID = savedInstanceState.getString("EVENT_ID");
+        eventLocation = new Place(savedInstanceState.getString("EVENT_NAME"),
+        savedInstanceState.getDouble("EVENT_LAT"),
+        savedInstanceState.getDouble("EVENT_LNG"));
+        facebookEventObject = savedInstanceState.getParcelable("FACEBOOK_ENTITY");
     }
 
     public void onFragmentInteraction(Uri uri) {

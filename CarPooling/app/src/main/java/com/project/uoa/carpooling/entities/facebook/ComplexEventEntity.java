@@ -1,6 +1,8 @@
 package com.project.uoa.carpooling.entities.facebook;
 
-import com.google.android.gms.maps.model.LatLng;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.project.uoa.carpooling.entities.shared.Place;
 
 import java.text.DateFormat;
@@ -10,9 +12,9 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Created by Chester on 14/07/2016.
+ * Created by Chester on 13/08/2016.
  */
-public class ComplexEventEntity {
+public class ComplexEventEntity implements Parcelable {
 
     private String ID;
     private String name;
@@ -160,4 +162,53 @@ public class ComplexEventEntity {
     public void setLongStartTime(String longStartTime) {
         this.longStartTime = longStartTime;
     }
+
+    protected ComplexEventEntity(Parcel in) {
+        ID = in.readString();
+        name = in.readString();
+        description = in.readString();
+        location = new Place(in.readString(), in.readDouble(), in.readDouble());
+        startCalendar = (Calendar) in.readValue(Calendar.class.getClassLoader());
+        endCalendar = (Calendar) in.readValue(Calendar.class.getClassLoader());
+        prettyStartTime = in.readString();
+        prettyEndTime = in.readString();
+        longStartDate = in.readString();
+        longStartTime = in.readString();
+        unixStartTime = in.readDouble();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(ID);
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(location.toString());
+        dest.writeDouble(location.getLatitude());
+        dest.writeDouble(location.getLongitude());
+        dest.writeValue(startCalendar);
+        dest.writeValue(endCalendar);
+        dest.writeString(prettyStartTime);
+        dest.writeString(prettyEndTime);
+        dest.writeString(longStartDate);
+        dest.writeString(longStartTime);
+        dest.writeDouble(unixStartTime);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<ComplexEventEntity> CREATOR = new Parcelable.Creator<ComplexEventEntity>() {
+        @Override
+        public ComplexEventEntity createFromParcel(Parcel in) {
+            return new ComplexEventEntity(in);
+        }
+
+        @Override
+        public ComplexEventEntity[] newArray(int size) {
+            return new ComplexEventEntity[size];
+        }
+    };
 }

@@ -40,11 +40,17 @@ public class Facebook_ComplexEvent_Parser {
                 if (placeObject.has("name")) {
                     placeName = placeObject.getString("name");
                 }
-                if (placeObject.has("longitude")) {
-                    longitude = placeObject.getString("longitude");
-                }
-                if (placeObject.has("latitude")) {
-                    latitude = placeObject.getString("latitude");
+
+                if (placeObject.has("location")) {
+
+                    JSONObject locationObject = placeObject.getJSONObject("location");
+
+                    if (locationObject.has("longitude")) {
+                        longitude = locationObject.getString("longitude");
+                    }
+                    if (locationObject.has("latitude")) {
+                        latitude = locationObject.getString("latitude");
+                    }
                 }
             }
 
