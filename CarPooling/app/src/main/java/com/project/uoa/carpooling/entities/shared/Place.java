@@ -3,7 +3,7 @@ package com.project.uoa.carpooling.entities.shared;
 /**
  * Created by Chester on 14/07/2016.
  */
-public class Place {
+public class Place  {
 
     private String placeName;
     private double longitude;
@@ -65,4 +65,5 @@ public class Place {
     public String toString() {
         return placeName;
     }
+
 }

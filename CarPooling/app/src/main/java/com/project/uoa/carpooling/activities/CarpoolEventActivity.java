@@ -23,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
+import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
 import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
@@ -142,9 +143,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_arrows_icon));
 
 
-
-
-
                                 final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
                                 floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
                                 final FloatingActionButton actionC = new FloatingActionButton(getBaseContext());
@@ -153,8 +151,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                     tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_o_icon));
                                 }
                                 else if(eventStatus == EventStatus.DRIVER) {
-
-
                                     actionC.setTitle("Manage Passengers");
                                     actionC.setOnClickListener(new OnClickListener() {
                                         @Override
@@ -165,7 +161,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                     floatingActionsMenu.addButton(actionC);
                                 }
                                 else if(eventStatus == EventStatus.PASSENGER) {
-
                                     actionC.setTitle("Manage Driver");
                                     actionC.setOnClickListener(new OnClickListener() {
                                         @Override
@@ -176,15 +171,60 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                     floatingActionsMenu.addButton(actionC);
                                 }
 
+                                final FloatingActionButton messagingButton = (FloatingActionButton) findViewById(R.id.messaging_button);
+                                messagingButton.setColorNormalResId(R.color.colorAccent);
+                                messagingButton.setColorPressedResId(R.color.colorAccentLight);
+                                messagingButton.setIcon(R.drawable.ic_fab_star);
+                                messagingButton.setStrokeVisible(false);
+
                                 floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
                                     @Override
                                     public void onMenuExpanded() {
+                                        messagingButton.setVisibility(View.VISIBLE);
                                         bg.setVisibility(View.VISIBLE);
                                     }
 
                                     @Override
                                     public void onMenuCollapsed() {
+                                        messagingButton.setVisibility(View.GONE);
                                         bg.setVisibility(View.GONE);
+                                    }
+                                });
+
+
+                                final FloatingActionButton detailsButton = (FloatingActionButton) findViewById(R.id.details_fab);
+                                detailsButton.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Log.d("Change Details", "BUTTON TODO:");
+                                        detailsButton.setTitle("TODO");
+                                    }
+                                });
+
+                                final FloatingActionButton leaveCarpoolButton = (FloatingActionButton) findViewById(R.id.leave_carpool_fab);
+                                leaveCarpoolButton.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // TODO: Add an R U SURE? popup
+
+                                        //remove from users
+                                        fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
+                                        //remove from events
+                                        fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
+
+                                        Log.d("firebase - event", "Unsubscribed: " + eventID);
+
+                                        CarpoolEventActivity.this.finish();
+                                    }
+                                });
+
+                                final FloatingActionButton changeStatusButton = (FloatingActionButton) findViewById(R.id.change_status_fab);
+                                changeStatusButton.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // Create and show the dialog.
+                                        ChangeStatusDialog newFragment = new ChangeStatusDialog();
+                                        newFragment.show(getSupportFragmentManager(), "status_dialog");
                                     }
                                 });
 
@@ -194,10 +234,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                 });
         // Execute Facebook request
         request.executeAsync();
-
-
-
-
 
     }
 

@@ -1,5 +1,7 @@
 package com.project.uoa.carpooling.entities.facebook;
 
+import android.util.Log;
+
 import com.project.uoa.carpooling.entities.shared.Place;
 
 import java.text.DateFormat;
@@ -37,7 +39,7 @@ public class ComplexEventEntity {
             longitudeAsDouble = Double.parseDouble(longitude);
             latitudeAsDouble = Double.parseDouble(latitude);
         } catch (NumberFormatException e) {
-
+Log.e("numberformatexception", "lat or long");
         }
 
         this.location = new Place(placeName, longitudeAsDouble, latitudeAsDouble);
@@ -46,7 +48,6 @@ public class ComplexEventEntity {
         DateFormat prettyFormat = new SimpleDateFormat("MMM d, h:mmaa", Locale.ENGLISH);
 
         DateFormat longDateFormat = new SimpleDateFormat("EEEE, d MMMM y", Locale.ENGLISH);
-
 
         DateFormat longTimeFormat = new SimpleDateFormat("h:mmaa", Locale.ENGLISH);
 
