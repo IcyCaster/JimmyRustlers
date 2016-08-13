@@ -43,21 +43,17 @@ public class O_Map extends MapsFragment implements OnMapReadyCallback {
         mMap.setMyLocationEnabled(true);
 
         // Get event lat lng pair.
-        eventLatLng = getLocationFromAddress(getActivity(), eventLocation);
+        eventLatLng = getLocationFromAddress(getActivity(), facebookEvent.getLocation());
 
         // Add Marker and move camera.
         mMap.addMarker(new MarkerOptions()
                 .position(eventLatLng)
-                .title(eventLocation.toString()));
+                .title(facebookEvent.getLocation().toString()));
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLatLng, 15));
     }
 
     public LatLng getLocationFromAddress(Context context, Place eventLocation) {
-        Log.d(TAG, "Placename: " + eventLocation.toString());
-        Log.d(TAG, "Placelat: " + eventLocation.getLatitude());
-        Log.d(TAG, "Placelng: " + eventLocation.getLongitude());
-
         // Check if Facebook Object has valid LatLng, else geocode it.
         if (eventLocation.hasLatLong()){
             return new LatLng(eventLocation.getLatitude(), eventLocation.getLongitude());
