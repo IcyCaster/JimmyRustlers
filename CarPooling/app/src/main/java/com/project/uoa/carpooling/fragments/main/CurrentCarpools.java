@@ -125,32 +125,7 @@ public class CurrentCarpools extends Fragment {
 
         });
 
-        // TODO: Needs to be added to all subscribed events
-        fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                // Detect that the driver is driving, trigger notification and
-                if((boolean)dataSnapshot.getValue()) {
-                    Log.d("Firebase", "isDriving true");
-
-
-                    showNotification();
-
-
-                    getActivity().startService(new Intent(getActivity().getBaseContext(), TutorialService.class));
-
-                }
-                else {
-                    Log.d("Firebase", "isDriving false");
-                    //TODO: check if background service is running, and cancel it.
-
-                    //getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
-
-                }
-            }
-
-        });
 
         return view;
     }
@@ -238,13 +213,9 @@ public class CurrentCarpools extends Fragment {
 
 
         listOfSubscribedEvents.clear();
-
-
         fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-
-
                 for (DataSnapshot child : snapshot.getChildren()) {
                     listOfSubscribedEvents.add(child.getKey().toString());
                 }
@@ -280,6 +251,42 @@ public class CurrentCarpools extends Fragment {
 
             subbedEvents = listOfSubscribedEvents.size();
             for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
+
+
+                // TOTOOTOTOTOTO TODO
+
+
+                // Check if passenger
+                // Check if dedicated driver is set
+                // Check dedicated driver's isDriving is T
+
+
+                // TODO: Needs to be added to all subscribed events
+                fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        // Detect that the driver is driving, trigger notification and
+                        if((boolean)dataSnapshot.getValue()) {
+                            Log.d("Firebase", "isDriving true");
+
+
+                            showNotification();
+
+
+                            getActivity().startService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+
+                        }
+                        else {
+                            Log.d("Firebase", "isDriving false");
+                            //TODO: check if background service is running, and cancel it.
+
+                            //getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
+
+                        }
+                    }
+
+                });
 
 
                 GraphRequest request = GraphRequest.newGraphPathRequest(
@@ -319,6 +326,8 @@ public class CurrentCarpools extends Fragment {
                                                     } catch (JSONException e) {
                                                         e.printStackTrace();
                                                     }
+
+
 
 
                                                     callback();

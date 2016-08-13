@@ -45,24 +45,6 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//TODO: REMOVE
-//        DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-//        // users/{user-ID}/events/{event-ID}
-//        fireBaseReference.child("ObjTest").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot snapshot) {
-//                Log.d("placeTest", "TRACK");
-//                Place place = snapshot.getValue(Place.class);
-//                Log.d("placeTest", place.getPlaceName() + ", " + place.getLatitude() + ", " + place.getLongitude());
-//                Log.d("hasLatLong", Boolean.toString(place.hasLatLong()));
-//                Log.d("hasPlaceName", Boolean.toString(place.hasPlaceName()));
-//            }
-//        });
-//
-//
-//        Place addPlace = new Place(null, 321, 123);
-//        fireBaseReference.child("ObjTest2").setValue(addPlace);
-
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
