@@ -62,14 +62,14 @@ public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarp
         if (list.get(position).getEventImageURL() != null) {
             Picasso.with(context)
                     .load(list.get(position).getEventImageURL())
-                    .placeholder(R.drawable.placeholder_image)
-                    .error(R.drawable.error_no_image)
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_error)
                     .fit()
                     .noFade()
                     .into(holder.eventThumbnail);
         } else {
             // If no URL given, load default image
-            holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.placeholder_image));
+            holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.image_placeholder));
         }
     }
 

@@ -29,7 +29,7 @@ public class O_Explorer extends ExplorerFragment{
                              Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.carpool_explorer_tab_pager, container, false);
-        pagerAdapter = new O_PagerAdapter(getChildFragmentManager(), getActivity());
+        pagerAdapter = new O_PagerAdapter(getChildFragmentManager());
 
         super.setupTabViewPager(view, pagerAdapter);
 

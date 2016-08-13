@@ -27,10 +27,8 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
@@ -167,7 +165,7 @@ public class CurrentCarpools extends Fragment {
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(getActivity())
-                        .setSmallIcon(R.drawable.driving_icon)
+                        .setSmallIcon(R.drawable.icon_grey_driving)
                         .setContentTitle("[Driver] is Driving!")
                         .setContentText("Touch to see how far away he is from you!")
                         .setContentIntent(pendingIntent); //Required on Gingerbread and below

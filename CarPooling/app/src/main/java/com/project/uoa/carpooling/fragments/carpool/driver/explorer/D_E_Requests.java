@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -36,6 +37,7 @@ public class D_E_Requests extends Fragment {
     private D_E_RequestsRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
+    private TextView noOffersText;
 
     private String userID;
     private String eventID;
@@ -60,15 +62,16 @@ public class D_E_Requests extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        PopulateRequests();
+
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
-
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
+        noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
+        noOffersText.setText("No Passengers Available!");
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+
+        PopulateRequests();
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -98,6 +101,8 @@ public class D_E_Requests extends Fragment {
     }
 
     public void PopulateRequests() {
+
+        noOffersText.setVisibility(View.GONE);
 
         listOfRequestingPassenger.clear();
 
@@ -152,10 +157,15 @@ public class D_E_Requests extends Fragment {
     public synchronized void callback() {
         requestNumber--;
         if (requestNumber <= 0) {
-            Collections.sort(listOfRequestingPassenger, new PassengerComparator());
-            adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(adapter);
+            if(listOfRequestingPassenger.size() == 0) {
+                noOffersText.setVisibility(View.VISIBLE);
+            }
+            else {
+                Collections.sort(listOfRequestingPassenger, new PassengerComparator());
+                adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerView.setAdapter(adapter);
+            }
             swipeContainer.setRefreshing(false);
         }
     }

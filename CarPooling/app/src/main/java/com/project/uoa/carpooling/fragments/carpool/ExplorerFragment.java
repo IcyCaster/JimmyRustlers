@@ -22,11 +22,4 @@ public class ExplorerFragment extends Fragment {
         TabLayout tabLayout = (TabLayout) view.findViewById(R.id.explorer_tab);
         tabLayout.setupWithViewPager(viewPager);
     }
-
-
-
-
-
-
-
 }

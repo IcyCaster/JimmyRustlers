@@ -1,11 +1,15 @@
 package com.project.uoa.carpooling.activities;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -149,9 +153,9 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 tabLayout.setupWithViewPager(viewPager);
 
 
-                                tabLayout.getTabAt(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.details_icon));
-                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.map_icon));
-                                tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_arrows_icon));
+                                tabLayout.getTabAt(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_details));
+                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_map));
+                                tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_arrows));
 
 
                                 final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
@@ -159,10 +163,11 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 final FloatingActionButton actionC = new FloatingActionButton(getBaseContext());
 
                                 if(eventStatus == EventStatus.OBSERVER) {
-                                    tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.explorer_o_icon));
+                                    tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_eye));
                                 }
                                 else if(eventStatus == EventStatus.DRIVER) {
                                     actionC.setTitle("Manage Passengers");
+                                    actionC.setIcon(R.drawable.icon_white_passenger);
                                     actionC.setOnClickListener(new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
@@ -173,6 +178,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 }
                                 else if(eventStatus == EventStatus.PASSENGER) {
                                     actionC.setTitle("Manage Driver");
+                                    actionC.setIcon(R.drawable.icon_white_driver);
                                     actionC.setOnClickListener(new OnClickListener() {
                                         @Override
                                         public void onClick(View v) {
@@ -185,7 +191,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 final FloatingActionButton messagingButton = (FloatingActionButton) findViewById(R.id.messaging_button);
                                 messagingButton.setColorNormalResId(R.color.colorAccent);
                                 messagingButton.setColorPressedResId(R.color.colorAccentLight);
-                                messagingButton.setIcon(R.drawable.ic_fab_star);
+                                messagingButton.setIcon(R.drawable.icon_black_messenger);
                                 messagingButton.setStrokeVisible(false);
 
                                 floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
@@ -204,6 +210,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
 
                                 final FloatingActionButton detailsButton = (FloatingActionButton) findViewById(R.id.details_fab);
+                                detailsButton.setIcon(R.drawable.icon_white_change_details);
                                 detailsButton.setOnClickListener(new OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -213,23 +220,41 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 });
 
                                 final FloatingActionButton leaveCarpoolButton = (FloatingActionButton) findViewById(R.id.leave_carpool_fab);
+                                leaveCarpoolButton.setIcon(R.drawable.icon_white_leave);
                                 leaveCarpoolButton.setOnClickListener(new OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        // TODO: Add an R U SURE? popup
 
-                                        //remove from users
-                                        fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
-                                        //remove from events
-                                        fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
 
-                                        Log.d("firebase - event", "Unsubscribed: " + eventID);
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(CarpoolEventActivity.this);
+                                        alert.setTitle("Confirm leaving?");
+                                        alert.setMessage(Html.fromHtml("Anything you have organised will be gone. You <b>cannot</b> undo this!"));
+                                        alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                //remove from users
+                                                fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
+                                                //remove from events
+                                                fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
 
-                                        CarpoolEventActivity.this.finish();
+                                                Log.d("firebase - event", "Unsubscribed: " + eventID);
+
+                                                CarpoolEventActivity.this.finish();
+                                            }
+                                        });
+                                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+                                        Dialog dialog = alert.create();
+                                        dialog.show();
                                     }
                                 });
 
                                 final FloatingActionButton changeStatusButton = (FloatingActionButton) findViewById(R.id.change_status_fab);
+                                changeStatusButton.setIcon(R.drawable.icon_white_change_status);
                                 changeStatusButton.setOnClickListener(new OnClickListener() {
                                     @Override
                                     public void onClick(View view) {

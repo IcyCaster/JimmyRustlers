@@ -17,8 +17,8 @@ public class Facebook_ComplexEvent_Parser {
         String ID;
         String name;
         String description = "";
-        String longitude = "";
-        String latitude = "";
+        String longitude = "0";
+        String latitude = "0";
         String placeName = "";
         String startTime;
         String endTime = "";

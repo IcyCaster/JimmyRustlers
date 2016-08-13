@@ -137,7 +137,7 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="16dp"
                                 android:layout_marginTop="16dp"
-                                android:src="@drawable/evt_loc_icon"/>
+                                android:src="@drawable/icon_black_location_icon"/>
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -189,7 +189,7 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="16dp"
                                 android:layout_marginTop="16dp"
-                                android:src="@drawable/route_icon"/>
+                                android:src="@drawable/icon_black_route"/>
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -248,7 +248,7 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="16dp"
                                 android:layout_marginTop="16dp"
-                                android:src="@drawable/driver_grey_circle"/>
+                                android:src="@drawable/icon_grey_circle_driver"/>
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
@@ -300,7 +300,7 @@
                                 android:layout_centerVertical="true"
                                 android:layout_marginLeft="16dp"
                                 android:layout_marginTop="16dp"
-                                android:src="@drawable/passenger_grey_circle"/>
+                                android:src="@drawable/icon_grey_circle_passenger"/>
 
                             <LinearLayout
                                 android:layout_width="wrap_content"

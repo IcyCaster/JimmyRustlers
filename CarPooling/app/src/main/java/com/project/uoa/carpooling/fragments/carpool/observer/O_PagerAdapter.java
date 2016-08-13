@@ -23,11 +23,9 @@ import com.project.uoa.carpooling.fragments.carpool.observer.explorer.O_E_Passen
 public class O_PagerAdapter extends FragmentPagerAdapter {
 
     private int tabCount = 2;
-    private Context context;
 
-    public O_PagerAdapter(FragmentManager fm, Context context) {
+    public O_PagerAdapter(FragmentManager fm) {
         super(fm);
-        this.context = context;
     }
 
     @Override
@@ -49,30 +47,14 @@ public class O_PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-
-        String title = "";
-//        Drawable image = null;
-
         switch (position) {
             case 0:
-                return title = "Drivers";
-//                image = ContextCompat.getDrawable(context, R.drawable.driving_icon);
-//                break;
+                return "Drivers";
             case 1:
-                return title = "Passengers";
-//                image = ContextCompat.getDrawable(context, R.drawable.passenger_icon);
-//                break;
+                return "Passengers";
+
             default:
                 return null;
-//                break;
         }
-
-        // BUG : SPANNABLE STRING FAILS IF ALLCAPS, TABLAYOUT CAN'T REMOVE ALLCAPS
-//        Log.d("IMG", image.toString());
-//        image.setBounds(0, 0, image.getIntrinsicWidth(), image.getIntrinsicHeight());
-//        SpannableString sb = new SpannableString("  " + title);
-//        ImageSpan imageSpan = new ImageSpan(image, ImageSpan.ALIGN_BOTTOM);
-//        sb.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        return sb;
     }
 }

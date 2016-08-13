@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +35,7 @@ public class P_E_Requests extends Fragment {
     private P_E_RequestsRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
+    private TextView noOffersText;
 
     private String userID;
     private String eventID;
@@ -59,16 +61,17 @@ public class P_E_Requests extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        PopulateRequests();
+
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new P_E_RequestsRecycler(listOfPotentialDrivers, getActivity());
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+        noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
+        noOffersText.setText("No Drivers Available!");
 
+        PopulateRequests();
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -99,7 +102,7 @@ public class P_E_Requests extends Fragment {
     public void PopulateRequests() {
 
         listOfPotentialDrivers.clear();
-
+        noOffersText.setVisibility(View.GONE);
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -144,10 +147,15 @@ public class P_E_Requests extends Fragment {
     }
 
     public synchronized void callback() {
-        Collections.sort(listOfPotentialDrivers, new DriverComparator());
-        adapter = new P_E_RequestsRecycler(listOfPotentialDrivers, getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+        if(listOfPotentialDrivers.size() == 0) {
+            noOffersText.setVisibility(View.VISIBLE);
+        }
+        else {
+            Collections.sort(listOfPotentialDrivers, new DriverComparator());
+            adapter = new P_E_RequestsRecycler(listOfPotentialDrivers, getActivity());
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
+        }
         swipeContainer.setRefreshing(false);
     }
 }

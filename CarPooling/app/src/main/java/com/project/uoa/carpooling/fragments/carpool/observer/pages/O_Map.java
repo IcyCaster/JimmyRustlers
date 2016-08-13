@@ -45,12 +45,16 @@ public class O_Map extends MapsFragment implements OnMapReadyCallback {
         // Get event lat lng pair.
         eventLatLng = getLocationFromAddress(getActivity(), eventLocation);
 
-        // Add Marker and move camera.
-        mMap.addMarker(new MarkerOptions()
-                .position(eventLatLng)
-                .title(eventLocation.toString()));
+        if(eventLatLng != null) {
+            // Add Marker and move camera.
+            mMap.addMarker(new MarkerOptions()
+                    .position(eventLatLng)
+                    .title(eventLocation.toString()));
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLatLng, 15));
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(eventLatLng, 15));
+        }
+
+
     }
 
     public LatLng getLocationFromAddress(Context context, Place eventLocation) {
@@ -69,6 +73,7 @@ public class O_Map extends MapsFragment implements OnMapReadyCallback {
 
             try {
                 address = coder.getFromLocationName(eventLocation.toString(), 5);
+                Log.d("address", address.toString());
                 if (address == null) {
                     return null;
                 }
