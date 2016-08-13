@@ -10,6 +10,7 @@ import com.project.uoa.carpooling.fragments.carpool.driver.pages.D_Details;
 import com.project.uoa.carpooling.fragments.carpool.driver.pages.D_Explorer;
 import com.project.uoa.carpooling.fragments.carpool.observer.pages.O_Details;
 import com.project.uoa.carpooling.fragments.carpool.observer.pages.O_Explorer;
+import com.project.uoa.carpooling.fragments.carpool.observer.pages.O_Map;
 import com.project.uoa.carpooling.fragments.carpool.passenger.pages.P_Details;
 import com.project.uoa.carpooling.fragments.carpool.passenger.pages.P_Explorer;
 
@@ -35,7 +36,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 0:
                         return new O_Details();
                     case 1:
-                        return new Event_Map();
+                        return new O_Map();
                     case 2:
                         return new O_Explorer();
                 }
