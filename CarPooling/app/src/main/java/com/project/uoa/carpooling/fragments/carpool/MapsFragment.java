@@ -61,17 +61,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
-        // Hide drive button if a passenger or observer.
-        mStartNavButton = (Button) view.findViewById(R.id.btn_start_nav);
-        if (eventStatus == EventStatus.OBSERVER || eventStatus == EventStatus.PASSENGER) {
-            mStartNavButton.setVisibility(View.GONE);
-        }
-
         // Map Initialization
         mMapView = (MapView) view.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume(); // Needed to have map displayed.
         mMapView.getMapAsync(this);
+
+        // Hide drive button if a passenger or observer.
+        mStartNavButton = (Button) view.findViewById(R.id.btn_start_nav);
+        if (eventStatus == EventStatus.OBSERVER || eventStatus == EventStatus.PASSENGER) {
+            mStartNavButton.setVisibility(View.GONE);
+        }
 
         return view;
     }
