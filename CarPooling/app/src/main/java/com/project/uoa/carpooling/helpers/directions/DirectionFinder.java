@@ -4,11 +4,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.PolyUtil;
 import com.project.uoa.carpooling.entities.maps.Distance;
 import com.project.uoa.carpooling.entities.maps.Duration;
@@ -41,7 +38,6 @@ public class DirectionFinder {
     private DirectionFinderListener listener;
     private String origin;
     private String destination;
-    private String eventID;
 
     // Firebase reference
     private DatabaseReference fireBaseReference;
@@ -105,30 +101,6 @@ public class DirectionFinder {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void updateEventLocation(String eventID) {
-        Log.d(TAG, "updateEventLocation() executed.");
-
-        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Event location is being extracted.");
-                if (dataSnapshot.hasChild("latitude") && dataSnapshot.hasChild("longitude")){
-                    destination = dataSnapshot.child("latitude").getValue().toString()
-                            + ","
-                            + dataSnapshot.child("longitude").getValue().toString();
-                } else if (dataSnapshot.hasChild("location")){
-                    destination = dataSnapshot.child("location").getValue().toString();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Could not retrieve event location.");
-            }
-        });
     }
 
     private void parseJSON(String data) throws JSONException {
