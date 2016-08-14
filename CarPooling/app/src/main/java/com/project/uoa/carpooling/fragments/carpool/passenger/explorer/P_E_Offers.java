@@ -71,6 +71,9 @@ public class P_E_Offers extends Fragment {
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Drivers Available!");
 
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
+
 
         PopulateOffers();
 

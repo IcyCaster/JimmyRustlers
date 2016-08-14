@@ -124,7 +124,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         eventID = ((CarpoolEventActivity)getActivity()).getEventID();
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
 
-        recieverTest();
+//        recieverTest();
 
     }
 
@@ -397,24 +397,24 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
 //        });
 //    }
 
-    //TODO: This is recieving the updates from the drivers who are driving
-    private void recieverTest() {
-
-        // TODO: Filter will be EventID-DriverID
-        IntentFilter filter = new IntentFilter("com.example.Broadcast");
-        MyReceiver receiver = new MyReceiver();
-        getActivity().registerReceiver(receiver, filter);
-
-    }
-
-    class MyReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context arg0, Intent intent) {
-            long latitude = intent.getLongExtra("Latitude", 0);
-            long longitude = intent.getLongExtra("Longitude", 0);
-
-            Log.d("Broadcast recieved", "Lat: " + latitude + ", Long: " + longitude);
-
-        }
-    }
+//    //TODO: This is recieving the updates from the drivers who are driving
+//    private void recieverTest() {
+//
+//        // TODO: Filter will be EventID-DriverID
+//        IntentFilter filter = new IntentFilter("com.example.Broadcast");
+//        MyReceiver receiver = new MyReceiver();
+//        getActivity().registerReceiver(receiver, filter);
+//
+//    }
+//
+//    class MyReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context arg0, Intent intent) {
+//            long latitude = intent.getLongExtra("Latitude", 0);
+//            long longitude = intent.getLongExtra("Longitude", 0);
+//
+//            Log.d("Broadcast recieved", "Lat: " + latitude + ", Long: " + longitude);
+//
+//        }
+//    }
 }
