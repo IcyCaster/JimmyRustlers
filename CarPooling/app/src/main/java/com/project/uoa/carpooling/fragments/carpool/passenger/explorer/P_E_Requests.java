@@ -67,6 +67,8 @@ public class P_E_Requests extends Fragment {
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new P_E_RequestsRecycler(listOfPotentialDrivers, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Drivers Available!");
@@ -108,7 +110,7 @@ public class P_E_Requests extends Fragment {
             public void onDataChange(DataSnapshot snapshot) {
 
                 // Check to make sure they don't have a driver
-                if (snapshot.child(userID).child("Driver").equals("null")) {
+                if (snapshot.child(userID).child("Driver").getValue().toString().equals("null")) {
 
                     for (DataSnapshot child : snapshot.getChildren()) {
                         if (child.child("Status").getValue().equals("Driver") && child.child("isPublic").getValue().equals(true)) {

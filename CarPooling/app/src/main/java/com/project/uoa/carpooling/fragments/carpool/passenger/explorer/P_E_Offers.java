@@ -128,13 +128,6 @@ public class P_E_Offers extends Fragment {
                                     String driverID = snapshot.getKey();
                                     String driverName = snapshot.child("Name").getValue().toString();
 
-                                    //No location stuff yet
-//                                    String pickupName = snapshot.child("PickupName").getValue().toString();
-//                                    String pickupLongitude = snapshot.child("PickupLong").getValue().toString();
-//                                    String pickupLatitude = snapshot.child("PickupLat").getValue().toString();
-//                                    Place pickupLocation = new Place(pickupName, pickupLongitude, pickupLatitude);
-
-
 
                                     int carCapacity = (int)(long)snapshot.child("Passengers").child("PassengerCapacity").getValue();
                                     //TODO: Calculate total space and compare it with number of passengers
