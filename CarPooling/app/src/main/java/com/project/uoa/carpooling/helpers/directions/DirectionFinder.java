@@ -29,6 +29,7 @@ import java.util.List;
 
 /**
  * Credits to: Mai Thanh Hiep.
+ * Code below adapted from: https://github.com/hiepxuan2008/GoogleMapDirectionSimple/
  */
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
@@ -39,16 +40,11 @@ public class DirectionFinder {
     private String origin;
     private String destination;
 
-    // Firebase reference
-    private DatabaseReference fireBaseReference;
-
     public DirectionFinder(DirectionFinderListener listener, String origin, String dest, String APIKey) {
         this.listener = listener;
         this.origin = origin;
         this.destination = dest;
         this.GOOGLE_API_KEY = APIKey;
-
-        this.fireBaseReference = FirebaseDatabase.getInstance().getReference();
     }
 
     public void execute() throws UnsupportedEncodingException {

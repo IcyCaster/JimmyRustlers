@@ -154,6 +154,7 @@ public class UpdateStatusDialog extends DialogFragment {
                     fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").setValue(currentLocation);
 
                 } else {
+                    // Else, save as Passenger.
                     fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Passenger");
                     fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Passenger");
                     fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(true);

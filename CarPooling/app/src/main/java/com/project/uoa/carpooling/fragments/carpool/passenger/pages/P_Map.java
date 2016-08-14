@@ -1,9 +1,6 @@
 package com.project.uoa.carpooling.fragments.carpool.passenger.pages;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,8 +25,6 @@ import java.util.List;
  */
 public class P_Map extends MapsFragment implements DirectionFinderListener {
     private static final String TAG = "P_Map";
-
-    private GoogleMap mMap;
 
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
