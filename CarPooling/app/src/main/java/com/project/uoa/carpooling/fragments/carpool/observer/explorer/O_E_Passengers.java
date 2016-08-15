@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -39,6 +40,7 @@ public class O_E_Passengers extends Fragment {
     private O_E_PassengersRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
+    private TextView noOffersText;
 
     private String userID;
     private String eventID;
@@ -63,15 +65,17 @@ public class O_E_Passengers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        PopulateRequests();
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
+
+        noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
+        noOffersText.setText("No Passengers Available!");
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+
+        PopulateRequests();
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -103,7 +107,7 @@ public class O_E_Passengers extends Fragment {
     public void PopulateRequests() {
 
         listOfPassenger.clear();
-
+        noOffersText.setVisibility(View.GONE);
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -129,10 +133,15 @@ public class O_E_Passengers extends Fragment {
     }
 
     public synchronized void callback() {
-        Collections.sort(listOfPassenger, new PassengerComparator());
-        adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+        if(listOfPassenger.size() == 0) {
+            noOffersText.setVisibility(View.VISIBLE);
+        }
+        else {
+            Collections.sort(listOfPassenger, new PassengerComparator());
+            adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
+        }
         swipeContainer.setRefreshing(false);
     }
 }

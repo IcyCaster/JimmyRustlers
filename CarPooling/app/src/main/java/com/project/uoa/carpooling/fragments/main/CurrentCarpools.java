@@ -5,69 +5,83 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
 import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
 import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseChildEventListener;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
-import com.project.uoa.carpooling.services.TutorialService;
 
 import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 
 public class CurrentCarpools extends Fragment {
 
+    // boolean to populate the list onResume()
     boolean shouldExecuteOnResume;
+
+    // Fields for the view components
     private View view;
-    private int subbedEvents;
-    private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
-    private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
-    private OnFragmentInteractionListener mListener;
+    private TextView emptyListText;
+    private SwipeRefreshLayout swipeContainer;
     private RecyclerView recyclerView;
     private CurrentCarpoolEventAdapter adapter;
-    private SwipeRefreshLayout swipeContainer;
-    private DatabaseReference fireBaseReference;
-    private String userId;
 
+    // Fields related to the list of subscribed events
+    private int numberOfSubscribedEvents;
+    private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
+    private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
+
+    private DatabaseReference fireBaseReference;
+    private String userID;
+
+    // HashMap for registering the isDriving notifications/broadcasts
+    private HashMap<String, ChildEventListener> isDrivingRefMap = new HashMap<>();
+
+    // Required empty public constructor
     public CurrentCarpools() {
-        // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onResume() {
+        super.onResume();
+        // This allows the list to repopulate when the user resumes
+        if (shouldExecuteOnResume) {
+            Log.d("resuming", "CurrentCarpools");
+            PopulateViewWithSubscribedEvents();
+        } else {
+            shouldExecuteOnResume = true;
+        }
     }
 
     @Override
@@ -77,13 +91,14 @@ public class CurrentCarpools extends Fragment {
         shouldExecuteOnResume = false;
 
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        userId = ((MainActivity) getActivity()).getUserID();
+        userID = ((MainActivity) getActivity()).getUserID();
 
-        // TODO: This will retrieve a list of all events the users is subscribed to. This list will be stored on firebase and will need to be parsed once retrieved.
-        // TODO: For now, it just fetches all current events a user is subscribed to.
         PopulateViewWithSubscribedEvents();
 
         view = inflater.inflate(R.layout.fragment_current_car_pools, container, false);
+
+        emptyListText = (TextView) view.findViewById(R.id.emptylist_text);
+        emptyListText.setText("No Carpools Available! \n Join one below!");
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
@@ -91,7 +106,6 @@ public class CurrentCarpools extends Fragment {
         recyclerView.setAdapter(adapter);
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
-
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -105,7 +119,6 @@ public class CurrentCarpools extends Fragment {
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
-
 
         Button addButton = (Button) view.findViewById(R.id.join_carpool_button);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -126,163 +139,94 @@ public class CurrentCarpools extends Fragment {
 
 
         });
-
-        // TODO: Needs to be added to all subscribed events
-        fireBaseReference.child("TestDriver").child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                // Detect that the driver is driving, trigger notification and
-                if((boolean)dataSnapshot.getValue()) {
-                    Log.d("Firebase", "isDriving true");
-
-
-                    showNotification();
-
-
-                    getActivity().startService(new Intent(getActivity().getBaseContext(), TutorialService.class));
-
-                }
-                else {
-                    Log.d("Firebase", "isDriving false");
-                    //TODO: check if background service is running, and cancel it.
-
-                    //getActivity().stopService(new Intent(getActivity().getBaseContext(), TutorialService.class));
-
-                }
-            }
-
-        });
-
         return view;
     }
 
-    private void showNotification() {
-
-        // Reference: http://stackoverflow.com/questions/13902115/how-to-create-a-notification-with-notificationcompat-builder
-
-        int mID = 100;
-        final Intent emptyIntent = new Intent();
-        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), 0, emptyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(getActivity())
-                        .setSmallIcon(R.drawable.driving_icon)
-                        .setContentTitle("[Driver] is Driving!")
-                        .setContentText("Touch to see how far away he is from you!")
-                        .setContentIntent(pendingIntent); //Required on Gingerbread and below
-
-        //TODO: Add click to launch carpool event on map page.
-
-        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.notify(mID, mBuilder.build());
-
-    }
-
-
     public void fetchTimelineAsync() {
-
-
-
         Handler h = new Handler();
-        //later to update UI
         h.post(new Runnable() {
             @Override
             public void run() {
+                Log.d("PopulatingAsync", "Subscribed Events");
                 PopulateViewWithSubscribedEvents();
             }
         });
     }
 
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        Log.d("CurrentCarpools", "onAttach");
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-        if (getActivity() == null) {
-            Log.d("CurrentCarpools", "Activity not attached");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (shouldExecuteOnResume) {
-            PopulateViewWithSubscribedEvents();
-        } else {
-            shouldExecuteOnResume = true;
-        }
-
-    }
-
+    // Gets all events the user is subscribed to from firebase
     public void PopulateViewWithSubscribedEvents() {
-
-
         listOfSubscribedEvents.clear();
-
-
-        fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+        fireBaseReference.child("users").child(userID).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
-
-
                 for (DataSnapshot child : snapshot.getChildren()) {
                     listOfSubscribedEvents.add(child.getKey().toString());
                 }
                 GetEventDetails();
-
             }
 
 
         });
-
-
     }
 
 
     public void GetEventDetails() {
 
-
         listOfEventCardEntities.clear();
 
         if (listOfSubscribedEvents.size() == 0) {
-            Toast toast = Toast.makeText(getActivity().getApplicationContext(), "NO POOLS CURRENTLY JOINED \n Join one below!",
-                    Toast.LENGTH_SHORT);
-            TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
-            if (v != null) v.setGravity(Gravity.CENTER);
-            toast.show();
 
+            Log.d("SubEventCount", "0");
+            // Display a message telling the user that they should subscribe to events below.
+            emptyListText.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
             swipeContainer.setRefreshing(false);
-
         } else {
 
+            Log.d("SubEventCount", Integer.toString(listOfSubscribedEvents.size()));
+            emptyListText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
 
-            subbedEvents = listOfSubscribedEvents.size();
+            numberOfSubscribedEvents = listOfSubscribedEvents.size();
             for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
 
+                fireBaseReference.child("events").child(listOfSubscribedEvents.get(i)).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        final String eventID = dataSnapshot.getKey().toString();
+
+                        // Check if they are a passenger for this event
+                        if (dataSnapshot.child("users").child(userID).child("Status").getValue().equals("Passenger")) {
+
+                            final String driverID = dataSnapshot.child("users").child(userID).child("Driver").getValue().toString();
+
+                            // Check if they have a specified driver
+                            if (!driverID.equals("null")) {
+
+                                final String driverName = dataSnapshot.child("users").child(driverID).child("Name").getValue().toString();
+
+                                // Attach valueListener
+                                fireBaseReference.child("events").child(dataSnapshot.getKey()).child("users").child(driverID).child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        DatabaseReference currentLocationRef = fireBaseReference.child("events").child(eventID).child("users").child(driverID);
+
+                                        // Detect that the driver is driving; trigger notification
+                                        if ((boolean) dataSnapshot.getValue()) {
+                                            if (isAdded()) {
+                                                Log.d("Notification", driverName + " is driving!");
+                                                showNotification(driverName);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
 
                 GraphRequest request = GraphRequest.newGraphPathRequest(
                         AccessToken.getCurrentAccessToken(),
@@ -303,15 +247,9 @@ public class CurrentCarpools extends Fragment {
                                                 @Override
                                                 public void onCompleted(GraphResponse response) {
 
-
                                                     try {
-
-
                                                         String url = "";
-
                                                         url = response.getJSONObject().getJSONObject("data").getString("url");
-
-
                                                         for (SimpleEventEntity e : listOfEventCardEntities) {
                                                             if (e.getEventID().equals(id)) {
                                                                 listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
@@ -321,12 +259,9 @@ public class CurrentCarpools extends Fragment {
                                                     } catch (JSONException e) {
                                                         e.printStackTrace();
                                                     }
-
-
                                                     callback();
                                                 }
                                             });
-
 
                                     Bundle parameters = new Bundle();
                                     parameters.putString("type", "large");
@@ -339,20 +274,16 @@ public class CurrentCarpools extends Fragment {
                                 }
                             }
                         });
-
                 request.executeAsync();
-
             }
         }
     }
 
     public synchronized void callback() {
-        subbedEvents--;
-        if (subbedEvents <= 0) {
+        numberOfSubscribedEvents--;
+        if (numberOfSubscribedEvents <= 0) {
 
             Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
-
-
             adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
@@ -360,22 +291,36 @@ public class CurrentCarpools extends Fragment {
         }
     }
 
+    private void showNotification(String driverName) {
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        // Reference: http://stackoverflow.com/questions/13902115/how-to-create-a-notification-with-notificationcompat-builder
+        int requestID = (int) System.currentTimeMillis();
+
+        int mID = 100;
+        final Intent emptyIntent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getActivity(getActivity(), requestID, emptyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(getActivity())
+                        .setSmallIcon(R.drawable.icon_grey_driving)
+                        .setContentTitle(driverName + " is Driving!")
+                        .setContentText("Touch to see how far away he is from you!")
+                        .setContentIntent(pendingIntent); //Required on Gingerbread and below
+
+        //TODO: Add click to launch carpool event on map page.
+
+        mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify(mID, mBuilder.build());
     }
 
+    public void broadcastIntent(double longitude, double latitude, String eventID, String driverID) {
+        Intent intent = new Intent();
+        intent.setAction(eventID + "-" + driverID);
+        intent.putExtra("Latitude", latitude);
+        intent.putExtra("Longitude", longitude);
+        getActivity().sendBroadcast(intent);
+    }
 }
 
 

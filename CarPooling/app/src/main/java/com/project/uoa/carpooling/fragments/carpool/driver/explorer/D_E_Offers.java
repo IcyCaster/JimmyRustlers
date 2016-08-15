@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
@@ -17,6 +18,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
+import com.project.uoa.carpooling.fragments.carpool.passenger.explorer.P_E_RequestsRecycler;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -35,6 +37,7 @@ public class D_E_Offers extends Fragment {
     private D_E_OffersRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
+    private TextView noOffersText;
 
     private String userID;
     private String eventID;
@@ -63,16 +66,16 @@ public class D_E_Offers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        DiscoverOffers();
         shouldExecuteOnResume = false;
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
-
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+        noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
+        noOffersText.setText("No Passengers Available!");
+
+        DiscoverOffers();
 
         // Create the swipe refresher
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
@@ -112,6 +115,8 @@ public class D_E_Offers extends Fragment {
      * TODO: Filters could be added in the future. These would be based around ArrivalTimes, LeaveTimes, MaxDetourTime, MaxDetourDistance.
      */
     public void DiscoverOffers() {
+
+        noOffersText.setVisibility(View.GONE);
 
         listOfAvailablePassengers.clear();
 
@@ -171,11 +176,17 @@ public class D_E_Offers extends Fragment {
     }
 
     public synchronized void PopulateOffers() {
-        // Sort them alphabetically first
-        Collections.sort(listOfAvailablePassengers, new PassengerComparator());
-        adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+
+        if(listOfAvailablePassengers.size() == 0) {
+            noOffersText.setVisibility(View.VISIBLE);
+        }
+        else {
+            // Sort them alphabetically first
+            Collections.sort(listOfAvailablePassengers, new PassengerComparator());
+            adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());
+            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+            recyclerView.setAdapter(adapter);
+        }
         // Stop the refresher icon
         swipeContainer.setRefreshing(false);
     }
