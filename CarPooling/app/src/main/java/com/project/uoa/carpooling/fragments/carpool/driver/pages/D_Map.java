@@ -171,6 +171,7 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
     }
 
     @Override
+    // Pass optimized order as new argument?
     public void onDirectionFinderSuccess(List<Route> routes) {
         for (Route route : routes) {
             for (Leg leg : route.legs) {
