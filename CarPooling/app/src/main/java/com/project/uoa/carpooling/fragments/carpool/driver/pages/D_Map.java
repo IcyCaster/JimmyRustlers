@@ -65,7 +65,7 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
     }
 
     private void displayDriverRoute() {
-        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+        fireBaseReference.child("events").child(eventID).child("users").addValueEventListener(new FirebaseValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -85,6 +85,8 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
 
                     // Get Driver's passenger locations, if available.
                     if (driverDetails.hasChild("Passengers")) {
+                        passengerLocations.clear();
+
                         for (DataSnapshot passengerID : driverDetails.child("Passengers").getChildren()) {
                             if (passengerID.getKey().toString().equals("PassengerCapacity")) {
                                 continue;
@@ -100,6 +102,8 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
                     // Get event location.
                     eventLatLng = getLocationFromAddress(getActivity(), facebookEvent.getLocation());
                     eventLocation = eventLatLng.latitude + "," + eventLatLng.longitude;
+
+                    Log.d(TAG, "PassengersLocationsFound:" + passengerLocations.size());
 
                     // Start request for getting route information.
                     new DirectionFinder(listener,
@@ -148,18 +152,21 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
             for (Marker marker : originMarkers) {
                 marker.remove();
             }
+            originMarkers.clear();
         }
 
         if (destinationMarkers != null) {
             for (Marker marker : destinationMarkers) {
                 marker.remove();
             }
+            destinationMarkers.clear();
         }
 
         if (polylinePaths != null) {
             for (Polyline polyline : polylinePaths) {
                 polyline.remove();
             }
+            polylinePaths.clear();
         }
     }
 

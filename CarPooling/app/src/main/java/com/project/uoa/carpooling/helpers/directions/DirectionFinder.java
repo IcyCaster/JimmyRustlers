@@ -78,7 +78,7 @@ public class DirectionFinder {
         }
 
         requestURL += "&key=" + GOOGLE_API_KEY;
-        Log.d("Route Request: ", requestURL);
+        Log.d(TAG, requestURL);
 
         return requestURL;
     }
