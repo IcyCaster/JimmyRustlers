@@ -4,11 +4,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.PolyUtil;
 import com.project.uoa.carpooling.entities.maps.Distance;
 import com.project.uoa.carpooling.entities.maps.Duration;
@@ -32,27 +27,32 @@ import java.util.List;
 
 /**
  * Credits to: Mai Thanh Hiep.
+ * Code below adapted from: https://github.com/hiepxuan2008/GoogleMapDirectionSimple/
  */
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
+    private static final String WAYPOINT_URL = "&waypoints=optimize:true";
     private static final String TAG = "DirectionFinder";
 
     private final String GOOGLE_API_KEY;
+    private List<String> passengerLocations = new ArrayList<>();
     private DirectionFinderListener listener;
     private String origin;
     private String destination;
-    private String eventID;
-
-    // Firebase reference
-    private DatabaseReference fireBaseReference;
 
     public DirectionFinder(DirectionFinderListener listener, String origin, String dest, String APIKey) {
         this.listener = listener;
         this.origin = origin;
         this.destination = dest;
         this.GOOGLE_API_KEY = APIKey;
+    }
 
-        this.fireBaseReference = FirebaseDatabase.getInstance().getReference();
+    public DirectionFinder(DirectionFinderListener listener, String origin, String dest, String APIKey, List<String> passengerLocations) {
+        this.listener = listener;
+        this.origin = origin;
+        this.destination = dest;
+        this.GOOGLE_API_KEY = APIKey;
+        this.passengerLocations = passengerLocations;
     }
 
     public void execute() throws UnsupportedEncodingException {
@@ -65,9 +65,22 @@ public class DirectionFinder {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
 
-        // Can supply a url with waypoints as well.
-        Log.d("Route Request: ", DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY);
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
+        // Construct URL
+        String requestURL = DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination;
+
+        if (!passengerLocations.isEmpty()) {
+            //Append additional waypoint data, if available.
+            requestURL += WAYPOINT_URL;
+
+            for(String location : passengerLocations) {
+                requestURL += "|"  + location;
+            }
+        }
+
+        requestURL += "&key=" + GOOGLE_API_KEY;
+        Log.d(TAG, requestURL);
+
+        return requestURL;
     }
 
     // Async Task for executing and downloading response from Directions API.
@@ -105,30 +118,6 @@ public class DirectionFinder {
                 e.printStackTrace();
             }
         }
-    }
-
-    private void updateEventLocation(String eventID) {
-        Log.d(TAG, "updateEventLocation() executed.");
-
-        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "Event location is being extracted.");
-                if (dataSnapshot.hasChild("latitude") && dataSnapshot.hasChild("longitude")){
-                    destination = dataSnapshot.child("latitude").getValue().toString()
-                            + ","
-                            + dataSnapshot.child("longitude").getValue().toString();
-                } else if (dataSnapshot.hasChild("location")){
-                    destination = dataSnapshot.child("location").getValue().toString();
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.e(TAG, "Could not retrieve event location.");
-            }
-        });
     }
 
     private void parseJSON(String data) throws JSONException {
