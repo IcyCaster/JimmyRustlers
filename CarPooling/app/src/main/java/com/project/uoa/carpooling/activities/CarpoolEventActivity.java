@@ -95,9 +95,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
             userID = savedInstanceState.getString("USER_ID");
             eventID = savedInstanceState.getString("EVENT_ID");
             eventStatus = (EventStatus) savedInstanceState.getSerializable("EVENT_STATUS");
-            eventLocation = new Place(savedInstanceState.getString("EVENT_NAME"),
-                    savedInstanceState.getDouble("EVENT_LAT"),
-                    savedInstanceState.getDouble("EVENT_LNG"));
             facebookEventObject = savedInstanceState.getParcelable("FACEBOOK_ENTITY");
         } else {
             Bundle bundle = getIntent().getExtras();
@@ -279,9 +276,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         savedInstanceState.putSerializable("EVENT_STATUS", eventStatus);
         savedInstanceState.putString("USER_ID", userID);
         savedInstanceState.putString("EVENT_ID", eventID);
-        savedInstanceState.putString("EVENT_NAME", getFacebookEvent().getLocation().toString());
-        savedInstanceState.putDouble("EVENT_LAT", getFacebookEvent().getLocation().getLatitude());
-        savedInstanceState.putDouble("EVENT_LNG", getFacebookEvent().getLocation().getLongitude());
         savedInstanceState.putParcelable("FACEBOOK_ENTITY", facebookEventObject);
 
         super.onSaveInstanceState(savedInstanceState);
@@ -295,9 +289,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         eventStatus = (EventStatus) savedInstanceState.getSerializable("EVENT_STATUS");
         userID = savedInstanceState.getString("USER_ID");
         eventID = savedInstanceState.getString("EVENT_ID");
-        eventLocation = new Place(savedInstanceState.getString("EVENT_NAME"),
-        savedInstanceState.getDouble("EVENT_LAT"),
-        savedInstanceState.getDouble("EVENT_LNG"));
         facebookEventObject = savedInstanceState.getParcelable("FACEBOOK_ENTITY");
     }
 

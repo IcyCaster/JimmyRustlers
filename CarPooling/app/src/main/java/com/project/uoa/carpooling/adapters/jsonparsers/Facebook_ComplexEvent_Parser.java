@@ -65,6 +65,4 @@ public class Facebook_ComplexEvent_Parser {
             return null;
         }
     }
-
-
 }
