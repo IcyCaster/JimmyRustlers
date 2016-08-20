@@ -115,12 +115,12 @@ public class MainActivity extends AppCompatActivity
         switch (viewId) {
             case R.id.nav_subscribed_carpools:
                 fragment = new CurrentCarpools();
-                title = "Car Pools";
+                title = "Carpools";
                 break;
 
             case R.id.nav_archived_pools:
                 fragment = new ArchivedCarpools();
-                title = "Archived Pools";
+                title = "Archived Carpools";
                 break;
 
             case R.id.nav_friend_groups:

@@ -151,9 +151,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
 
                                 tabLayout.getTabAt(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_details));
-                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_map));
-                                tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_arrows));
-
+                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_arrows));
+                                tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_map));
 
                                 final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
                                 floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);

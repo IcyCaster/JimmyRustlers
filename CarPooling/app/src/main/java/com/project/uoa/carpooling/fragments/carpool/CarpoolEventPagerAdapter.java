@@ -38,27 +38,27 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 0:
                         return new O_Details();
                     case 1:
-                        return new O_Map();
-                    case 2:
                         return new O_Explorer();
+                    case 2:
+                        return new O_Map();
                 }
             case DRIVER:
                 switch (position) {
                     case 0:
                         return new D_Details();
                     case 1:
-                        return new D_Map();
-                    case 2:
                         return new D_Explorer();
+                    case 2:
+                        return new D_Map();
                 }
             case PASSENGER:
                 switch (position) {
                     case 0:
                         return new P_Details();
                     case 1:
-                        return new P_Map();
-                    case 2:
                         return new P_Explorer();
+                    case 2:
+                        return new P_Map();
                 }
             default:
                 return null;
@@ -76,13 +76,16 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return "Details";
             case 1:
-                return "Map";
-            case 2:
                 if (eventStatus == EventStatus.OBSERVER) {
-                    return "Observe";
-                } else {
-                    return "Explore";
+                    return "People";
+                } else if (eventStatus == EventStatus.DRIVER) {
+                    return "Passengers";
                 }
+                if (eventStatus == EventStatus.PASSENGER) {
+                    return "Drivers";
+                }
+            case 2:
+                return "Map";
 
             default:
                 return null;
