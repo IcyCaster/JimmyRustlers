@@ -61,8 +61,8 @@
         android:visibility="gone"></RelativeLayout>
 
     <toan.android.floatingactionmenu.FloatingActionButton
-        android:background="@android:color/transparent"
         android:id="@+id/place_holder_button"
+        android:background="@android:color/transparent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -70,11 +70,10 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        fab:fab_title="Change Role"
         />
 
     <toan.android.floatingactionmenu.FloatingActionButton
-        android:id="@+id/messaging_button"
+        android:id="@+id/manage_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -83,6 +82,19 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:visibility="gone"/>
+
+    <toan.android.floatingactionmenu.FloatingActionButton
+        android:id="@+id/messaging_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/manage_button"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:visibility="gone"/>
+
+
 
 
 
@@ -97,7 +109,7 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        fab:fab_menuIcon="@drawable/icon_white_change_details"
+        fab:fab_menuIcon="@drawable/icon_white_settings"
         fab:fab_addButtonColorNormal="@color/colorPrimary"
         fab:fab_addButtonColorPressed="@color/colorPrimaryLight"
         fab:fab_labelStyle="@style/menu_labels_style">
