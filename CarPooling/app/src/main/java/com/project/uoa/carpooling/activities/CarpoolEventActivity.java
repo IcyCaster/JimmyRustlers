@@ -2,6 +2,7 @@ package com.project.uoa.carpooling.activities;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
@@ -21,66 +23,67 @@ import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
 import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
-import com.project.uoa.carpooling.entities.shared.Place;
-import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
+import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
-
-//import com.getbase.floatingactionbutton.FloatingActionButton;
-//import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import toan.android.floatingactionmenu.FloatingActionButton;
 import toan.android.floatingactionmenu.FloatingActionsMenu;
 
-import android.view.View.OnClickListener;
+//import com.getbase.floatingactionbutton.FloatingActionButton;
+//import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 /**
  * CarpoolEventActivity is the created when a user wishes to see a specific carpool they have subscribed to.
  * From this activity they can navigate via tabbed pages to visit:
- *                                                                 - The event/carpool details
- *                                                                 - A map of the route to the location
- *                                                                 - An explorer where they can check out passengers/drivers' requests/offers
- *
+ * - The event/carpool details
+ * - A map of the route to the location
+ * - An explorer where they can check out passengers/drivers' requests/offers
+ * <p>
  * They can also switch between the different status' Observer/Driver/Passenger
  * Or leave the carpool altogether.
  */
 public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
 //TODO: Remove the irrelevant OnFragmentInteractionListeners
 
+    public FloatingActionsMenu floatingActionsMenu;
     // Unique to the event instance
     private String userID;
     private String eventID;
     private EventStatus eventStatus;
     private ComplexEventEntity facebookEventObject;
     private Place eventLocation;
-
     private DatabaseReference fireBaseReference;
 
     public String getUserID() {
         return userID;
     }
+
     public String getEventID() {
         return eventID;
     }
+
     public EventStatus getEventStatus() {
         return eventStatus;
     }
+
     public ComplexEventEntity getFacebookEvent() {
         return facebookEventObject;
     }
-    public Place getEventLocation() {return  eventLocation; }
 
-    public FloatingActionsMenu floatingActionsMenu;
+    public Place getEventLocation() {
+        return eventLocation;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,21 +130,26 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 String status = snapshot.getValue().toString();
                                 Log.d("firebase - log", "Event Status: " + status);
 
-                                if(status.equals("Observer")) {
+                                if (status.equals("Observer")) {
                                     eventStatus = EventStatus.OBSERVER;
-                                }
-                                else if(status.equals("Driver")) {
+                                } else if (status.equals("Driver")) {
                                     eventStatus = EventStatus.DRIVER;
-                                }
-                                else if(status.equals("Passenger")) {
+                                } else if (status.equals("Passenger")) {
                                     eventStatus = EventStatus.PASSENGER;
                                 }
 
                                 // Set the activities view content
                                 setContentView(R.layout.activity__car_pool_instance);
 
-                                TextView statusText = (TextView)findViewById(R.id.status_text);
+                                TextView statusText = (TextView) findViewById(R.id.status_text);
                                 statusText.setText("ROLE: " + eventStatus.toString());
+                                statusText.setOnClickListener(changeStatus);
+
+                                Drawable img = ContextCompat.getDrawable(CarpoolEventActivity.this, R.drawable.icon_white_role_edit);
+                                img.setBounds( 0, 0, 60, 60 );
+                                statusText.setCompoundDrawables(  null, null, img, null );
+
+
 
                                 // Create Pager and Adapter
                                 CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus, getApplicationContext());
@@ -154,20 +162,19 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
 
                                 tabLayout.getTabAt(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_details));
-                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_arrows));
+                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_observer));
                                 tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_map));
 
                                 final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
                                 floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
 
 
-
                                 final FloatingActionButton actionC = new FloatingActionButton(getBaseContext());
 
-                                if(eventStatus == EventStatus.OBSERVER) {
-                                    tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_eye));
-                                }
-                                else if(eventStatus == EventStatus.DRIVER) {
+//                                if(eventStatus == EventStatus.OBSERVER) {
+//                                    tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_eye));
+//                                }
+                                if (eventStatus == EventStatus.DRIVER) {
                                     actionC.setTitle("Manage Passengers");
                                     actionC.setIcon(R.drawable.icon_white_passenger);
                                     actionC.setOnClickListener(new OnClickListener() {
@@ -177,8 +184,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                         }
                                     });
                                     floatingActionsMenu.addButton(actionC);
-                                }
-                                else if(eventStatus == EventStatus.PASSENGER) {
+                                } else if (eventStatus == EventStatus.PASSENGER) {
                                     actionC.setTitle("Manage Driver");
                                     actionC.setIcon(R.drawable.icon_white_driver);
                                     actionC.setOnClickListener(new OnClickListener() {
@@ -257,14 +263,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
                                 final FloatingActionButton changeStatusButton = (FloatingActionButton) findViewById(R.id.change_status_fab);
                                 changeStatusButton.setIcon(R.drawable.icon_white_change_status);
-                                changeStatusButton.setOnClickListener(new OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        // Create and show the dialog.
-                                        ChangeStatusDialog newFragment = new ChangeStatusDialog();
-                                        newFragment.show(getSupportFragmentManager(), "status_dialog");
-                                    }
-                                });
+                                changeStatusButton.setOnClickListener(changeStatus);
 
                             }
                         });
@@ -274,6 +273,16 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         request.executeAsync();
 
     }
+
+    private OnClickListener changeStatus = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            // Create and show the dialog.
+            ChangeStatusDialog newFragment = new ChangeStatusDialog();
+            newFragment.show(getSupportFragmentManager(), "status_dialog");
+        }
+    };
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -303,10 +312,9 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
     @Override
     public void onBackPressed() {
-        if(floatingActionsMenu.isExpanded()) {
+        if (floatingActionsMenu.isExpanded()) {
             floatingActionsMenu.collapse();
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }

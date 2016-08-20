@@ -30,6 +30,7 @@
                 android:text="ROLE: ???"
                 android:textAllCaps="true"
                 android:textColor="@android:color/white"
+                android:clickable="true"
                 android:textSize="20sp" />
 
         </RelativeLayout>
