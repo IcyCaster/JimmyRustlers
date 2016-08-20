@@ -2,6 +2,7 @@ package com.project.uoa.carpooling.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -150,8 +151,15 @@ public class ChangeStatusDialog extends DialogFragment {
                         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(false);
 
 
+
+                        Intent i = new Intent(getActivity(), CarpoolEventActivity.class);
+                        Bundle b = new Bundle();
+                        b.putString("userID", userID);
+                        b.putString("eventID", eventID);
+                        i.putExtras(b);
+
                         getActivity().finish();
-                        startActivity(getActivity().getIntent());
+                        getActivity().startActivity(i);
                     }
                 });
             }
