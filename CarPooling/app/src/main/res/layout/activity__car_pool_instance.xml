@@ -60,7 +60,7 @@
         android:clickable="true"
         android:visibility="gone"></RelativeLayout>
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <toan.android.floatingactionmenu.FloatingActionButton
         android:background="@android:color/transparent"
         android:id="@+id/place_holder_button"
         android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
         fab:fab_title="Change Role"
         />
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
+    <toan.android.floatingactionmenu.FloatingActionButton
         android:id="@+id/messaging_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,7 +84,10 @@
         android:layout_marginRight="16dp"
         android:visibility="gone"/>
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
+
+
+    <toan.android.floatingactionmenu.FloatingActionsMenu
+        android:src="@android:drawable/ic_menu_share"
         android:id="@+id/multiple_actions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -94,12 +97,12 @@
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        fab:fab_menuIcon="@drawable/icon_white_change_details"
         fab:fab_addButtonColorNormal="@color/colorPrimary"
         fab:fab_addButtonColorPressed="@color/colorPrimaryLight"
-        fab:fab_addButtonPlusIconColor="@color/white"
         fab:fab_labelStyle="@style/menu_labels_style">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <toan.android.floatingactionmenu.FloatingActionButton
             android:id="@+id/leave_carpool_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -107,7 +110,7 @@
             fab:fab_colorPressed="@color/colorPrimaryLight"
             fab:fab_title="Leave Carpool" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <toan.android.floatingactionmenu.FloatingActionButton
             android:id="@+id/details_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -115,7 +118,7 @@
             fab:fab_colorPressed="@color/colorPrimaryLight"
             fab:fab_title="Change Details" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <toan.android.floatingactionmenu.FloatingActionButton
             android:id="@+id/change_status_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -124,7 +127,7 @@
             fab:fab_title="Change Role" />
 
 
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+    </toan.android.floatingactionmenu.FloatingActionsMenu>
 
 
 

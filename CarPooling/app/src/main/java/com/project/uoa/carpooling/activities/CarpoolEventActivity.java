@@ -36,8 +36,11 @@ import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+//import com.getbase.floatingactionbutton.FloatingActionButton;
+//import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
+import toan.android.floatingactionmenu.FloatingActionButton;
+import toan.android.floatingactionmenu.FloatingActionsMenu;
 
 import android.view.View.OnClickListener;
 
@@ -156,10 +159,13 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
                                 final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
                                 floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
+
+
+
                                 final FloatingActionButton actionC = new FloatingActionButton(getBaseContext());
 
                                 if(eventStatus == EventStatus.OBSERVER) {
-                                    tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_eye));
+                                    tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_eye));
                                 }
                                 else if(eventStatus == EventStatus.DRIVER) {
                                     actionC.setTitle("Manage Passengers");
