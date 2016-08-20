@@ -64,6 +64,14 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     private ComplexEventEntity facebookEventObject;
     private Place eventLocation;
     private DatabaseReference fireBaseReference;
+    private OnClickListener changeStatus = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            // Create and show the dialog.
+            ChangeStatusDialog newFragment = new ChangeStatusDialog();
+            newFragment.show(getSupportFragmentManager(), "status_dialog");
+        }
+    };
 
     public String getUserID() {
         return userID;
@@ -146,9 +154,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 statusText.setOnClickListener(changeStatus);
 
                                 Drawable img = ContextCompat.getDrawable(CarpoolEventActivity.this, R.drawable.icon_white_role_edit);
-                                img.setBounds( 0, 0, 60, 60 );
-                                statusText.setCompoundDrawables(  null, null, img, null );
-
+                                img.setBounds(0, 0, 60, 60);
+                                statusText.setCompoundDrawables(null, null, img, null);
 
 
                                 // Create Pager and Adapter
@@ -216,16 +223,18 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                     }
                                 });
 
-
-                                final FloatingActionButton detailsButton = (FloatingActionButton) findViewById(R.id.details_fab);
-                                detailsButton.setIcon(R.drawable.icon_white_change_details);
-                                detailsButton.setOnClickListener(new OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        Log.d("Change Details", "BUTTON TODO:");
-                                        detailsButton.setTitle("TODO");
-                                    }
-                                });
+                                if (!(eventStatus == EventStatus.OBSERVER)) {
+                                    final FloatingActionButton detailsButton = (FloatingActionButton) findViewById(R.id.details_fab);
+                                    detailsButton.setVisibility(View.VISIBLE);
+                                    detailsButton.setIcon(R.drawable.icon_white_change_details);
+                                    detailsButton.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            Log.d("Change Details", "BUTTON TODO:");
+                                            detailsButton.setTitle("TODO");
+                                        }
+                                    });
+                                }
 
                                 final FloatingActionButton leaveCarpoolButton = (FloatingActionButton) findViewById(R.id.leave_carpool_fab);
                                 leaveCarpoolButton.setIcon(R.drawable.icon_white_leave);
@@ -273,16 +282,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         request.executeAsync();
 
     }
-
-    private OnClickListener changeStatus = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            // Create and show the dialog.
-            ChangeStatusDialog newFragment = new ChangeStatusDialog();
-            newFragment.show(getSupportFragmentManager(), "status_dialog");
-        }
-    };
-
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {

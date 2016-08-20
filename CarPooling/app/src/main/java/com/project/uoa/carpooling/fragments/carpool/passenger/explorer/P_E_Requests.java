@@ -61,8 +61,6 @@ public class P_E_Requests extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-
-
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
@@ -74,6 +72,7 @@ public class P_E_Requests extends Fragment {
         noOffersText.setText("No Drivers Available!");
 
         PopulateRequests();
+
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

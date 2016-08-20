@@ -58,19 +58,17 @@ public class D_E_Offers extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        shouldExecuteOnResume = false;
 
-        // Firebase Reference
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
-        // UserID / EventID
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
-
-        shouldExecuteOnResume = false;
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Passengers Available!");
@@ -83,8 +81,7 @@ public class D_E_Offers extends Fragment {
             @Override
             public void onRefresh() {
                 swipeContainer.setRefreshing(true);
-//                populateAsync(); // Not sure why I'm populating asynchronously... Will keep this here just in case.
-                DiscoverOffers();
+                populateAsync();
             }
         });
 
@@ -118,11 +115,11 @@ public class D_E_Offers extends Fragment {
 
         noOffersText.setVisibility(View.GONE);
 
-        listOfAvailablePassengers.clear();
-
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+
+                listOfAvailablePassengers.clear();
 
                 // Calculate the number of spaces left in the drivers car
                 int passengerSpaceAvailable = (int)(long)snapshot.child(userID).child("Passengers").child("PassengerCapacity").getValue();

@@ -65,15 +65,14 @@ public class O_E_Passengers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Passengers Available!");
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
-
 
         PopulateRequests();
 
@@ -108,6 +107,7 @@ public class O_E_Passengers extends Fragment {
 
         listOfPassenger.clear();
         noOffersText.setVisibility(View.GONE);
+
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {

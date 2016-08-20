@@ -62,14 +62,14 @@ public class D_E_Requests extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-
-
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
+
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Passengers Available!");
-
 
         PopulateRequests();
 
@@ -95,7 +95,6 @@ public class D_E_Requests extends Fragment {
             @Override
             public void run() {
                 PopulateRequests();
-
             }
         });
     }

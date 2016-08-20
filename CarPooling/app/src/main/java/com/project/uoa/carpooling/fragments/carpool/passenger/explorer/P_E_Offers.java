@@ -64,16 +64,14 @@ public class P_E_Offers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-
-
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Drivers Available!");
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
-
 
         PopulateOffers();
 

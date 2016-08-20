@@ -130,7 +130,8 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimaryLight"
-            fab:fab_title="Change Details" />
+            fab:fab_title="Change Details"
+            android:visibility="gone"/>
 
         <toan.android.floatingactionmenu.FloatingActionButton
             android:id="@+id/change_status_fab"

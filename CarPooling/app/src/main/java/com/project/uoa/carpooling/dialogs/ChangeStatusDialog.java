@@ -150,8 +150,6 @@ public class ChangeStatusDialog extends DialogFragment {
                         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
                         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(false);
 
-
-
                         Intent i = new Intent(getActivity(), CarpoolEventActivity.class);
                         Bundle b = new Bundle();
                         b.putString("userID", userID);
@@ -159,7 +157,7 @@ public class ChangeStatusDialog extends DialogFragment {
                         i.putExtras(b);
 
                         getActivity().finish();
-                        getActivity().startActivity(i);
+//                        getActivity().startActivity(i);
                     }
                 });
             }

@@ -65,17 +65,15 @@ public class O_E_Drivers extends Fragment {
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        adapter = new O_E_DriversRecycler(listOfDrivers, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Drivers Available!");
 
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new O_E_DriversRecycler(listOfDrivers, getActivity());
         PopulateDrivers();
-
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

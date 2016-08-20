@@ -1,6 +1,7 @@
 package com.project.uoa.carpooling.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -11,11 +12,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
@@ -26,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
+import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.fragments.main.ArchivedCarpools;
 import com.project.uoa.carpooling.fragments.main.CurrentCarpools;
 import com.project.uoa.carpooling.fragments.main.FriendGroups;
@@ -93,7 +97,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.kill_switch) {
+            executeFirebaseReset();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -163,5 +168,39 @@ public class MainActivity extends AppCompatActivity
 
     public void onFragmentInteraction(Uri uri) {
         // Kept Empty
+    }
+
+    // Kill switch. Only clears firebase, does not add test accounts.
+    public void executeFirebaseReset() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(
+                MainActivity.this);
+        builder.setTitle("Don't mind me!");
+        builder.setMessage("Only press okay if you know what you're doing!");
+        builder.setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                        final DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
+                        fireBaseReference.child("events").removeValue();
+                        fireBaseReference.child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
+                                for (DataSnapshot child : snapshot.getChildren()) {
+                                    fireBaseReference.child("users").child(child.getKey()).child("events").removeValue();
+                                }
+                                Intent i = new Intent(MainActivity.this, MainActivity.class);
+                                finish();
+                                startActivity(i);
+                            }
+                        });
+                    }
+                });
+        builder.setNegativeButton("Cancel",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                    }
+                });
+        builder.show();
     }
 }
