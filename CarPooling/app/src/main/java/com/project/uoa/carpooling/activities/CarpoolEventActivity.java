@@ -138,7 +138,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 setContentView(R.layout.activity__car_pool_instance);
 
                                 TextView statusText = (TextView)findViewById(R.id.status_text);
-                                statusText.setText(eventStatus.toString());
+                                statusText.setText("ROLE: " + eventStatus.toString());
 
                                 // Create Pager and Adapter
                                 CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus, getApplicationContext());

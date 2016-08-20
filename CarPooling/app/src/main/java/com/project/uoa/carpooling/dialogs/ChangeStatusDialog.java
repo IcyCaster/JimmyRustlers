@@ -65,7 +65,7 @@ public class ChangeStatusDialog extends DialogFragment {
 
         // Set status text
         TextView statusText = (TextView) view.findViewById(R.id.popup_status_text);
-        statusText.setText("Status: " + eventStatus);
+        statusText.setText("Role: " + eventStatus);
 
         // If they are a passenger/driver they can only become an observer
         if (eventStatus == EventStatus.PASSENGER || eventStatus == EventStatus.DRIVER) {
