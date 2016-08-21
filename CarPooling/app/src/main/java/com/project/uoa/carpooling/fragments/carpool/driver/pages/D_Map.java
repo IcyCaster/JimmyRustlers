@@ -11,11 +11,10 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.entities.maps.Leg;
 import com.project.uoa.carpooling.entities.maps.Route;
 import com.project.uoa.carpooling.fragments.carpool.MapsFragment;
@@ -30,18 +29,16 @@ import java.util.List;
 /**
  * Created by Chester on 18/07/2016.
  */
-public class D_Map extends MapsFragment implements DirectionFinderListener {
+public class D_Map extends MapsFragment {
     private static final String TAG = "D_Map";
 
     private String driverLocation;
     private String eventLocation;
     private List<String> passengerLocations = new ArrayList<>();
 
-    private List<Marker> originMarkers = new ArrayList<>();
-    private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
-
     private DirectionFinderListener listener = this;
+
+    private FirebaseValueEventListener driverFirebaseListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,68 +56,86 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Remove Listener for Driver map.
+        fireBaseReference.child("events").child(eventID).child("users").removeEventListener(driverFirebaseListener);
+
+    }
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         super.onMapReady(googleMap);
         displayDriverRoute();
     }
 
     private void displayDriverRoute() {
-        fireBaseReference.child("events").child(eventID).child("users").addValueEventListener(new FirebaseValueEventListener() {
+        driverFirebaseListener = new FirebaseValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                try {
-                    /*
-                    TODO - Get positions (Latlng or address) of all passengers and driver.
-                    TODO - Then save that data for both the map and drive intent later on.
-                    TODO - Use that data to populate optimized route on map.
-                    TODO - Can probably use this logic for passenger side as well.
-                     */
+                // Check if current user is a driver.
+                if (dataSnapshot.child(userID).child("Status").getValue() != null) {
+                    Log.d(TAG, "Status:" + dataSnapshot.child(userID).child("Status").getValue().toString());
+                    if (dataSnapshot.child(userID).child("Status").getValue().toString().equals("Driver")) {
+                        try {
+                            /*
+                            TODO - Get positions (Latlng or address) of all passengers and driver.
+                            TODO - Then save that data for both the map and drive intent later on.
+                            TODO - Use that data to populate optimized route on map.
+                            TODO - Can probably use this logic for passenger side as well.
+                             */
 
-                    // Get driver starting location.
-                    DataSnapshot driverDetails = dataSnapshot.child(userID);
-                    String startDriverLat = driverDetails.child("StartLocation").child("latitude").getValue().toString();
-                    String startDriverLng = driverDetails.child("StartLocation").child("longitude").getValue().toString();
-                    driverLocation = startDriverLat + "," + startDriverLng;
+                            // Get driver starting location.
+                            DataSnapshot driverDetails = dataSnapshot.child(userID);
 
-                    // Get Driver's passenger locations, if available.
-                    if (driverDetails.hasChild("Passengers")) {
-                        passengerLocations.clear();
+                            if (driverDetails.hasChild("StartLocation") && driverDetails.hasChild("Passengers")) {
 
-                        for (DataSnapshot passengerID : driverDetails.child("Passengers").getChildren()) {
-                            if (passengerID.getKey().toString().equals("PassengerCapacity")) {
-                                continue;
+                                String startDriverLat = driverDetails.child("StartLocation").child("latitude").getValue().toString();
+                                String startDriverLng = driverDetails.child("StartLocation").child("longitude").getValue().toString();
+                                driverLocation = startDriverLat + "," + startDriverLng;
+
+                                // Get Driver's passenger locations, if available.
+                                passengerLocations.clear();
+
+                                for (DataSnapshot passengerID : driverDetails.child("Passengers").getChildren()) {
+                                    if (passengerID.getKey().toString().equals("PassengerCapacity")) {
+                                        continue;
+                                    }
+                                    Log.d(TAG, passengerID.getKey().toString());
+                                    DataSnapshot passengerDetails = dataSnapshot.child(passengerID.getKey().toString());
+                                    String passengerLat = passengerDetails.child("PickupLocation").child("latitude").getValue().toString();
+                                    String passengerLng = passengerDetails.child("PickupLocation").child("longitude").getValue().toString();
+                                    passengerLocations.add(passengerLat + "," + passengerLng);
+                                }
                             }
-                            Log.d(TAG, passengerID.getKey().toString());
-                            DataSnapshot passengerDetails = dataSnapshot.child(passengerID.getKey().toString());
-                            String passengerLat = passengerDetails.child("PickupLocation").child("latitude").getValue().toString();
-                            String passengerLng = passengerDetails.child("PickupLocation").child("longitude").getValue().toString();
-                            passengerLocations.add(passengerLat + "," + passengerLng);
+
+                            // Get event location.
+                            eventLatLng = getLocationFromAddress(getActivity(), facebookEvent.getLocation());
+                            eventLocation = eventLatLng.latitude + "," + eventLatLng.longitude;
+
+                            Log.d(TAG, "PassengersLocationsFound:" + passengerLocations.size());
+
+                            // Start request for getting route information.
+                            new DirectionFinder(listener,
+                                    driverLocation,
+                                    eventLocation,
+                                    GOOGLE_API_KEY,
+                                    passengerLocations)
+                                    .execute();
+
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
                         }
+
+                        // Safe to enable drive navigation button now.
+                        mStartNavButton.setEnabled(true);
                     }
-
-                    // Get event location.
-                    eventLatLng = getLocationFromAddress(getActivity(), facebookEvent.getLocation());
-                    eventLocation = eventLatLng.latitude + "," + eventLatLng.longitude;
-
-                    Log.d(TAG, "PassengersLocationsFound:" + passengerLocations.size());
-
-                    // Start request for getting route information.
-                    new DirectionFinder(listener,
-                            driverLocation,
-                            eventLocation,
-                            GOOGLE_API_KEY,
-                            passengerLocations)
-                            .execute();
-
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
                 }
-
-                // Safe to enable drive navigation button now.
-                mStartNavButton.setEnabled(true);
             }
-        });
+        };
+
+        fireBaseReference.child("events").child(eventID).child("users").addValueEventListener(driverFirebaseListener);
     }
 
     private void launchGoogleMapsNavigationIntent() {
@@ -130,13 +145,19 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
                 driverLocation +
                 "&daddr=";
 
-        if (passengerLocations != null) {
-            for (String location: passengerLocations) {
-                intentURI += location + " to:";
+        if (passengerLocations != null && waypointOrder != null) {
+            for (int i : waypointOrder) {
+                intentURI += passengerLocations.get(i) + " to:";
             }
+            //TODO remove later if above works.
+//            for (String location : passengerLocations) {
+//                intentURI += location + " to:";
+//            }
         }
 
         intentURI += eventLocation;
+
+        Log.d(TAG, "URI:" + intentURI);
 
         Uri gmmIntentUri = Uri.parse(intentURI);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
@@ -146,33 +167,18 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
         }
     }
 
-    @Override
-    public void onDirectionFinderStart() {
-        if (originMarkers != null) {
-            for (Marker marker : originMarkers) {
-                marker.remove();
-            }
-            originMarkers.clear();
-        }
-
-        if (destinationMarkers != null) {
-            for (Marker marker : destinationMarkers) {
-                marker.remove();
-            }
-            destinationMarkers.clear();
-        }
-
-        if (polylinePaths != null) {
-            for (Polyline polyline : polylinePaths) {
-                polyline.remove();
-            }
-            polylinePaths.clear();
-        }
-    }
 
     @Override
+    // Pass optimized order as new argument?
     public void onDirectionFinderSuccess(List<Route> routes) {
-        for (Route route : routes) {
+        Route route = null;
+        if (!routes.isEmpty()) {
+            route = routes.get(0);
+        }
+        if (route != null) {
+            //Save waypoint order.
+            waypointOrder = route.waypointOrder;
+
             for (Leg leg : route.legs) {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
 
@@ -183,6 +189,7 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
                         .title(leg.endAddress)
                         .position(leg.endLocation)));
             }
+
             // Options specify line graphic details and path of line.
             PolylineOptions polylineOptions = new PolylineOptions().
                     geodesic(true).
