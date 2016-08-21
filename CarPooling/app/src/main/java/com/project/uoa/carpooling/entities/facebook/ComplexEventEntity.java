@@ -1,5 +1,6 @@
 package com.project.uoa.carpooling.entities.facebook;
 
+import android.util.Log;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -37,10 +38,12 @@ public class ComplexEventEntity implements Parcelable {
         double latitudeAsDouble = 0.0;
 
         try {
+
+            Log.d("fb", longitude + latitude);
             longitudeAsDouble = Double.parseDouble(longitude);
             latitudeAsDouble = Double.parseDouble(latitude);
         } catch (NumberFormatException e) {
-
+Log.e("numberformatexception", "lat or long");
         }
 
         this.location = new Place(placeName, longitudeAsDouble, latitudeAsDouble);
@@ -49,7 +52,6 @@ public class ComplexEventEntity implements Parcelable {
         DateFormat prettyFormat = new SimpleDateFormat("MMM d, h:mmaa", Locale.ENGLISH);
 
         DateFormat longDateFormat = new SimpleDateFormat("EEEE, d MMMM y", Locale.ENGLISH);
-
 
         DateFormat longTimeFormat = new SimpleDateFormat("h:mmaa", Locale.ENGLISH);
 

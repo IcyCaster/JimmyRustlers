@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,6 +39,7 @@ public class P_E_Offers extends Fragment {
     private P_E_OffersRecycler adapter;
     private SwipeRefreshLayout swipeContainer;
     private DatabaseReference fireBaseReference;
+    private TextView noOffersText;
 
     private String userID;
     private String eventID;
@@ -62,15 +64,18 @@ public class P_E_Offers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-        PopulateOffers();
+
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
+
+        noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
+        noOffersText.setText("No Drivers Available!");
 
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+
+        PopulateOffers();
 
         swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -102,6 +107,7 @@ public class P_E_Offers extends Fragment {
     public void PopulateOffers() {
 
         listOfOffersFromDrivers.clear();
+        noOffersText.setVisibility(View.GONE);
 
         fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
@@ -121,13 +127,6 @@ public class P_E_Offers extends Fragment {
 
                                     String driverID = snapshot.getKey();
                                     String driverName = snapshot.child("Name").getValue().toString();
-
-                                    //No location stuff yet
-//                                    String pickupName = snapshot.child("PickupName").getValue().toString();
-//                                    String pickupLongitude = snapshot.child("PickupLong").getValue().toString();
-//                                    String pickupLatitude = snapshot.child("PickupLat").getValue().toString();
-//                                    Place pickupLocation = new Place(pickupName, pickupLongitude, pickupLatitude);
-
 
 
                                     int carCapacity = (int)(long)snapshot.child("Passengers").child("PassengerCapacity").getValue();
@@ -159,12 +158,16 @@ public class P_E_Offers extends Fragment {
         requestNumber--;
         if (requestNumber <= 0) {
 
-            Log.d("T", listOfOffersFromDrivers.toString());
+            if(listOfOffersFromDrivers.size() == 0) {
+                noOffersText.setVisibility(View.VISIBLE);
+            }
+            else {
 
-            Collections.sort(listOfOffersFromDrivers, new DriverComparator());
-            adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
-            recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            recyclerView.setAdapter(adapter);
+                Collections.sort(listOfOffersFromDrivers, new DriverComparator());
+                adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
+                recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                recyclerView.setAdapter(adapter);
+            }
             swipeContainer.setRefreshing(false);
         }
     }
