@@ -8,24 +8,19 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.TextView;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.enums.EventStatus;
+import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 /**
@@ -64,14 +59,9 @@ public class ChangeStatusDialog extends DialogFragment {
 
         view = inflater.inflate(R.layout.fragment_status_selection, container, false);
 
-        // If they are a passenger/driver they can only become an observer
+
         if (eventStatus == EventStatus.PASSENGER || eventStatus == EventStatus.DRIVER) {
             observerButton = (Button) view.findViewById(R.id.button1);
-
-            // Hide the other button
-            Button button = (Button) view.findViewById(R.id.button2);
-            button.setVisibility(View.GONE);
-
             observerButton.setText("Change to: Observer");
             observerButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -80,6 +70,46 @@ public class ChangeStatusDialog extends DialogFragment {
                     becomingObserverAlert();
                 }
             });
+
+
+            // Hide the other button
+            Button button = (Button) view.findViewById(R.id.button2);
+            if (eventStatus == EventStatus.PASSENGER) {
+                button.setText("Change to: Driver");
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        Fragment prev = getFragmentManager().findFragmentByTag("status_dialog2");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        UpdateStatusDialog statusFragment = UpdateStatusDialog.newInstance("Driver");
+                        statusFragment.show(ft, "status_dialog2");
+                    }
+                });
+            } else if (eventStatus == EventStatus.DRIVER) {
+                button.setText("Change to: Passenger");
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        FragmentTransaction ft = getFragmentManager().beginTransaction();
+                        Fragment prev = getFragmentManager().findFragmentByTag("status_dialog2");
+                        if (prev != null) {
+                            ft.remove(prev);
+                        }
+                        ft.addToBackStack(null);
+
+                        // Create and show the dialog.
+                        UpdateStatusDialog statusFragment = UpdateStatusDialog.newInstance("Passenger");
+                        statusFragment.show(ft, "status_dialog2");
+                    }
+                });
+            }
         } else {
             driverButton = (Button) view.findViewById(R.id.button1);
             driverButton.setText("Change to: Driver");
@@ -134,32 +164,9 @@ public class ChangeStatusDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
 
 
-                // TODO: Remove all old details. Somehow notify those affected.
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+                CarpoolResolver.statusChange((CarpoolEventActivity)getActivity(), EventStatus.OBSERVER, 0, null);
 
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
 
-                        // Save username for re-adding
-                        String usersName = snapshot.child("Name").getValue().toString();
-
-                        fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Observer");
-                        fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
-
-                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Name").setValue(usersName);
-                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
-                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(false);
-
-                        Intent i = new Intent(getActivity(), CarpoolEventActivity.class);
-                        Bundle b = new Bundle();
-                        b.putString("userID", userID);
-                        b.putString("eventID", eventID);
-                        i.putExtras(b);
-
-                        getActivity().finish();
-//                        getActivity().startActivity(i);
-                    }
-                });
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -35,6 +35,7 @@ import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
+import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import toan.android.floatingactionmenu.FloatingActionButton;
@@ -49,7 +50,7 @@ import toan.android.floatingactionmenu.FloatingActionsMenu;
  * - The event/carpool details
  * - A map of the route to the location
  * - An explorer where they can check out passengers/drivers' requests/offers
- * <p>
+ * <p/>
  * They can also switch between the different status' Observer/Driver/Passenger
  * Or leave the carpool altogether.
  */
@@ -64,14 +65,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     private ComplexEventEntity facebookEventObject;
     private Place eventLocation;
     private DatabaseReference fireBaseReference;
-    private OnClickListener changeStatus = new OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            // Create and show the dialog.
-            ChangeStatusDialog newFragment = new ChangeStatusDialog();
-            newFragment.show(getSupportFragmentManager(), "status_dialog");
-        }
-    };
+
 
     public String getUserID() {
         return userID;
@@ -249,14 +243,12 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                         alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int id) {
-                                                //remove from users
-                                                fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
-                                                //remove from events
-                                                fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
+
+
+                                                CarpoolResolver.leaveCarpool(CarpoolEventActivity.this);
 
                                                 Log.d("firebase - event", "Unsubscribed: " + eventID);
 
-                                                CarpoolEventActivity.this.finish();
                                             }
                                         });
                                         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -273,7 +265,6 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 final FloatingActionButton changeStatusButton = (FloatingActionButton) findViewById(R.id.change_status_fab);
                                 changeStatusButton.setIcon(R.drawable.icon_white_change_status);
                                 changeStatusButton.setOnClickListener(changeStatus);
-
                             }
                         });
                     }
@@ -282,6 +273,15 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         request.executeAsync();
 
     }
+
+    OnClickListener changeStatus = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            // Create and show the dialog.
+            ChangeStatusDialog newFragment = new ChangeStatusDialog();
+            newFragment.show(getSupportFragmentManager(), "status_dialog");
+        }
+    };
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -317,4 +317,5 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
             super.onBackPressed();
         }
     }
+
 }
