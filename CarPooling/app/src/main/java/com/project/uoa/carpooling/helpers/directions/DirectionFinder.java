@@ -27,19 +27,32 @@ import java.util.List;
 
 /**
  * Credits to: Mai Thanh Hiep.
+ * Code below adapted from: https://github.com/hiepxuan2008/GoogleMapDirectionSimple/
  */
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
+    private static final String WAYPOINT_URL = "&waypoints=optimize:true";
+    private static final String TAG = "DirectionFinder";
+
     private final String GOOGLE_API_KEY;
+    private List<String> passengerLocations = new ArrayList<>();
     private DirectionFinderListener listener;
     private String origin;
     private String destination;
 
-    public DirectionFinder(DirectionFinderListener listener, String origin, String destination, String APIKey) {
+    public DirectionFinder(DirectionFinderListener listener, String origin, String dest, String APIKey) {
         this.listener = listener;
         this.origin = origin;
-        this.destination = destination;
+        this.destination = dest;
         this.GOOGLE_API_KEY = APIKey;
+    }
+
+    public DirectionFinder(DirectionFinderListener listener, String origin, String dest, String APIKey, List<String> passengerLocations) {
+        this.listener = listener;
+        this.origin = origin;
+        this.destination = dest;
+        this.GOOGLE_API_KEY = APIKey;
+        this.passengerLocations = passengerLocations;
     }
 
     public void execute() throws UnsupportedEncodingException {
@@ -52,8 +65,22 @@ public class DirectionFinder {
         String urlOrigin = URLEncoder.encode(origin, "utf-8");
         String urlDestination = URLEncoder.encode(destination, "utf-8");
 
-        // Can supply a url with waypoints as well.
-        return DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination + "&key=" + GOOGLE_API_KEY;
+        // Construct URL
+        String requestURL = DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination;
+
+        if (!passengerLocations.isEmpty()) {
+            //Append additional waypoint data, if available.
+            requestURL += WAYPOINT_URL;
+
+            for(String location : passengerLocations) {
+                requestURL += "|"  + location;
+            }
+        }
+
+        requestURL += "&key=" + GOOGLE_API_KEY;
+        Log.d(TAG, requestURL);
+
+        return requestURL;
     }
 
     // Async Task for executing and downloading response from Directions API.
@@ -71,7 +98,7 @@ public class DirectionFinder {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     buffer.append(line + "\n");
-                }
+            }
 
                 return buffer.toString();
 

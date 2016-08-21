@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.activities.MainActivity;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.Collections;
@@ -51,48 +49,43 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
     public void onBindViewHolder(final CurrentCarpoolEventViewHolder holder, final int position) {
 
         // Picasso loads image from the URL
-        if (list.get(position).eventImageURL != null) {
+        if (list.get(position).getEventImageURL() != null) {
             Picasso.with(context)
-                    .load(list.get(position).eventImageURL)
-                    .placeholder(R.drawable.placeholder_image)
-                    .error(R.drawable.error_no_image)
+                    .load(list.get(position).getEventImageURL())
+                    .placeholder(R.drawable.image_placeholder)
+                    .error(R.drawable.image_error)
                     .fit()
                     .noFade()
                     .into(holder.eventThumbnail);
         } else {
             // If no URL given, load default image
-            holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.placeholder_image));
+            holder.eventThumbnail.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.image_placeholder));
         }
 
         // Checks DB/users/{user-id}
         DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        fireBaseReference.child("users").child(((MainActivity) context).getUserID()).child("events").child(list.get(position).eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+        fireBaseReference.child("users").child(((MainActivity) context).getUserID()).child("events").child(list.get(position).getEventID()).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot snapshot) {
                 // Set the observer temp_placeholder_indicator
                 if (snapshot.getValue().equals("Observer")) {
-                    holder.eventStatusImage.setImageResource(R.drawable.observer_icon);
+                    holder.eventStatusImage.setImageResource(R.drawable.icon_grey_circle_observer);
                 }
                 // Set the driver temp_placeholder_indicator
                 else if (snapshot.getValue().equals("Driver")) {
-                    holder.eventStatusImage.setImageResource(R.drawable.driver_icon);
+                    holder.eventStatusImage.setImageResource(R.drawable.icon_grey_circle_driver);
                 }
                 // Set the passenger temp_placeholder_indicator
                 else if (snapshot.getValue().equals("Passenger")) {
-                    holder.eventStatusImage.setImageResource(R.drawable.passenger_icon);
+                    holder.eventStatusImage.setImageResource(R.drawable.icon_grey_circle_passenger);
                 } else {
-                    holder.eventStatusImage.setImageResource(R.drawable.temp_placeholder_indicator);
+                    holder.eventStatusImage.setImageResource(R.drawable.image_placeholder);
                 }
 
-                holder.eventId = list.get(position).eventID;
-                holder.eventName.setText(list.get(position).eventName);
-                holder.eventStartDate.setText(list.get(position).startDate);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
+                holder.eventId = list.get(position).getEventID();
+                holder.eventName.setText(list.get(position).getEventName());
+                holder.eventStartDate.setText(list.get(position).getPrettyStartTime());
             }
         });
     }
@@ -128,7 +121,7 @@ class CurrentCarpoolEventViewHolder extends RecyclerView.ViewHolder {
             @Override
             public void onClick(View v) {
 
-                String eventID = adapter.list.get(getAdapterPosition()).eventID;
+                String eventID = adapter.list.get(getAdapterPosition()).getEventID();
 
                 // Launch the carpool instance as a new activity
                 Intent i = new Intent(mainActivity, CarpoolEventActivity.class);

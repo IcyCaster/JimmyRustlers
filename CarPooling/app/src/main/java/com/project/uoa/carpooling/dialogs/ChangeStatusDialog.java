@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,17 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.activities.MainActivity;
+import com.project.uoa.carpooling.enums.EventStatus;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 /**
  * Created by Chester on 12/07/2016.
@@ -33,7 +41,7 @@ public class ChangeStatusDialog extends DialogFragment {
     private DatabaseReference fireBaseReference;
 
     private String userID;
-    private String eventStatus;
+    private EventStatus eventStatus;
     private String eventID;
 
     public ChangeStatusDialog() {
@@ -60,7 +68,7 @@ public class ChangeStatusDialog extends DialogFragment {
         statusText.setText("Status: " + eventStatus);
 
         // If they are a passenger/driver they can only become an observer
-        if (eventStatus.equals("Passenger") || eventStatus.equals("Driver")) {
+        if (eventStatus == EventStatus.PASSENGER || eventStatus == EventStatus.DRIVER) {
             observerButton = (Button) view.findViewById(R.id.button1);
 
             // Hide the other button
@@ -123,25 +131,33 @@ public class ChangeStatusDialog extends DialogFragment {
     public void becomingObserverAlert() {
         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
         alert.setTitle("Are you sure?");
-        alert.setMessage("Do you want to no longer be a " + eventStatus + "? " + "Everything organised will be removed and those affected will be notified!");
+        alert.setMessage("Do you want to no longer be a " + eventStatus.toString() + "? " + "Everything organised will be removed and those affected will be notified!");
         alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
 
 
                 // TODO: Remove all old details. Somehow notify those affected.
+                fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+
+                        // Save username for re-adding
+                        String usersName = snapshot.child("Name").getValue().toString();
+
+                        fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Observer");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
+
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Name").setValue(usersName);
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(false);
 
 
-
-
-                fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Observer");
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue("False");
-
-
-                getActivity().finish();
-                startActivity(getActivity().getIntent());
+                        getActivity().finish();
+                        startActivity(getActivity().getIntent());
+                    }
+                });
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -1,35 +1,67 @@
 package com.project.uoa.carpooling.activities;
 
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.adapters.pagers.CarpoolEventPagerAdapter;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
+import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
+import com.project.uoa.carpooling.entities.shared.Place;
+import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
-import com.project.uoa.carpooling.fragments.carpool.Event_Details;
+import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
-import com.project.uoa.carpooling.fragments.carpool.Event_Explorer;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Offers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Passengers;
-import com.project.uoa.carpooling.fragments.carpool.Explorer_Requests;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
-public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Explorer_Passengers.OnFragmentInteractionListener, Event_Details.OnFragmentInteractionListener, Event_Explorer.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener, Explorer_Requests.OnFragmentInteractionListener, Explorer_Offers.OnFragmentInteractionListener {
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
-    // These are relevant to the event instance
+import android.view.View.OnClickListener;
+
+/**
+ * CarpoolEventActivity is the created when a user wishes to see a specific carpool they have subscribed to.
+ * From this activity they can navigate via tabbed pages to visit:
+ *                                                                 - The event/carpool details
+ *                                                                 - A map of the route to the location
+ *                                                                 - An explorer where they can check out passengers/drivers' requests/offers
+ *
+ * They can also switch between the different status' Observer/Driver/Passenger
+ * Or leave the carpool altogether.
+ */
+public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+//TODO: Remove the irrelevant OnFragmentInteractionListeners
+
+    // Unique to the event instance
     private String userID;
     private String eventID;
-    private String eventStatus;
+    private EventStatus eventStatus;
+    private ComplexEventEntity facebookEventObject;
+    private Place eventLocation;
+
+    private DatabaseReference fireBaseReference;
 
     public String getUserID() {
         return userID;
@@ -37,82 +69,240 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     public String getEventID() {
         return eventID;
     }
-    public String getEventStatus() {
+    public EventStatus getEventStatus() {
         return eventStatus;
     }
+    public ComplexEventEntity getFacebookEvent() {
+        return facebookEventObject;
+    }
+    public Place getEventLocation() {return  eventLocation; }
+
+    public FloatingActionsMenu floatingActionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
-        // Get userID and id passed from the MainActivity
+        // Facebook and Firebase
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
+
+        // Update values if savedInstanceState exists.
         if (savedInstanceState != null) {
             userID = savedInstanceState.getString("USER_ID");
             eventID = savedInstanceState.getString("EVENT_ID");
-            eventStatus = savedInstanceState.getString("EVENT_STATUS");
+            eventStatus = (EventStatus) savedInstanceState.getSerializable("EVENT_STATUS");
+            facebookEventObject = savedInstanceState.getParcelable("FACEBOOK_ENTITY");
         } else {
             Bundle bundle = getIntent().getExtras();
             userID = bundle.getString("userID");
             eventID = bundle.getString("eventID");
-            eventStatus = bundle.getString("eventStatus");
         }
 
-        DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
+        // Facebook request to create the Facebook event object
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + eventID,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
 
-        // users/{user-ID}/events/{event-ID}
-        fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
+                        // Parsing the event object
+                        facebookEventObject = Facebook_ComplexEvent_Parser.parse(response.getJSONObject());
 
-                eventStatus = snapshot.getValue().toString();
+                        // Save location as separate entity.
+                        eventLocation = facebookEventObject.getLocation();
 
-                setContentView(R.layout.activity__car_pool_instance);
+                        // users/{user-ID}/events/{event-ID}
+                        fireBaseReference.child("users").child(userID).child("events").child(eventID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot snapshot) {
 
-                // Set up the pageViewer with the adapter
-                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager());
-                ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
-                viewPager.setAdapter(pagerAdapter);
+                                String status = snapshot.getValue().toString();
+                                Log.d("firebase - log", "Event Status: " + status);
 
-                // Add tabs to the pageViewer
-                TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-                tabLayout.setupWithViewPager(viewPager);
-                tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-            }
-            @Override
-            public void onCancelled(DatabaseError firebaseError) {
-                Log.e("firebase - error", firebaseError.getMessage());
-            }
-        });
+                                if(status.equals("Observer")) {
+                                    eventStatus = EventStatus.OBSERVER;
+                                }
+                                else if(status.equals("Driver")) {
+                                    eventStatus = EventStatus.DRIVER;
+                                }
+                                else if(status.equals("Passenger")) {
+                                    eventStatus = EventStatus.PASSENGER;
+                                }
+
+                                // Set the activities view content
+                                setContentView(R.layout.activity__car_pool_instance);
+
+                                TextView statusText = (TextView)findViewById(R.id.status_text);
+                                statusText.setText(eventStatus.toString());
+
+                                // Create Pager and Adapter
+                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus, getApplicationContext());
+                                ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+                                viewPager.setAdapter(pagerAdapter);
+
+                                // Add tabs to the pageViewer
+                                TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+                                tabLayout.setupWithViewPager(viewPager);
+
+
+                                tabLayout.getTabAt(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_details));
+                                tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_map));
+                                tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_arrows));
+
+
+                                final RelativeLayout bg = (RelativeLayout) findViewById(R.id.semi_black_bg);
+                                floatingActionsMenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
+                                final FloatingActionButton actionC = new FloatingActionButton(getBaseContext());
+
+                                if(eventStatus == EventStatus.OBSERVER) {
+                                    tabLayout.getTabAt(2).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_eye));
+                                }
+                                else if(eventStatus == EventStatus.DRIVER) {
+                                    actionC.setTitle("Manage Passengers");
+                                    actionC.setIcon(R.drawable.icon_white_passenger);
+                                    actionC.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+//
+                                        }
+                                    });
+                                    floatingActionsMenu.addButton(actionC);
+                                }
+                                else if(eventStatus == EventStatus.PASSENGER) {
+                                    actionC.setTitle("Manage Driver");
+                                    actionC.setIcon(R.drawable.icon_white_driver);
+                                    actionC.setOnClickListener(new OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+//
+                                        }
+                                    });
+                                    floatingActionsMenu.addButton(actionC);
+                                }
+
+                                final FloatingActionButton messagingButton = (FloatingActionButton) findViewById(R.id.messaging_button);
+                                messagingButton.setColorNormalResId(R.color.colorAccent);
+                                messagingButton.setColorPressedResId(R.color.colorAccentLight);
+                                messagingButton.setIcon(R.drawable.icon_black_messenger);
+                                messagingButton.setStrokeVisible(false);
+
+                                floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
+                                    @Override
+                                    public void onMenuExpanded() {
+                                        messagingButton.setVisibility(View.VISIBLE);
+                                        bg.setVisibility(View.VISIBLE);
+                                    }
+
+                                    @Override
+                                    public void onMenuCollapsed() {
+                                        messagingButton.setVisibility(View.GONE);
+                                        bg.setVisibility(View.GONE);
+                                    }
+                                });
+
+
+                                final FloatingActionButton detailsButton = (FloatingActionButton) findViewById(R.id.details_fab);
+                                detailsButton.setIcon(R.drawable.icon_white_change_details);
+                                detailsButton.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Log.d("Change Details", "BUTTON TODO:");
+                                        detailsButton.setTitle("TODO");
+                                    }
+                                });
+
+                                final FloatingActionButton leaveCarpoolButton = (FloatingActionButton) findViewById(R.id.leave_carpool_fab);
+                                leaveCarpoolButton.setIcon(R.drawable.icon_white_leave);
+                                leaveCarpoolButton.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+
+
+                                        AlertDialog.Builder alert = new AlertDialog.Builder(CarpoolEventActivity.this);
+                                        alert.setTitle("Confirm leaving?");
+                                        alert.setMessage(Html.fromHtml("Anything you have organised will be gone. You <b>cannot</b> undo this!"));
+                                        alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                //remove from users
+                                                fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
+                                                //remove from events
+                                                fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
+
+                                                Log.d("firebase - event", "Unsubscribed: " + eventID);
+
+                                                CarpoolEventActivity.this.finish();
+                                            }
+                                        });
+                                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int id) {
+                                                dialog.cancel();
+                                            }
+                                        });
+                                        Dialog dialog = alert.create();
+                                        dialog.show();
+                                    }
+                                });
+
+                                final FloatingActionButton changeStatusButton = (FloatingActionButton) findViewById(R.id.change_status_fab);
+                                changeStatusButton.setIcon(R.drawable.icon_white_change_status);
+                                changeStatusButton.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // Create and show the dialog.
+                                        ChangeStatusDialog newFragment = new ChangeStatusDialog();
+                                        newFragment.show(getSupportFragmentManager(), "status_dialog");
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                });
+        // Execute Facebook request
+        request.executeAsync();
+
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save state members in saved instance
+        savedInstanceState.putSerializable("EVENT_STATUS", eventStatus);
         savedInstanceState.putString("USER_ID", userID);
         savedInstanceState.putString("EVENT_ID", eventID);
-        savedInstanceState.putString("EVENT_STATUS", eventStatus);
+        savedInstanceState.putParcelable("FACEBOOK_ENTITY", facebookEventObject);
 
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Always call the superclass so it can restore the view hierarchy
         super.onRestoreInstanceState(savedInstanceState);
 
         // Restore state members from saved instance
+        eventStatus = (EventStatus) savedInstanceState.getSerializable("EVENT_STATUS");
         userID = savedInstanceState.getString("USER_ID");
         eventID = savedInstanceState.getString("EVENT_ID");
-        eventStatus = savedInstanceState.getString("EVENT_STATUS");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+        facebookEventObject = savedInstanceState.getParcelable("FACEBOOK_ENTITY");
     }
 
     public void onFragmentInteraction(Uri uri) {
         // Kept Empty
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(floatingActionsMenu.isExpanded()) {
+            floatingActionsMenu.collapse();
+        }
+        else {
+            super.onBackPressed();
+        }
     }
 }

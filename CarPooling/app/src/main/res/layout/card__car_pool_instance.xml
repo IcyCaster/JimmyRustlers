@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/event_photo"
                 android:layout_toLeftOf="@+id/status_photo"
-                android:text="THE EVENT - TESTING WHEN ITS A LOT OF TEXT"
+                android:text="Loading..."
                 android:textSize="20sp"
                 android:ellipsize="end"
                 android:maxLines="1"
@@ -50,7 +50,7 @@
                 android:layout_toRightOf="@+id/event_photo"
                 android:layout_toLeftOf="@+id/status_photo"
                 android:layout_below="@+id/event_name"
-                android:text="15-Sep-2016 - 8:00pm"
+                android:text="Loading..."
                 android:ellipsize="end"
                 android:maxLines="1"
                 />
@@ -59,7 +59,7 @@
                 android:id="@+id/status_photo"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:layout_width="25dp"
+                android:layout_width="50dp"
                 android:layout_height="50dp"
                 />
 

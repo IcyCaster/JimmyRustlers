@@ -4,6 +4,16 @@
     android:layout_height="match_parent"
     tools:context=".fragments.main.CurrentCarpools">
 
+    <TextView
+        android:id="@+id/emptylist_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        style="@style/Base.TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+        android:text="EMPTY!"
+        android:visibility="gone"
+        />
+
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_above="@+id/join_carpool_button"
         android:id="@+id/swipeContainer"

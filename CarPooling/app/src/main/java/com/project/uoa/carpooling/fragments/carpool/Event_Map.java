@@ -1,20 +1,28 @@
 package com.project.uoa.carpooling.fragments.carpool;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.facebook.FacebookSdk;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -24,12 +32,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.firebase.database.DataSnapshot;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
-import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
 import com.project.uoa.carpooling.entities.maps.Leg;
 import com.project.uoa.carpooling.entities.maps.Route;
+import com.project.uoa.carpooling.entities.shared.Place;
+import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
+import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseChildEventListener;
+import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -43,10 +58,11 @@ import java.util.List;
  * Use the {@link Event_Map#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Event_Map extends Fragment implements OnMapReadyCallback, DirectionFinderListener {
+public class Event_Map extends Fragment implements OnMapReadyCallback, DirectionFinderListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String EVENT_ID = "param1";
+    private static final String TAG = "Event_Map";
     private String GOOGLE_API_KEY;
 
     // TODO: Rename and change types of parameters
@@ -54,16 +70,27 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     private String eventID;
     private String userID;
     private String eventStatus;
-    //TODO Update string with actual address dynamically.
-    private String mSelectedAddress = "University Of Auckland";
+
     private OnFragmentInteractionListener mListener;
     private List<Marker> originMarkers = new ArrayList<>();
     private List<Marker> destinationMarkers = new ArrayList<>();
     private List<Polyline> polylinePaths = new ArrayList<>();
 
+    //TODO Update string with actual address dynamically.
+    private String mSelectedAddress = "University Of Auckland";
+    private GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
+    private Location mCurrentLocation;
+
     private MapView mMapView;
     private Button btnStartNav;
+
+    // Firebase reference
+    private DatabaseReference fireBaseReference;
+    private String mEventLocation = "University Of Auckland";
+
+    // Temporary, I don't think this works, not the correct reference (cuz its java which has no reference).
+//    private DirectionFinderListener tempListener = this;
 
     public Event_Map() {
         // Required empty public constructor
@@ -73,7 +100,6 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-
      * @return A new instance of fragment Event_Map.
      */
     // TODO: Rename and change types and number of parameters
@@ -92,32 +118,33 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
             eventId = getArguments().getLong(EVENT_ID);
         }
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
+//        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
+
+//        recieverTest();
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //Start Google Location API
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+
+        fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         View view = inflater.inflate(R.layout.fragment_event_map, container, false);
 
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
-
-//        double latitude = 40.714728;
-//        double longitude = -73.998672;
-//        String label = "ABC Label";
-//        String uriBegin = "geo:" + latitude + "," + longitude;
-//        String query = latitude + "," + longitude + "(" + label + ")";
-//        String encodedQuery = Uri.encode(query);
-//        String uriString = uriBegin + "?q=" + encodedQuery + "&z=16";
-//        Uri uri = Uri.parse(uriString);
-//        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, uri);
-//        startActivity(intent);
+//        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus().toString();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
         // Map Initialization
         mMapView = (MapView) view.findViewById(R.id.mapView);
@@ -128,12 +155,6 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         try {
             MapsInitializer.initialize(getActivity().getApplicationContext());
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        try {
-            new DirectionFinder(this, "Manukau", "University of Auckland", GOOGLE_API_KEY).execute();
-        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 
@@ -181,7 +202,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         // Set route to event location
         mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
+            // TODO: Ask for permission, and handle if not granted.
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
             //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
@@ -209,7 +230,7 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         }
 
         if (polylinePaths != null) {
-            for (Polyline polyline:polylinePaths ) {
+            for (Polyline polyline : polylinePaths) {
                 polyline.remove();
             }
         }
@@ -240,6 +261,44 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         }
     }
 
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+
+        Log.i(TAG, "Connection Started");
+        mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+
+        // Check event entity for address
+        Place eventLocation = ((CarpoolEventActivity) getActivity()).getFacebookEvent().getLocation();
+        mEventLocation = eventLocation.toString();
+
+        try {
+            // Start request for getting route information.
+            new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(TAG, "Connection failed. Error: " + connectionResult.getErrorCode());
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -256,7 +315,8 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     }
 
     private void launchGoogleMapsNavigationIntent(String address) {
-        Uri gmmIntentUri = Uri.parse("google.navigation:q=" + address.replaceAll(" ", "+"));
+        //Uri gmmIntentUri = Uri.parse("google.navigation:q=" + address.replaceAll(" ", "+"));
+        Uri gmmIntentUri = Uri.parse("https://maps.google.ch/maps?saddr=Manukau&daddr=University of Auckland to:Auckland to: Charles Prevost Dr");
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -270,18 +330,22 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
     @Override
     public void onResume() {
         super.onResume();
+        monitorDriverCurrentLocation();
+//        registerBroadcastReceiver();
         mMapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+//        unregisterBroadcastReceiver();
         mMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+//        unregisterBroadcastReceiver();
         mMapView.onDestroy();
     }
 
@@ -290,4 +354,176 @@ public class Event_Map extends Fragment implements OnMapReadyCallback, Direction
         super.onLowMemory();
         mMapView.onLowMemory();
     }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
+
+    public void monitorDriverCurrentLocation() {
+
+        Log.d("test1", eventID);
+
+        fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Log.d("test2", eventID);
+
+                // Check if they are a passenger for this event
+                if (dataSnapshot.child(userID).child("Status").getValue().toString().equals("Passenger")) {
+
+                    Log.d("test2.5", eventID);
+
+                    final String driverID = dataSnapshot.child(userID).child("Driver").getValue().toString();
+                    final DatabaseReference currentLocationRef = fireBaseReference.child("events").child(eventID).child("users").child(driverID);
+
+                    // Check if they have a specified driver
+                    if (!driverID.equals("null")) {
+
+                        Log.d("test3", eventID);
+
+                        final String driverName = dataSnapshot.child(driverID).child("Name").getValue().toString();
+
+                        // Attach valueListener
+                        fireBaseReference.child("events").child(eventID).child("users").child(driverID).child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
+
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                Log.d("test4", eventID);
+
+                                // Detect that the driver is driving, trigger notification and
+                                if ((boolean) dataSnapshot.getValue()) {
+
+                                    Log.d("Driver", "Now listening for " + driverName + "'s current location!");
+                                    currentLocationRef.addChildEventListener(DriverLocationListener);
+
+                                } else {
+
+                                    // Detach as the driver is no longer driving
+                                    currentLocationRef.removeEventListener(DriverLocationListener);
+
+                                }
+                            }
+
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    FirebaseChildEventListener DriverLocationListener = new FirebaseChildEventListener() {
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            // Only care about current location changes
+            if (dataSnapshot.getKey().equals("CurrentLocation")) {
+                // Detect location update, broadcast to map
+                Place driverLocation = dataSnapshot.getValue(Place.class);
+                Log.d("Broadcast", "Driver is now at: latitude: " + driverLocation.getLatitude() + "; longitude: " + driverLocation.getLongitude());
+
+                //TODO
+                Log.d("TODO", "Update Map HERE!");
+            }
+        }
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            // Do nothing...
+        }
+    };
+
 }
+
+
+// ANGELS MAP STUFF
+//    private void updateEventLocation(String eventID) {
+//        Log.d(TAG, "updateEventLocation() executed.");
+//
+//        fireBaseReference.child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "Event location is being extracted.");
+//                if (dataSnapshot.hasChild("latitude") && dataSnapshot.hasChild("longitude")) {
+//                    mEventLocation = dataSnapshot.child("latitude").getValue().toString()
+//                            + ","
+//                            + dataSnapshot.child("longitude").getValue().toString();
+//                } else if (dataSnapshot.hasChild("location")) {
+//                    mEventLocation = dataSnapshot.child("location").getValue().toString();
+//                }
+//
+//                try {
+//                    // Start request for getting route information.
+//                    new DirectionFinder(this, mCurrentLocation.getLatitude() + "," + mCurrentLocation.getLongitude(), mEventLocation, GOOGLE_API_KEY).execute();
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.e(TAG, "Could not retrieve event location.");
+//            }
+//        });
+//    }
+
+
+
+
+
+    // R.I.P BROADCAST STUFF
+
+//    private LocationReceiver receiver = new LocationReceiver();
+//    private String driverID;
+
+    // Called from OnResume()
+//    private void registerBroadcastReceiver() {
+//
+//        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // TEMP check for passenger while Maps are being completed
+//                if(dataSnapshot.child("Status").getValue().toString().equals("Passenger")) {
+//                    if (!dataSnapshot.child("Driver").getValue().toString().equals("null")) {
+//                        driverID = dataSnapshot.child("Driver").getValue().toString();
+//                        IntentFilter filter = new IntentFilter(eventID + "-" + driverID);
+//                        getActivity().registerReceiver(receiver, filter);
+//                    }
+//                }
+//            }
+//        });
+//    }
+//
+//    // Called from OnPause() and on Destroy()
+//    private void unregisterBroadcastReceiver() {
+//        try {
+//            getActivity().unregisterReceiver(receiver);
+//        }
+//        catch (IllegalArgumentException e) {
+//        }
+//    }
+//
+//
+//    class LocationReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context arg0, Intent intent) {
+//            double latitude = intent.getDoubleExtra("Latitude", 0.0);
+//            double longitude = intent.getDoubleExtra("Longitude", 0);
+//
+//            Log.d("Broadcast received", "Lat: " + latitude + ", Long: " + longitude);
+//            //TODO: Update this on the MAP! WITH AN ICON!
+//        }
+//    }
+
