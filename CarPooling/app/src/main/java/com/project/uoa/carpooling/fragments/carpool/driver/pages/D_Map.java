@@ -65,6 +65,7 @@ public class D_Map extends MapsFragment implements DirectionFinderListener {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                // Check if current user is a driver.
                 if (dataSnapshot.child(userID).child("Status").getValue().toString().equals("Driver")) {
                     try {
                     /*
