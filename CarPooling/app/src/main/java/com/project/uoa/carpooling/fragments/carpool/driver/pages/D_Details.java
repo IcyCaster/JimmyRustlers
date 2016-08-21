@@ -49,7 +49,7 @@ public class D_Details extends DetailsFragment {
                 String passengers = "";
                 int passengerNumber = 0;
                 for (DataSnapshot child : userSnapshot.child("Passengers").getChildren()) {
-                    if (!child.getKey().equals("PassengerCapacity")) {
+                    if (!child.getKey().equals("PassengerCapacity") && !child.getValue().equals("abandoned")) {
                         String passengerName = snapshot.child("users").child(child.getKey()).child("Name").getValue().toString();
                         passengers = passengers + passengerName + "(" + child.getValue() + "); ";
                         passengerNumber += (int)(long)child.getValue();

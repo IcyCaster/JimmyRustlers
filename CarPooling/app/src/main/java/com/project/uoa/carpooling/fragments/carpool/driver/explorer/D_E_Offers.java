@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,19 +59,17 @@ public class D_E_Offers extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        shouldExecuteOnResume = false;
 
-        // Firebase Reference
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
-        // UserID / EventID
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
-
-        shouldExecuteOnResume = false;
 
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
         adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Passengers Available!");
@@ -83,8 +82,7 @@ public class D_E_Offers extends Fragment {
             @Override
             public void onRefresh() {
                 swipeContainer.setRefreshing(true);
-//                populateAsync(); // Not sure why I'm populating asynchronously... Will keep this here just in case.
-                DiscoverOffers();
+                populateAsync();
             }
         });
 
@@ -116,18 +114,21 @@ public class D_E_Offers extends Fragment {
      */
     public void DiscoverOffers() {
 
-        noOffersText.setVisibility(View.GONE);
-
-        listOfAvailablePassengers.clear();
-
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
+                listOfAvailablePassengers.clear();
+
                 // Calculate the number of spaces left in the drivers car
                 int passengerSpaceAvailable = (int)(long)snapshot.child(userID).child("Passengers").child("PassengerCapacity").getValue();
                 for (DataSnapshot child : snapshot.child(userID).child("Passengers").getChildren()) {
-                    if (!child.getKey().equals("PassengerCapacity")) {
+                    if(child.getValue().equals("abandoned")) {
+                        // TODO send notification + remove
+                        Log.d("Notification", "TODO: PASSENGER HAS LEFT");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").child(child.getKey()).removeValue();
+                    }
+                    else if (!child.getKey().equals("PassengerCapacity")) {
                         int passengerCount = (int)(long) child.getValue();
                         passengerSpaceAvailable -= passengerCount;
                     }
@@ -179,8 +180,11 @@ public class D_E_Offers extends Fragment {
 
         if(listOfAvailablePassengers.size() == 0) {
             noOffersText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
         }
         else {
+            noOffersText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             // Sort them alphabetically first
             Collections.sort(listOfAvailablePassengers, new PassengerComparator());
             adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());

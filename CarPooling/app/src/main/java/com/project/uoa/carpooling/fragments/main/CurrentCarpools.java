@@ -170,7 +170,6 @@ public class CurrentCarpools extends Fragment {
         });
     }
 
-
     public void GetEventDetails() {
 
         listOfEventCardEntities.clear();
@@ -205,24 +204,37 @@ public class CurrentCarpools extends Fragment {
                             // Check if they have a specified driver
                             if (!driverID.equals("null")) {
 
-                                final String driverName = dataSnapshot.child("users").child(driverID).child("Name").getValue().toString();
+                                if (driverID.equals("abandoned")) {
+                                    // TODO send notification + set abandoned to null
+                                    Log.d("Notification", "TODO: DRIVER HAS LEFT");
+                                    fireBaseReference.child("events").child(dataSnapshot.getKey()).child("users").child(userID).child("Driver").setValue("null");
+                                } else {
 
-                                // Attach valueListener
-                                fireBaseReference.child("events").child(dataSnapshot.getKey()).child("users").child(driverID).child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                        DatabaseReference currentLocationRef = fireBaseReference.child("events").child(eventID).child("users").child(driverID);
+                                    final String driverName = dataSnapshot.child("users").child(driverID).child("Name").getValue().toString();
 
-                                        // Detect that the driver is driving; trigger notification
-                                        if ((boolean) dataSnapshot.getValue()) {
-                                            if (isAdded()) {
-                                                Log.d("Notification", driverName + " is driving!");
-                                                showNotification(driverName);
+                                    // Attach valueListener
+                                    fireBaseReference.child("events").child(dataSnapshot.getKey()).child("users").child(driverID).child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                            DatabaseReference currentLocationRef = fireBaseReference.child("events").child(eventID).child("users").child(driverID);
+
+                                            if (dataSnapshot.exists()) {
+                                                // Detect that the driver is driving; trigger notification
+                                                if ((boolean) dataSnapshot.getValue()) {
+                                                    if (isAdded()) {
+                                                        Log.d("Notification", driverName + " is driving!");
+                                                        showNotification(driverName);
+                                                    }
+                                                }
+                                            } else {
+                                                // TODO send notification + set abandoned to null
+                                                Log.d("Notification", "TODO: DRIVER HAS LEFT");
                                             }
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         }
                     }

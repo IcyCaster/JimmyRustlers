@@ -64,16 +64,14 @@ public class P_E_Offers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-
-
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Drivers Available!");
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
-
 
         PopulateOffers();
 
@@ -107,7 +105,6 @@ public class P_E_Offers extends Fragment {
     public void PopulateOffers() {
 
         listOfOffersFromDrivers.clear();
-        noOffersText.setVisibility(View.GONE);
 
         fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
@@ -159,10 +156,12 @@ public class P_E_Offers extends Fragment {
         if (requestNumber <= 0) {
 
             if(listOfOffersFromDrivers.size() == 0) {
+                recyclerView.setVisibility(View.GONE);
                 noOffersText.setVisibility(View.VISIBLE);
             }
             else {
-
+                recyclerView.setVisibility(View.VISIBLE);
+                noOffersText.setVisibility(View.GONE);
                 Collections.sort(listOfOffersFromDrivers, new DriverComparator());
                 adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

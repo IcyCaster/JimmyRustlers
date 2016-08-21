@@ -1,11 +1,14 @@
 package com.project.uoa.carpooling.dialogs;
 
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,29 +21,31 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.shared.Place;
+import com.project.uoa.carpooling.enums.EventStatus;
+import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class UpdateStatusDialog extends DialogFragment {
+    private static final String STATUS = "param1";
+    private static final String TAG = "UpdateStatusDialog";
     private OnFragmentInteractionListener mListener;
     private View view;
     private NumberPicker np;
     //EditText locationResult;
     private PlaceAutocompleteFragment locationAutoResult;
-
-    private static final String STATUS = "param1";
-    private static final String TAG = "UpdateStatusDialog";
-
     private com.google.android.gms.location.places.Place locationSelected;
     private String status;
     private String eventID;
     private String userID;
+    private EventStatus eventStatus;
+
+    private double longitude = 0.0;
+    private double latitude = 0.0;
 
     public UpdateStatusDialog() {
         // Required empty public constructor
@@ -73,6 +78,7 @@ public class UpdateStatusDialog extends DialogFragment {
 
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
 
         TextView statusText = (TextView) view.findViewById(R.id.status_text_popup2);
 
@@ -125,53 +131,61 @@ public class UpdateStatusDialog extends DialogFragment {
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
 
-            if (locationSelected == null) {
-                Log.d("TODO:", "Warn user they have not put a location");
-            } else {
-
-                double longitude = 0.0;
-                double latitude = 0.0;
-
-                try {
-                    longitude = locationSelected.getLatLng().longitude;
-                    latitude = locationSelected.getLatLng().latitude;
-                } catch (NumberFormatException e) {
-                    Log.d("TODO:", "Only accepts numbers atm");
-                }
-
-                DatabaseReference fireBaseReference = FirebaseDatabase.getInstance().getReference();
-                if (status.equals("Driver")) {
-                    fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Driver");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Driver");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(true);
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue(false);
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").child("PassengerCapacity").setValue(np.getValue());
-
-                    Place startLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("StartLocation").setValue(startLocation);
-
-                    Place currentLocation = new Place(null, 0.0, 0.0);
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").setValue(currentLocation);
-
+                if (locationSelected == null) {
+                    Log.d("TODO:", "Warn user they have not put a location");
                 } else {
-                    // Else, save as Passenger.
-                    fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Passenger");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Passenger");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(true);
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Driver").setValue("null");
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PassengerCount").setValue(np.getValue());
 
-                    Place pickupLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PickupLocation").setValue(pickupLocation);
+
+                    try {
+                        longitude = locationSelected.getLatLng().longitude;
+                        latitude = locationSelected.getLatLng().latitude;
+                    } catch (NumberFormatException e) {
+                        Log.d("TODO:", "Only accepts numbers atm");
+                    }
+
+
+                    if(eventStatus!=eventStatus.OBSERVER) {
+
+
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+                        alert.setTitle("Are you sure?");
+                        alert.setMessage("Do you want to no longer be a " + eventStatus.toString() + "? " + "Everything organised will be removed and those affected will be notified!");
+                        alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                makeChange();
+
+                            }
+                        });
+                        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+                        Dialog dialog = alert.create();
+                        dialog.show();
+
+                    }
+                    else {
+                        makeChange();
+                    }
+
                 }
-
-                getActivity().finish();
-                startActivity(getActivity().getIntent());
-            }
             }
         });
 
         return view;
+    }
+
+    public void makeChange() {
+        if (status.equals("Driver")) {
+            Place startLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
+            CarpoolResolver.statusChange((CarpoolEventActivity) getActivity(), eventStatus.DRIVER, np.getValue(), startLocation);
+        } else if (status.equals("Passenger")) {
+            Place pickupLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
+            CarpoolResolver.statusChange((CarpoolEventActivity) getActivity(), eventStatus.PASSENGER, np.getValue(), pickupLocation);
+        }
     }
 
     @Override

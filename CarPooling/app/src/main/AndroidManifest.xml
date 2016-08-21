@@ -44,8 +44,6 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".activities.CarpoolEventActivity"></activity>
 
-        <service android:name=".services.TutorialService" />
-
     </application>
 
 </manifest>

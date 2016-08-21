@@ -6,6 +6,12 @@
 
     <!-- Header aligned to top -->
 
+    <!--<TextView-->
+        <!--android:id="@+id/explorer_description"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="This is a test message"/>-->
+
     <android.support.design.widget.TabLayout
         android:id="@+id/explorer_tab"
         android:layout_width="match_parent"
@@ -21,6 +27,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        android:tabStripEnabled="false" />
+        android:tabStripEnabled="false"
+        />
+
 
 </LinearLayout>
