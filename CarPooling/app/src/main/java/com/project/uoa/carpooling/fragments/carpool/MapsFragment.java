@@ -3,6 +3,7 @@ package com.project.uoa.carpooling.fragments.carpool;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
@@ -13,17 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.entities.maps.Leg;
 import com.project.uoa.carpooling.entities.maps.Route;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
@@ -158,7 +163,36 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
     }
 
     @Override
+    // Pass optimized order as new argument?
     public void onDirectionFinderSuccess(List<Route> routes) {
+        Route route = null;
+        if (!routes.isEmpty()) {
+            route = routes.get(0);
+        }
+        if (route != null) {
+            //Save waypoint order.
+            waypointOrder = route.waypointOrder;
 
+            for (Leg leg : route.legs) {
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
+
+                originMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(leg.startAddress)
+                        .position(leg.startLocation)));
+                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(leg.endAddress)
+                        .position(leg.endLocation)));
+            }
+
+            // Options specify line graphic details and path of line.
+            PolylineOptions polylineOptions = new PolylineOptions().
+                    geodesic(true).
+                    color(Color.rgb(101, 156, 239));
+
+            for (int i = 0; i < route.points.size(); i++)
+                polylineOptions.add(route.points.get(i));
+
+            polylinePaths.add(mMap.addPolyline(polylineOptions));
+        }
     }
 }
