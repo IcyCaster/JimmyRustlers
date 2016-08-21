@@ -6,21 +6,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
-import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.DriverComparator;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -105,7 +101,7 @@ public class O_E_Drivers extends Fragment {
     public void PopulateDrivers() {
 
         listOfDrivers.clear();
-        noOffersText.setVisibility(View.GONE);
+
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -120,10 +116,10 @@ public class O_E_Drivers extends Fragment {
                         // Place startLocation = child.child("StartLocation").getValue(Place.class);
 
                         // Calculates the amount of spaces left in the driver's car
-                        int passengerSpaceAvailable = (int)(long)child.child("Passengers").child("PassengerCapacity").getValue();
+                        int passengerSpaceAvailable = (int) (long) child.child("Passengers").child("PassengerCapacity").getValue();
                         for (DataSnapshot passengers : child.child("Passengers").getChildren()) {
-                            if (!passengers.getKey().equals("PassengerCapacity")) {
-                                int passengerCount = (int)(long) passengers.getValue();
+                            if (!passengers.getKey().equals("PassengerCapacity") && !passengers.getValue().equals("abandoned")) {
+                                int passengerCount = (int) (long) passengers.getValue();
                                 passengerSpaceAvailable -= passengerCount;
                             }
                         }
@@ -140,10 +136,12 @@ public class O_E_Drivers extends Fragment {
     }
 
     public synchronized void callback() {
-        if(listOfDrivers.size() == 0) {
+        if (listOfDrivers.size() == 0) {
             noOffersText.setVisibility(View.VISIBLE);
-        }
-        else {
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            noOffersText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             Collections.sort(listOfDrivers, new DriverComparator());
             adapter = new O_E_DriversRecycler(listOfDrivers, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

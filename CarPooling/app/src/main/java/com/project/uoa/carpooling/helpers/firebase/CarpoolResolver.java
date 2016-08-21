@@ -65,7 +65,7 @@ public class CarpoolResolver {
             }
 
         }
-        
+
         // Changes user's record of status
         fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue(goToStatus.toString());
     }

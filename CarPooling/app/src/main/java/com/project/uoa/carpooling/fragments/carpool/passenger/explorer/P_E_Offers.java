@@ -105,7 +105,6 @@ public class P_E_Offers extends Fragment {
     public void PopulateOffers() {
 
         listOfOffersFromDrivers.clear();
-        noOffersText.setVisibility(View.GONE);
 
         fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
@@ -157,10 +156,12 @@ public class P_E_Offers extends Fragment {
         if (requestNumber <= 0) {
 
             if(listOfOffersFromDrivers.size() == 0) {
+                recyclerView.setVisibility(View.GONE);
                 noOffersText.setVisibility(View.VISIBLE);
             }
             else {
-
+                recyclerView.setVisibility(View.VISIBLE);
+                noOffersText.setVisibility(View.GONE);
                 Collections.sort(listOfOffersFromDrivers, new DriverComparator());
                 adapter = new P_E_OffersRecycler(listOfOffersFromDrivers, getActivity());
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

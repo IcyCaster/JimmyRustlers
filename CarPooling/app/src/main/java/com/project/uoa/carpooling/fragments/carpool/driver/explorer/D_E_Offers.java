@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -113,8 +114,6 @@ public class D_E_Offers extends Fragment {
      */
     public void DiscoverOffers() {
 
-        noOffersText.setVisibility(View.GONE);
-
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -124,7 +123,12 @@ public class D_E_Offers extends Fragment {
                 // Calculate the number of spaces left in the drivers car
                 int passengerSpaceAvailable = (int)(long)snapshot.child(userID).child("Passengers").child("PassengerCapacity").getValue();
                 for (DataSnapshot child : snapshot.child(userID).child("Passengers").getChildren()) {
-                    if (!child.getKey().equals("PassengerCapacity")) {
+                    if(child.getValue().equals("abandoned")) {
+                        // TODO send notification + remove
+                        Log.d("Notification", "TODO: PASSENGER HAS LEFT");
+                        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").child(child.getKey()).removeValue();
+                    }
+                    else if (!child.getKey().equals("PassengerCapacity")) {
                         int passengerCount = (int)(long) child.getValue();
                         passengerSpaceAvailable -= passengerCount;
                     }
@@ -176,8 +180,11 @@ public class D_E_Offers extends Fragment {
 
         if(listOfAvailablePassengers.size() == 0) {
             noOffersText.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
         }
         else {
+            noOffersText.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
             // Sort them alphabetically first
             Collections.sort(listOfAvailablePassengers, new PassengerComparator());
             adapter = new D_E_OffersRecycler(listOfAvailablePassengers, getActivity());

@@ -103,7 +103,7 @@ public class P_E_Requests extends Fragment {
     public void PopulateRequests() {
 
         listOfPotentialDrivers.clear();
-        noOffersText.setVisibility(View.GONE);
+
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -148,10 +148,12 @@ public class P_E_Requests extends Fragment {
     }
 
     public synchronized void callback() {
-        if(listOfPotentialDrivers.size() == 0) {
+        if (listOfPotentialDrivers.size() == 0) {
+            recyclerView.setVisibility(View.GONE);
             noOffersText.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            noOffersText.setVisibility(View.GONE);
             Collections.sort(listOfPotentialDrivers, new DriverComparator());
             adapter = new P_E_RequestsRecycler(listOfPotentialDrivers, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

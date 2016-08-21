@@ -101,8 +101,6 @@ public class D_E_Requests extends Fragment {
 
     public void PopulateRequests() {
 
-        noOffersText.setVisibility(View.GONE);
-
         listOfRequestingPassenger.clear();
 
         fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
@@ -158,8 +156,11 @@ public class D_E_Requests extends Fragment {
         if (requestNumber <= 0) {
             if(listOfRequestingPassenger.size() == 0) {
                 noOffersText.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
             }
             else {
+                noOffersText.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
                 Collections.sort(listOfRequestingPassenger, new PassengerComparator());
                 adapter = new D_E_RequestsRecycler(listOfRequestingPassenger, getActivity());
                 recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

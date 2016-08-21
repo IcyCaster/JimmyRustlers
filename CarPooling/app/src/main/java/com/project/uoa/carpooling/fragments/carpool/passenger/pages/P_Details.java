@@ -1,6 +1,7 @@
 package com.project.uoa.carpooling.fragments.carpool.passenger.pages;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +52,13 @@ public class P_Details extends DetailsFragment {
                 RelativeLayout routeDetails = (RelativeLayout) view.findViewById(R.id.route_details_container);
                 View routeDetailsBreak = view.findViewById(R.id.route_details_break);
 
-                if (userSnapshot.child("Driver").getValue().equals("null")) {
+                if (userSnapshot.child("Driver").getValue().equals("abandoned")) {
+                    // TODO send notification + set abandoned to null
+                    Log.d("Notification", "TODO: DRIVER HAS LEFT");
+                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Driver").setValue("null");
+                }
+
+                if (userSnapshot.child("Driver").getValue().equals("null") || userSnapshot.child("Driver").getValue().equals("abandoned")) {
                     driverText.setText("No Driver");
                     routeDetails.setVisibility(View.GONE);
                     routeDetailsBreak.setVisibility(View.GONE);
