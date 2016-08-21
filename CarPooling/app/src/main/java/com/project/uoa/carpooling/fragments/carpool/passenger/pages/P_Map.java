@@ -66,27 +66,6 @@ public class P_Map extends MapsFragment implements DirectionFinderListener {
     }
 
     @Override
-    public void onDirectionFinderStart() {
-        if (originMarkers != null) {
-            for (Marker marker : originMarkers) {
-                marker.remove();
-            }
-        }
-
-        if (destinationMarkers != null) {
-            for (Marker marker : destinationMarkers) {
-                marker.remove();
-            }
-        }
-
-        if (polylinePaths != null) {
-            for (Polyline polyline : polylinePaths) {
-                polyline.remove();
-            }
-        }
-    }
-
-    @Override
     public void onDirectionFinderSuccess(List<Route> routes) {
         for (Route route : routes) {
             for (Leg leg : route.legs) {

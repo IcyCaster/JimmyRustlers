@@ -17,35 +17,45 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.entities.maps.Route;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
+import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Chester on 10/08/2016.
  */
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class MapsFragment extends Fragment implements DirectionFinderListener, OnMapReadyCallback {
     // TODO: Rename and change types of parameters
-    public String eventID;
-    public String userID;
-    public EventStatus eventStatus;
-    public ComplexEventEntity facebookEvent;
-    public String GOOGLE_API_KEY;
-    public LatLng eventLatLng;
+    protected String eventID;
+    protected String userID;
+    protected EventStatus eventStatus;
+    protected ComplexEventEntity facebookEvent;
+    protected String GOOGLE_API_KEY;
+    protected LatLng eventLatLng;
 
-    public GoogleMap mMap;
+    protected List<Marker> originMarkers = new ArrayList<>();
+    protected List<Marker> destinationMarkers = new ArrayList<>();
+    protected List<Polyline> polylinePaths = new ArrayList<>();
+    protected List<Integer> waypointOrder = new ArrayList<>();
 
-    public MapView mMapView;
-    public Button mStartNavButton;
+    protected GoogleMap mMap;
+
+    protected MapView mMapView;
+    protected Button mStartNavButton;
 
     // Firebase reference
-    public DatabaseReference fireBaseReference;
+    protected DatabaseReference fireBaseReference;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,5 +127,38 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
             return eventLatLng;
         }
+    }
+
+
+    @Override
+    public void onDirectionFinderStart() {
+        if (originMarkers != null) {
+            for (Marker marker : originMarkers) {
+                marker.remove();
+            }
+            originMarkers.clear();
+        }
+
+        if (destinationMarkers != null) {
+            for (Marker marker : destinationMarkers) {
+                marker.remove();
+            }
+            destinationMarkers.clear();
+        }
+
+        if (polylinePaths != null) {
+            for (Polyline polyline : polylinePaths) {
+                polyline.remove();
+            }
+            polylinePaths.clear();
+        }
+
+        // Clear Map
+        mMap.clear();
+    }
+
+    @Override
+    public void onDirectionFinderSuccess(List<Route> routes) {
+
     }
 }
