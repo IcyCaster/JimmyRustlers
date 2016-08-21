@@ -23,12 +23,8 @@ import java.util.List;
 /**
  * Created by Chester on 18/07/2016.
  */
-public class P_Map extends MapsFragment implements DirectionFinderListener {
+public class P_Map extends MapsFragment {
     private static final String TAG = "P_Map";
-
-    private List<Marker> originMarkers = new ArrayList<>();
-    private List<Marker> destinationMarkers = new ArrayList<>();
-    private List<Polyline> polylinePaths = new ArrayList<>();
 
     private DirectionFinderListener listener = this;
 
@@ -65,49 +61,28 @@ public class P_Map extends MapsFragment implements DirectionFinderListener {
         });
     }
 
-    @Override
-    public void onDirectionFinderStart() {
-        if (originMarkers != null) {
-            for (Marker marker : originMarkers) {
-                marker.remove();
-            }
-        }
-
-        if (destinationMarkers != null) {
-            for (Marker marker : destinationMarkers) {
-                marker.remove();
-            }
-        }
-
-        if (polylinePaths != null) {
-            for (Polyline polyline : polylinePaths) {
-                polyline.remove();
-            }
-        }
-    }
-
-    @Override
-    public void onDirectionFinderSuccess(List<Route> routes) {
-        for (Route route : routes) {
-            for (Leg leg : route.legs) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
-
-                originMarkers.add(mMap.addMarker(new MarkerOptions()
-                        .title(leg.startAddress)
-                        .position(leg.startLocation)));
-                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                        .title(leg.endAddress)
-                        .position(leg.endLocation)));
-            }
-            // Options specify line graphic details and path of line.
-            PolylineOptions polylineOptions = new PolylineOptions().
-                    geodesic(true).
-                    color(Color.rgb(101, 156, 239));
-
-            for (int i = 0; i < route.points.size(); i++)
-                polylineOptions.add(route.points.get(i));
-
-            polylinePaths.add(mMap.addPolyline(polylineOptions));
-        }
-    }
+//    @Override
+//    public void onDirectionFinderSuccess(List<Route> routes) {
+//        for (Route route : routes) {
+//            for (Leg leg : route.legs) {
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
+//
+//                originMarkers.add(mMap.addMarker(new MarkerOptions()
+//                        .title(leg.startAddress)
+//                        .position(leg.startLocation)));
+//                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+//                        .title(leg.endAddress)
+//                        .position(leg.endLocation)));
+//            }
+//            // Options specify line graphic details and path of line.
+//            PolylineOptions polylineOptions = new PolylineOptions().
+//                    geodesic(true).
+//                    color(Color.rgb(101, 156, 239));
+//
+//            for (int i = 0; i < route.points.size(); i++)
+//                polylineOptions.add(route.points.get(i));
+//
+//            polylinePaths.add(mMap.addPolyline(polylineOptions));
+//        }
+//    }
 }

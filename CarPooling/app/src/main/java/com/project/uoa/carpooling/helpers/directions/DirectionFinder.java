@@ -62,11 +62,11 @@ public class DirectionFinder {
 
     // Creates URL string for Google Directions Web API HTTP request.
     private String createUrl() throws UnsupportedEncodingException {
-        String urlOrigin = URLEncoder.encode(origin, "utf-8");
-        String urlDestination = URLEncoder.encode(destination, "utf-8");
+//        String urlOrigin = URLEncoder.encode(origin, "utf-8");
+//        String urlDestination = URLEncoder.encode(destination, "utf-8");
 
         // Construct URL
-        String requestURL = DIRECTION_URL_API + "origin=" + urlOrigin + "&destination=" + urlDestination;
+        String requestURL = DIRECTION_URL_API + "origin=" + origin + "&destination=" + destination;
 
         if (!passengerLocations.isEmpty()) {
             //Append additional waypoint data, if available.
@@ -153,6 +153,13 @@ public class DirectionFinder {
                 leg.endLocation = new LatLng(jsonEndLocation.getDouble("lat"), jsonEndLocation.getDouble("lng"));
 
                 route.legs.add(leg);
+
+                route.waypointOrder = new ArrayList<>();
+                JSONArray jsonWaypointOrder = jsonRoute.getJSONArray("waypoint_order");
+
+                for (int j = 0; j < jsonWaypointOrder.length(); j++) {
+                    route.waypointOrder.add(jsonWaypointOrder.getInt(j));
+                }
             }
 
             route.points = PolyUtil.decode(overview_polylineJson.getString("points"));
