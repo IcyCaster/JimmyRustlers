@@ -175,6 +175,13 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 //                                if(eventStatus == EventStatus.OBSERVER) {
 //                                    tabLayout.getTabAt(1).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.icon_white_explorer_eye));
 //                                }
+
+                                final FloatingActionButton messagingButton = (FloatingActionButton) findViewById(R.id.messaging_button);
+                                messagingButton.setColorNormalResId(R.color.colorAccent);
+                                messagingButton.setColorPressedResId(R.color.colorAccentLight);
+                                messagingButton.setIcon(R.drawable.icon_black_messenger);
+                                messagingButton.setStrokeVisible(false);
+
                                 if (eventStatus == EventStatus.DRIVER) {
                                     actionC.setTitle("Manage Passengers");
                                     actionC.setIcon(R.drawable.icon_white_passenger);
@@ -195,18 +202,18 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                         }
                                     });
                                     floatingActionsMenu.addButton(actionC);
+                                } else if (eventStatus == EventStatus.OBSERVER) {
+                                    messagingButton.setVisibility(View.GONE);
                                 }
 
-                                final FloatingActionButton messagingButton = (FloatingActionButton) findViewById(R.id.messaging_button);
-                                messagingButton.setColorNormalResId(R.color.colorAccent);
-                                messagingButton.setColorPressedResId(R.color.colorAccentLight);
-                                messagingButton.setIcon(R.drawable.icon_black_messenger);
-                                messagingButton.setStrokeVisible(false);
+
 
                                 floatingActionsMenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
                                     @Override
                                     public void onMenuExpanded() {
-                                        messagingButton.setVisibility(View.VISIBLE);
+                                        if (!(eventStatus == EventStatus.OBSERVER)) {
+                                            messagingButton.setVisibility(View.VISIBLE);
+                                        }
                                         bg.setVisibility(View.VISIBLE);
                                     }
 

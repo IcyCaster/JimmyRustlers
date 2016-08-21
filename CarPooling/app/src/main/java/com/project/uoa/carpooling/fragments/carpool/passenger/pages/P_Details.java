@@ -59,7 +59,7 @@ public class P_Details extends DetailsFragment {
                 }
 
                 if (userSnapshot.child("Driver").getValue().equals("null") || userSnapshot.child("Driver").getValue().equals("abandoned")) {
-                    driverText.setText("No Driver");
+                    driverText.setText("No Driver Yet!");
                     routeDetails.setVisibility(View.GONE);
                     routeDetailsBreak.setVisibility(View.GONE);
 
