@@ -183,6 +183,13 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 messagingButton.setColorPressedResId(R.color.colorAccentLight);
                                 messagingButton.setIcon(R.drawable.icon_black_messenger);
                                 messagingButton.setStrokeVisible(false);
+                                messagingButton.setOnClickListener(new OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Log.d("Change Details", "BUTTON TODO:");
+                                        messagingButton.setTitle("TODO");
+                                    }
+                                });
 
                                 if (eventStatus == EventStatus.DRIVER) {
                                     actionC.setTitle("Manage Passengers");
