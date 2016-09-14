@@ -65,6 +65,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
     private ComplexEventEntity facebookEventObject;
     private Place eventLocation;
     private DatabaseReference fireBaseReference;
+    private CarpoolEventPagerAdapter pagerAdapter;
+    private ViewPager viewPager;
 
 
     public String getUserID() {
@@ -153,8 +155,8 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
 
 
                                 // Create Pager and Adapter
-                                CarpoolEventPagerAdapter pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus, getApplicationContext());
-                                ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+                                pagerAdapter = new CarpoolEventPagerAdapter(getSupportFragmentManager(), eventStatus, getApplicationContext());
+                                viewPager = (ViewPager) findViewById(R.id.view_pager);
                                 viewPager.setAdapter(pagerAdapter);
 
                                 // Add tabs to the pageViewer
