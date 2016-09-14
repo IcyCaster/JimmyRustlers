@@ -1,11 +1,14 @@
 package com.project.uoa.carpooling.activities;
 
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -29,12 +32,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
 import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
+import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
+import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
 import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -186,10 +191,13 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
                                 messagingButton.setOnClickListener(new OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        Log.d("Change Details", "BUTTON TODO:");
-                                        messagingButton.setTitle("TODO");
-                                    }
-                                });
+                                        FragmentManager fm = getSupportFragmentManager();
+                                        SimpleMessenger dFragment = new SimpleMessenger();
+                                        // Show DialogFragment
+                                        dFragment.show(fm, "Messenger Fragment");
+
+                            }
+                        });
 
                                 if (eventStatus == EventStatus.DRIVER) {
                                     actionC.setTitle("Manage Passengers");

@@ -37,7 +37,7 @@ import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, SimpleMessenger.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
 
     private String userID;
 
