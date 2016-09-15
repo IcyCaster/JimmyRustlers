@@ -40,13 +40,11 @@ import java.util.List;
  */
 public class D_Map extends MapsFragment {
     private static final String TAG = "D_Map";
-
     private String driverLocation;
     private String eventLocation;
     private List<String> passengerLocations = new ArrayList<>();
     private LocationManager locationManager;
     private LocationListener locationListener;
-
 
     private DirectionFinderListener listener = this;
 
@@ -188,7 +186,6 @@ public class D_Map extends MapsFragment {
     }
 
     private void launchGoogleMapsNavigationIntent() {
-
         pushLocationForPassengers();
 
         //String intentURI = "https://maps.google.ch/maps?saddr=Manukau&daddr=University of Auckland to:Auckland to: Charles Prevost Dr";
@@ -201,15 +198,9 @@ public class D_Map extends MapsFragment {
             for (int i : waypointOrder) {
                 intentURI += passengerLocations.get(i) + " to:";
             }
-            //TODO remove later if above works.
-//            for (String location : passengerLocations) {
-//                intentURI += location + " to:";
-//            }
         }
 
         intentURI += eventLocation;
-
-        Log.d(TAG, "URI:" + intentURI);
 
         Uri gmmIntentUri = Uri.parse(intentURI);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
