@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -76,13 +77,13 @@ public class P_Details extends DetailsFragment {
                 countText.setText(userSnapshot.child("PassengerCount").getValue().toString());
 
                 TextView locationText = (TextView) view.findViewById(R.id.pickup_location_placename);
-                locationText.setText(userSnapshot.child("PickupLocation").child("latitude").getValue().toString() + "   " + userSnapshot.child("PickupLocation").child("longitude").getValue().toString());
+
+                //locationText.setText(userSnapshot.child("PickupLocation").child("latitude").getValue().toString() + "   " + userSnapshot.child("PickupLocation").child("longitude").getValue().toString());
+                locationText.setText(getAddressFromLocation(getActivity(), (double) userSnapshot.child("PickupLocation").child("latitude").getValue(), (double) userSnapshot.child("PickupLocation").child("longitude").getValue()));
             }
 
 
         });
-
-
 
 
         return view;
