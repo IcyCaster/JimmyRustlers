@@ -213,7 +213,7 @@ public class P_Map extends MapsFragment {
                 LatLng driverLatLng = new LatLng(driverLocation.getLatitude(), driverLocation.getLongitude());
                 driverLocationIcon = mMap.addMarker(new MarkerOptions()
                         .position(driverLatLng)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.driver_icon)));
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_car)));
             }
         }
     };
