@@ -1,21 +1,17 @@
 package com.project.uoa.carpooling.fragments.carpool.passenger.pages;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DatabaseReference;
-import com.project.uoa.carpooling.entities.maps.Leg;
-import com.project.uoa.carpooling.entities.maps.Route;
+import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.MapsFragment;
 import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
@@ -24,8 +20,6 @@ import com.project.uoa.carpooling.helpers.firebase.FirebaseChildEventListener;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Chester on 18/07/2016.
@@ -40,6 +34,8 @@ public class P_Map extends MapsFragment {
     private DirectionFinderListener listener = this;
     private DatabaseReference currentLocationRef;
     private String driverID;
+
+    private Marker driverLocationIcon;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -194,6 +190,12 @@ public class P_Map extends MapsFragment {
 
 
                                     Log.d("Driver", "Now listening for " + driverName + "'s current location!");
+                                    try {
+                                        currentLocationRef.removeEventListener(DriverLocationListener);
+                                    }
+                                    catch(Exception e) {
+                                        Log.e(TAG, e.getMessage());
+                                    }
                                     currentLocationRef.addChildEventListener(DriverLocationListener);
 
                                 } else {
@@ -211,7 +213,7 @@ public class P_Map extends MapsFragment {
         });
     }
 
-    static FirebaseChildEventListener DriverLocationListener = new FirebaseChildEventListener() {
+    FirebaseChildEventListener DriverLocationListener = new FirebaseChildEventListener() {
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
             // Only care about current location changes
@@ -220,10 +222,17 @@ public class P_Map extends MapsFragment {
                 Place driverLocation = dataSnapshot.getValue(Place.class);
                 Log.d("Broadcast", "Driver is now at: latitude: " + driverLocation.getLatitude() + "; longitude: " + driverLocation.getLongitude());
 
-                //TODO
-                Log.d("TODO ANGEL", "Update Map HERE!");
+                //Remove driver lcoation if exists
+                if (driverLocationIcon != null) {
+                    driverLocationIcon.remove();
+                }
 
-                gMap
+                //Draw driver location on map
+                Log.d(TAG, "Driver Location Updated");
+                LatLng driverLatLng = new LatLng(driverLocation.getLatitude(), driverLocation.getLongitude());
+                driverLocationIcon = mMap.addMarker(new MarkerOptions()
+                        .position(driverLatLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.driver_icon)));
             }
         }
     };
