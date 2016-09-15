@@ -9,6 +9,7 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -174,18 +176,77 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
             route = routes.get(0);
         }
         if (route != null) {
+            Log.d("MapsFragment", "Legs:"+route.legs.size());
+
             //Save waypoint order.
             waypointOrder = route.waypointOrder;
 
-            for (Leg leg : route.legs) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
+            if (route.legs.size() <= 1) {
+                // Render simple route.
+                Leg firstLeg = route.legs.get(0);
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLeg.startLocation, 11));
 
                 originMarkers.add(mMap.addMarker(new MarkerOptions()
-                        .title(leg.startAddress)
-                        .position(leg.startLocation)));
+                        .title(firstLeg.startAddress)
+                        .position(firstLeg.startLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_start))));
                 destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                        .title(leg.endAddress)
-                        .position(leg.endLocation)));
+                        .title(firstLeg.endAddress)
+                        .position(firstLeg.endLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_destination))));
+            } else {
+
+                // Render first leg.
+                Leg firstLeg = route.legs.get(0);
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstLeg.startLocation, 11));
+
+                originMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(firstLeg.startAddress)
+                        .position(firstLeg.startLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_start))));
+                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(firstLeg.endAddress)
+                        .position(firstLeg.endLocation)));
+
+                for (int i = 1; i < route.legs.size() - 1; i++) {
+                    Leg leg = route.legs.get(i);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
+
+                    originMarkers.add(mMap.addMarker(new MarkerOptions()
+                            .title(leg.startAddress)
+                            .position(leg.startLocation)));
+                    destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                            .title(leg.endAddress)
+                            .position(leg.endLocation)));
+                }
+
+                // Render final leg.
+                Leg finalLeg = route.legs.get(route.legs.size() - 1);
+
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(finalLeg.startLocation, 11));
+
+                originMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(finalLeg.startAddress)
+                        .position(finalLeg.startLocation)));
+                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+                        .title(finalLeg.endAddress)
+                        .position(finalLeg.endLocation)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_destination))));
+
+//            for (Leg leg : route.legs) {
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
+//
+//                originMarkers.add(mMap.addMarker(new MarkerOptions()
+//                        .title(leg.startAddress)
+//                        .position(leg.startLocation)
+//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_start))));
+//                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+//                        .title(leg.endAddress)
+//                        .position(leg.endLocation)
+//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_destination))));
+//            }
             }
 
             // Options specify line graphic details and path of line.

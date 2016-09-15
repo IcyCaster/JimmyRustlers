@@ -211,39 +211,39 @@ public class D_Map extends MapsFragment {
     }
 
 
-    @Override
-    // Pass optimized order as new argument?
-    public void onDirectionFinderSuccess(List<Route> routes) {
-        Route route = null;
-        if (!routes.isEmpty()) {
-            route = routes.get(0);
-        }
-        if (route != null) {
-            //Save waypoint order.
-            waypointOrder = route.waypointOrder;
-
-            for (Leg leg : route.legs) {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
-
-                originMarkers.add(mMap.addMarker(new MarkerOptions()
-                        .title(leg.startAddress)
-                        .position(leg.startLocation)));
-                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-                        .title(leg.endAddress)
-                        .position(leg.endLocation)));
-            }
-
-            // Options specify line graphic details and path of line.
-            PolylineOptions polylineOptions = new PolylineOptions().
-                    geodesic(true).
-                    color(Color.rgb(101, 156, 239));
-
-            for (int i = 0; i < route.points.size(); i++)
-                polylineOptions.add(route.points.get(i));
-
-            polylinePaths.add(mMap.addPolyline(polylineOptions));
-        }
-    }
+//    @Override
+//    // Pass optimized order as new argument?
+//    public void onDirectionFinderSuccess(List<Route> routes) {
+//        Route route = null;
+//        if (!routes.isEmpty()) {
+//            route = routes.get(0);
+//        }
+//        if (route != null) {
+//            //Save waypoint order.
+//            waypointOrder = route.waypointOrder;
+//
+//            for (Leg leg : route.legs) {
+//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
+//
+//                originMarkers.add(mMap.addMarker(new MarkerOptions()
+//                        .title(leg.startAddress)
+//                        .position(leg.startLocation)));
+//                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
+//                        .title(leg.endAddress)
+//                        .position(leg.endLocation)));
+//            }
+//
+//            // Options specify line graphic details and path of line.
+//            PolylineOptions polylineOptions = new PolylineOptions().
+//                    geodesic(true).
+//                    color(Color.rgb(101, 156, 239));
+//
+//            for (int i = 0; i < route.points.size(); i++)
+//                polylineOptions.add(route.points.get(i));
+//
+//            polylinePaths.add(mMap.addPolyline(polylineOptions));
+//        }
+//    }
 
     private class MyLocationListener implements LocationListener {
 
