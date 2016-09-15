@@ -27,10 +27,7 @@ import java.io.UnsupportedEncodingException;
 public class P_Map extends MapsFragment {
     private static final String TAG = "P_Map";
 
-    private FirebaseValueEventListener driverLocationFirebaseListener;
-    private FirebaseValueEventListener driverStatusFirebaseListener;
     private FirebaseValueEventListener driverRouteFirebaseListener;
-
     private DirectionFinderListener listener = this;
     private DatabaseReference currentLocationRef;
     private DatabaseReference carpoolPassengersRef;
