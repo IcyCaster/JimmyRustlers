@@ -14,7 +14,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.entities.maps.Leg;
 import com.project.uoa.carpooling.entities.maps.Route;
 import com.project.uoa.carpooling.fragments.carpool.MapsFragment;
@@ -23,7 +22,6 @@ import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,10 +29,6 @@ import java.util.List;
  */
 public class D_Map extends MapsFragment {
     private static final String TAG = "D_Map";
-
-    private String driverLocation;
-    private String eventLocation;
-    private List<String> passengerLocations = new ArrayList<>();
 
     private DirectionFinderListener listener = this;
 
@@ -139,7 +133,6 @@ public class D_Map extends MapsFragment {
     }
 
     private void launchGoogleMapsNavigationIntent() {
-        //String intentURI = "https://maps.google.ch/maps?saddr=Manukau&daddr=University of Auckland to:Auckland to: Charles Prevost Dr";
         String intentURI = "https://maps.google.ch/maps?" +
                 "saddr=" +
                 driverLocation +
@@ -149,15 +142,9 @@ public class D_Map extends MapsFragment {
             for (int i : waypointOrder) {
                 intentURI += passengerLocations.get(i) + " to:";
             }
-            //TODO remove later if above works.
-//            for (String location : passengerLocations) {
-//                intentURI += location + " to:";
-//            }
         }
 
         intentURI += eventLocation;
-
-        Log.d(TAG, "URI:" + intentURI);
 
         Uri gmmIntentUri = Uri.parse(intentURI);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);

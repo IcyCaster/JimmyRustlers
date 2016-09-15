@@ -49,6 +49,10 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
     protected String GOOGLE_API_KEY;
     protected LatLng eventLatLng;
 
+    protected String driverLocation;
+    protected String eventLocation;
+    protected List<String> passengerLocations = new ArrayList<>();
+
     protected List<Marker> originMarkers = new ArrayList<>();
     protected List<Marker> destinationMarkers = new ArrayList<>();
     protected List<Polyline> polylinePaths = new ArrayList<>();
