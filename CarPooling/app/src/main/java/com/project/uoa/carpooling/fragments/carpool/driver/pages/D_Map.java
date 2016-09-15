@@ -1,22 +1,31 @@
 package com.project.uoa.carpooling.fragments.carpool.driver.pages;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.entities.maps.Leg;
 import com.project.uoa.carpooling.entities.maps.Route;
+import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.MapsFragment;
 import com.project.uoa.carpooling.helpers.directions.DirectionFinder;
 import com.project.uoa.carpooling.helpers.directions.DirectionFinderListener;
@@ -35,10 +44,34 @@ public class D_Map extends MapsFragment {
     private String driverLocation;
     private String eventLocation;
     private List<String> passengerLocations = new ArrayList<>();
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+
 
     private DirectionFinderListener listener = this;
 
     private FirebaseValueEventListener driverFirebaseListener;
+
+
+    public void pushLocationForPassengers() {
+        locationListener = new MyLocationListener();
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
+    }
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -59,8 +92,24 @@ public class D_Map extends MapsFragment {
     public void onDestroy() {
         super.onDestroy();
         // Remove Listener for Driver map.
+        Log.d(TAG, "Cleaning up current location tracking");
+        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue(false);
+        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").setValue(new Place(null, 0, 0));
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        if(locationListener != null) {
+            locationManager.removeUpdates(locationListener);
+        }
+//        service.cancelUpdates();
         fireBaseReference.child("events").child(eventID).child("users").removeEventListener(driverFirebaseListener);
-
     }
 
     @Override
@@ -139,6 +188,9 @@ public class D_Map extends MapsFragment {
     }
 
     private void launchGoogleMapsNavigationIntent() {
+
+        pushLocationForPassengers();
+
         //String intentURI = "https://maps.google.ch/maps?saddr=Manukau&daddr=University of Auckland to:Auckland to: Charles Prevost Dr";
         String intentURI = "https://maps.google.ch/maps?" +
                 "saddr=" +
@@ -201,4 +253,40 @@ public class D_Map extends MapsFragment {
             polylinePaths.add(mMap.addPolyline(polylineOptions));
         }
     }
+
+    private class MyLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location loc) {
+//            Toast.makeText(
+//                    getActivity().getBaseContext(),
+//                    "Location changed: Lat: " + loc.getLatitude() + " Lng: "
+//                            + loc.getLongitude(), Toast.LENGTH_SHORT).show();
+            String longitude = "Longitude: " + loc.getLongitude();
+            Log.v(TAG, longitude);
+            String latitude = "Latitude: " + loc.getLatitude();
+            Log.v(TAG, latitude);
+
+
+            Place currentLocation = new Place(null, loc.getLongitude(), loc.getLatitude());
+            fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue(true);
+            fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").setValue(currentLocation);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+
+        }
+    }
 }
+

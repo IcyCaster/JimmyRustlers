@@ -23,6 +23,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
 
     private EventStatus eventStatus;
     private Context context;
+    private MapsFragment mapsFragment;
 
     public CarpoolEventPagerAdapter(FragmentManager fm, EventStatus eventStatus, Context context) {
         super(fm);
@@ -40,7 +41,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 1:
                         return new O_Explorer();
                     case 2:
-                        return new O_Map();
+                        return mapsFragment = new O_Map();
                 }
             case DRIVER:
                 switch (position) {
@@ -49,7 +50,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 1:
                         return new D_Explorer();
                     case 2:
-                        return new D_Map();
+                        return mapsFragment = new D_Map();
                 }
             case PASSENGER:
                 switch (position) {
@@ -58,7 +59,7 @@ public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
                     case 1:
                         return new P_Explorer();
                     case 2:
-                        return new P_Map();
+                        return mapsFragment = new P_Map();
                 }
             default:
                 return null;
