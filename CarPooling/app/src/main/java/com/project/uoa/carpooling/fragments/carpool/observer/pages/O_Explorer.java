@@ -31,10 +31,14 @@ public class O_Explorer extends ExplorerFragment{
         view = inflater.inflate(R.layout.carpool_explorer_tab_pager, container, false);
         pagerAdapter = new O_PagerAdapter(getChildFragmentManager());
 
-        super.setupTabViewPager(view, pagerAdapter);
+        setupTabViewPager(view, pagerAdapter);
 
         return view;
     }
+
+
+
+
 }
 
 

@@ -6,21 +6,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.entities.shared.Place;
+import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -65,15 +62,14 @@ public class O_E_Passengers extends Fragment {
         userID = ((CarpoolEventActivity) getActivity()).getUserID();
         eventID = ((CarpoolEventActivity) getActivity()).getEventID();
 
-
         view = inflater.inflate(R.layout.carpool_explorer_swipe_recycler, container, false);
+        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
+        adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(adapter);
 
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Passengers Available!");
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.rv);
-        adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
-
 
         PopulateRequests();
 
@@ -107,7 +103,7 @@ public class O_E_Passengers extends Fragment {
     public void PopulateRequests() {
 
         listOfPassenger.clear();
-        noOffersText.setVisibility(View.GONE);
+
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
@@ -120,7 +116,7 @@ public class O_E_Passengers extends Fragment {
 
                         Place pickupLocation = child.child("PickupLocation").getValue(Place.class);
 
-                        int passengerCount = (int)(long)child.child("PassengerCount").getValue();
+                        int passengerCount = (int) (long) child.child("PassengerCount").getValue();
 
                         // Make passenger entity and add it to the list
                         PassengerEntity passenger = new PassengerEntity(passengerID, passengerName, pickupLocation, passengerCount);
@@ -133,10 +129,12 @@ public class O_E_Passengers extends Fragment {
     }
 
     public synchronized void callback() {
-        if(listOfPassenger.size() == 0) {
+        if (listOfPassenger.size() == 0) {
+            recyclerView.setVisibility(View.GONE);
             noOffersText.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            noOffersText.setVisibility(View.GONE);
             Collections.sort(listOfPassenger, new PassengerComparator());
             adapter = new O_E_PassengersRecycler(listOfPassenger, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));

@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.PagerAdapter;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ImageSpan;
@@ -24,8 +25,21 @@ public class O_PagerAdapter extends FragmentPagerAdapter {
 
     private int tabCount = 2;
 
+    private String dText = "Drivers";
+    private String pText = "Passengers";
+
     public O_PagerAdapter(FragmentManager fm) {
         super(fm);
+    }
+
+    public void updatePageTitle(int position, String amount) {
+        if(position == 0) {
+            dText = "Drivers(" + amount + ")";
+        }
+        else{
+            pText = "Passengers(" + amount + ")";
+        }
+
     }
 
     @Override
@@ -49,9 +63,9 @@ public class O_PagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         switch (position) {
             case 0:
-                return "Drivers";
+                return dText;
             case 1:
-                return "Passengers";
+                return pText;
 
             default:
                 return null;
