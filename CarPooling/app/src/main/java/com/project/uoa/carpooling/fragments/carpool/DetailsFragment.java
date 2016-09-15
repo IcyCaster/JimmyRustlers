@@ -1,13 +1,22 @@
 package com.project.uoa.carpooling.fragments.carpool;
 
+import android.content.Context;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
+import com.project.uoa.carpooling.entities.shared.Place;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Chester on 10/08/2016.
@@ -83,5 +92,21 @@ public class DetailsFragment extends Fragment {
                 }
             }
         });
+    }
+
+        Geocoder geocoder;
+        List<Address> addresses = null;
+        geocoder = new Geocoder(context, Locale.getDefault());
+        String address = null;
+
+        try {
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (addresses != null) {
+        }
+
+        return address;
     }
 }

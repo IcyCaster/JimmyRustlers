@@ -225,6 +225,9 @@ public class P_Map extends MapsFragment {
     public void onDestroy() {
         super.onDestroy();
         currentLocationRef.removeEventListener(DriverLocationListener);
-        carpoolPassengersRef.removeEventListener(driverRouteFirebaseListener);
+
+        if (carpoolPassengersRef != null && driverRouteFirebaseListener != null) {
+            carpoolPassengersRef.removeEventListener(driverRouteFirebaseListener);
+        }
     }
 }

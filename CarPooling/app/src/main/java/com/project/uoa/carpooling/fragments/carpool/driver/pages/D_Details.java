@@ -73,7 +73,7 @@ public class D_Details extends DetailsFragment {
 
 
                 TextView locationText = (TextView) view.findViewById(R.id.starting_location_placename);
-                locationText.setText(userSnapshot.child("StartLocation").child("latitude").getValue().toString() + "   " + userSnapshot.child("StartLocation").child("longitude").getValue().toString());
+                locationText.setText(getAddressFromLocation(getActivity(), (double) userSnapshot.child("StartLocation").child("latitude").getValue(), (double) userSnapshot.child("StartLocation").child("longitude").getValue()));
             }
 
 
