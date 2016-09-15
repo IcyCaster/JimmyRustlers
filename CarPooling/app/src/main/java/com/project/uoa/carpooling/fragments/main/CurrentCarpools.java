@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -53,6 +54,7 @@ public class CurrentCarpools extends Fragment {
     // Fields for the view components
     private View view;
     private TextView emptyListText;
+    private ProgressBar mProgressBar;
     private SwipeRefreshLayout swipeContainer;
     private RecyclerView recyclerView;
     private CurrentCarpoolEventAdapter adapter;
@@ -93,9 +95,10 @@ public class CurrentCarpools extends Fragment {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
         userID = ((MainActivity) getActivity()).getUserID();
 
-        PopulateViewWithSubscribedEvents();
-
         view = inflater.inflate(R.layout.fragment_current_car_pools, container, false);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
+        PopulateViewWithSubscribedEvents();
 
         emptyListText = (TextView) view.findViewById(R.id.emptylist_text);
         emptyListText.setText("No Carpools Available! \n Join one below!");
@@ -173,19 +176,26 @@ public class CurrentCarpools extends Fragment {
     public void GetEventDetails() {
 
         listOfEventCardEntities.clear();
+        recyclerView.setVisibility(View.GONE);
 
         if (listOfSubscribedEvents.size() == 0) {
 
             Log.d("SubEventCount", "0");
             // Display a message telling the user that they should subscribe to events below.
             emptyListText.setVisibility(View.VISIBLE);
-            recyclerView.setVisibility(View.GONE);
+            //recyclerView.setVisibility(View.GONE);
             swipeContainer.setRefreshing(false);
+
+            // Set progress bar to invisible.
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         } else {
 
             Log.d("SubEventCount", Integer.toString(listOfSubscribedEvents.size()));
             emptyListText.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
+
+
+            // Set progress bar to invisible.
+            mProgressBar.setVisibility(ProgressBar.VISIBLE);
 
             numberOfSubscribedEvents = listOfSubscribedEvents.size();
             for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
@@ -299,7 +309,11 @@ public class CurrentCarpools extends Fragment {
             adapter = new CurrentCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
+            recyclerView.setVisibility(View.VISIBLE);
             swipeContainer.setRefreshing(false);
+
+            // Set progress bar to invisible.
+            mProgressBar.setVisibility(ProgressBar.INVISIBLE);
         }
     }
 
