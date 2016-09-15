@@ -94,17 +94,20 @@ public class DetailsFragment extends Fragment {
         });
     }
 
+    public String getAddressFromLocation(Context context, double latitude, double longitude) {
         Geocoder geocoder;
         List<Address> addresses = null;
         geocoder = new Geocoder(context, Locale.getDefault());
         String address = null;
 
         try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         if (addresses != null) {
+            address = addresses.get(0).getAddressLine(0) + ", " + addresses.get(0).getLocality();
         }
 
         return address;
