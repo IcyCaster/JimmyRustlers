@@ -103,7 +103,7 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
     }
 }
 
-// Viewholder is needed to inflate multiple CardViews on the fly for displaying in the RecyclerView
+// ViewHolder is needed to inflate multiple CardViews on the fly for displaying in the RecyclerView
 class CurrentCarpoolEventViewHolder extends RecyclerView.ViewHolder {
     protected String eventId;
     protected ImageView eventThumbnail;

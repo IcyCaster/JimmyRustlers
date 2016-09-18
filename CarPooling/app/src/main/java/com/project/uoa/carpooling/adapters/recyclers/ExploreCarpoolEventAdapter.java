@@ -30,7 +30,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Chester on 13/06/2016.
+ * ExploreCarpoolEventAdapter is created to display SimpleEvents, from Facebook, for the users so they can join. Once clicked they will be added to the user's subscription list.
+ * <p/>
+ * * Created by Angel and Chester on 13/06/2016.
  */
 public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarpoolEventViewHolder> {
 
@@ -56,7 +58,6 @@ public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarp
         holder.eventID = list.get(position).getEventID();
         holder.eventName.setText(list.get(position).getEventName());
         holder.eventStartDate.setText(list.get(position).getPrettyStartTime());
-
 
         // Picasso loads image from the URL
         if (list.get(position).getEventImageURL() != null) {
@@ -90,6 +91,7 @@ public class ExploreCarpoolEventAdapter extends RecyclerView.Adapter<ExploreCarp
     }
 }
 
+// ViewHolder is needed to inflate multiple CardViews on the fly for displaying in the RecyclerView
 class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
     protected String eventID;
     protected TextView eventName;
@@ -122,7 +124,6 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
                 fireBaseReference.addListenerForSingleValueEvent(new FirebaseValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-
 
 
                         // If it does not exist it needs to be added
@@ -176,11 +177,6 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
                             parameters.putString("fields", "place");
                             request.setParameters(parameters);
                             request.executeAsync();
-
-
-
-
-
                         }
 
                         // Add {user-ID} to events/{event-ID}/users/, set as an observer and add users name
@@ -192,11 +188,7 @@ class ExploreCarpoolEventViewHolder extends RecyclerView.ViewHolder {
                         fireBaseReference.child("users").child(userId).child("events").child(eventID).push();
                         fireBaseReference.child("users").child(userId).child("events").child(eventID).setValue("Observer");
 
-
-//                        // Execute back functionality. TODO Find a better way to do this.
-//                        ((MainActivity) context).onBackPressed();
-
-                        // TODO: Remove it from the list? Or acknowledge that the event has been subscribed somehow?
+                        // TODO Future explorations to provide feedback to the user. Usability studies indicated that they did not know if they had joined a carpool or not.
                     }
                 });
             }
