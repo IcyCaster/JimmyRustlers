@@ -15,10 +15,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.Profile;
@@ -27,15 +25,20 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
-import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import com.project.uoa.carpooling.fragments.main.ArchivedCarpools;
 import com.project.uoa.carpooling.fragments.main.CurrentCarpools;
 import com.project.uoa.carpooling.fragments.main.FriendGroups;
 import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
+/**
+ * MainActivity is created to houses all of the events the user has joined and displayed for them to easily access them all.
+ * <p/>
+ * From this the user can go to these events or join additional ones.
+ * <p/>
+ * * Created by Angel and Chester
+ */
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
 
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        // Allows the accesstoken to be retrieved so that Facebook requests can be made
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         // Get the userID stored in the shared preferences
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity
         displayView(R.id.nav_subscribed_carpools);
     }
 
+    // Closes the drawer if the back button is pressed instead of closing the application entirely
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -97,6 +101,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        // This completed resets the database in case something completely unexpected happens during exhibition
         if (id == R.id.kill_switch) {
             executeFirebaseReset();
             return true;
@@ -118,26 +123,31 @@ public class MainActivity extends AppCompatActivity
         String title = getString(R.string.app_name_short);
 
         switch (viewId) {
+            // Mainpage, overview of all subscribed carpools
             case R.id.nav_subscribed_carpools:
                 fragment = new CurrentCarpools();
                 title = "Carpools";
                 break;
 
+            // Unused archived list of carpools
             case R.id.nav_archived_pools:
                 fragment = new ArchivedCarpools();
                 title = "Archived Carpools";
                 break;
 
+            // Unused list of friend groups
             case R.id.nav_friend_groups:
                 fragment = new FriendGroups();
                 title = "Friend Groups";
                 break;
 
+            // Settings currently contains a global messenger
             case R.id.nav_settings:
                 fragment = new SimpleMessenger();
                 title = "Global Messenger";
                 break;
 
+            // THIS DOES NOTHING
             case R.id.nav_help:
                 Profile profile = Profile.getCurrentProfile();
                 title = "Hello, " + profile.getFirstName() + "!";
