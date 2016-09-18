@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by Chester on 10/08/2016.
+ * Created by Chester Booker and Angel Castro on 10/08/2016.
  */
 public class DetailsFragment extends Fragment {
 

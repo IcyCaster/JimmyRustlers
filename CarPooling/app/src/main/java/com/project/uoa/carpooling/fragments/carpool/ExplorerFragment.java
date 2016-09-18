@@ -11,7 +11,7 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 
 /**
- * Created by Chester on 10/08/2016.
+ * Created by Chester Booker and Angel Castro on 10/08/2016.
  */
 public class ExplorerFragment extends Fragment {
 

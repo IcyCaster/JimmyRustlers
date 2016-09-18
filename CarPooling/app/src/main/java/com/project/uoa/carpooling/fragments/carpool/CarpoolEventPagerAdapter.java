@@ -17,7 +17,7 @@ import com.project.uoa.carpooling.fragments.carpool.passenger.pages.P_Explorer;
 import com.project.uoa.carpooling.fragments.carpool.passenger.pages.P_Map;
 
 /**
- * Created by Chester on 18/07/2016.
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class CarpoolEventPagerAdapter extends FragmentStatePagerAdapter {
 

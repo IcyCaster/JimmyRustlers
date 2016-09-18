@@ -40,10 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Chester on 10/08/2016.
+ * Created by Chester Booker and Angel Castro on 10/08/2016.
  */
 public class MapsFragment extends Fragment implements DirectionFinderListener, OnMapReadyCallback {
-    // TODO: Rename and change types of parameters
     protected String eventID;
     protected String userID;
     protected EventStatus eventStatus;
