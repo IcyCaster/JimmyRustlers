@@ -72,10 +72,10 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        userID = ((CarpoolEventActivity)getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity)getActivity()).getEventID();
-        eventStatus = ((CarpoolEventActivity)getActivity()).getEventStatus();
-        facebookEvent = ((CarpoolEventActivity)getActivity()).getFacebookEvent();
+        userID = ((CarpoolEventActivity) getActivity()).getUserID();
+        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
+        eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
+        facebookEvent = ((CarpoolEventActivity) getActivity()).getFacebookEvent();
 
         GOOGLE_API_KEY = getActivity().getResources().getString(R.string.google_api_key);
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
@@ -100,13 +100,6 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Ask for permission, and handle if not granted.
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         mMap = googleMap;
@@ -115,7 +108,7 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
 
     public LatLng getLocationFromAddress(Context context, Place eventLocation) {
         // Check if Facebook Object has valid LatLng, else geocode it.
-        if (eventLocation.hasLatLong()){
+        if (eventLocation.hasLatLong()) {
             return new LatLng(eventLocation.getLatitude(), eventLocation.getLongitude());
 
         } else {
@@ -176,7 +169,7 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
             route = routes.get(0);
         }
         if (route != null) {
-            Log.d("MapsFragment", "Legs:"+route.legs.size());
+            Log.d("MapsFragment", "Legs:" + route.legs.size());
 
             //Save waypoint order.
             waypointOrder = route.waypointOrder;
@@ -234,19 +227,6 @@ public class MapsFragment extends Fragment implements DirectionFinderListener, O
                         .title(finalLeg.endAddress)
                         .position(finalLeg.endLocation)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_destination))));
-
-//            for (Leg leg : route.legs) {
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
-//
-//                originMarkers.add(mMap.addMarker(new MarkerOptions()
-//                        .title(leg.startAddress)
-//                        .position(leg.startLocation)
-//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_start))));
-//                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-//                        .title(leg.endAddress)
-//                        .position(leg.endLocation)
-//                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_destination))));
-//            }
             }
 
             // Options specify line graphic details and path of line.
