@@ -12,7 +12,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 /**
- * Created by Chester on 12/08/2016.
+ * CarpoolMatch.TryJoin attempts to match a driver and passenger to form a carpool.
+ * Usually they will match but several conditions must be checked before this can be confirmed.
+ * It should be noted that Firebase deals with the possibility of race-conditions occurring where simultaneous matches happen.
+ *
+ * Conditions to check:
+ * - Both are public
+ * - Both have space (Drivers have room in their car, passengers already don't have a driver)
+ * - One is still a driver and the other is still a passenger
+ *
+ * Created by Chester and Angel on 12/08/2016.
  */
 public class CarpoolMatch {
 
@@ -90,21 +99,15 @@ public class CarpoolMatch {
                                     Dialog dialog = alert.create();
                                     dialog.show();
 
-
                                 }
                             }
-
-
                         }
-
-
                     }
                 }
-
         );
-
     }
 
+    // Confirmation popup for confirming that they want to match
     private static void MatchPopup(String title, String message, boolean hasNegative) {
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setTitle(title);
@@ -112,10 +115,7 @@ public class CarpoolMatch {
         alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-
-
                 dialog.cancel();
-
             }
         });
         if (hasNegative) {
@@ -129,8 +129,6 @@ public class CarpoolMatch {
         Dialog dialog = alert.create();
         dialog.show();
     }
-
-
 }
 
 
