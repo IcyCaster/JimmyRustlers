@@ -2,7 +2,6 @@ package com.project.uoa.carpooling.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -14,34 +13,29 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
-import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 /**
- * Created by Chester on 12/07/2016.
+ * This dialog is used to select a role to change into (either
+ * an Observer, a Passenger or a Driver). If the user wants to
+ * become a Passenger or a Driver, this dialog will open up the
+ * RoleDetailsDialog.
+ *
+ * Created by Chester Booker and Angel Castro.
  */
-public class ChangeStatusDialog extends DialogFragment {
-
+public class ChangeRoleDialog extends DialogFragment {
     private View view;
 
     private Button observerButton = null;
     private Button driverButton = null;
     private Button passengerButton = null;
 
-    private DatabaseReference fireBaseReference;
-
-    private String userID;
     private EventStatus eventStatus;
-    private String eventID;
 
-    public ChangeStatusDialog() {
-
+    public ChangeRoleDialog() {
     }
 
     @Override
@@ -52,13 +46,8 @@ public class ChangeStatusDialog extends DialogFragment {
         getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
-        userID = ((CarpoolEventActivity) getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
-
-        fireBaseReference = FirebaseDatabase.getInstance().getReference();
 
         view = inflater.inflate(R.layout.fragment_status_selection, container, false);
-
 
         if (eventStatus == EventStatus.PASSENGER || eventStatus == EventStatus.DRIVER) {
             observerButton = (Button) view.findViewById(R.id.button1);
@@ -72,7 +61,7 @@ public class ChangeStatusDialog extends DialogFragment {
             });
 
 
-            // Hide the other button
+            // Hide other button
             Button button = (Button) view.findViewById(R.id.button2);
             if (eventStatus == EventStatus.PASSENGER) {
                 button.setText("Change to: Driver");
@@ -87,7 +76,7 @@ public class ChangeStatusDialog extends DialogFragment {
                         ft.addToBackStack(null);
 
                         // Create and show the dialog.
-                        UpdateStatusDialog statusFragment = UpdateStatusDialog.newInstance("Driver");
+                        RoleDetailsDialog statusFragment = RoleDetailsDialog.newInstance("Driver");
                         statusFragment.show(ft, "status_dialog2");
                     }
                 });
@@ -96,7 +85,6 @@ public class ChangeStatusDialog extends DialogFragment {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-
                         FragmentTransaction ft = getFragmentManager().beginTransaction();
                         Fragment prev = getFragmentManager().findFragmentByTag("status_dialog2");
                         if (prev != null) {
@@ -105,7 +93,7 @@ public class ChangeStatusDialog extends DialogFragment {
                         ft.addToBackStack(null);
 
                         // Create and show the dialog.
-                        UpdateStatusDialog statusFragment = UpdateStatusDialog.newInstance("Passenger");
+                        RoleDetailsDialog statusFragment = RoleDetailsDialog.newInstance("Passenger");
                         statusFragment.show(ft, "status_dialog2");
                     }
                 });
@@ -116,8 +104,6 @@ public class ChangeStatusDialog extends DialogFragment {
             driverButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     Fragment prev = getFragmentManager().findFragmentByTag("status_dialog2");
                     if (prev != null) {
@@ -126,10 +112,8 @@ public class ChangeStatusDialog extends DialogFragment {
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    UpdateStatusDialog statusFragment = UpdateStatusDialog.newInstance("Driver");
+                    RoleDetailsDialog statusFragment = RoleDetailsDialog.newInstance("Driver");
                     statusFragment.show(ft, "status_dialog2");
-
-
                 }
             });
 
@@ -147,7 +131,7 @@ public class ChangeStatusDialog extends DialogFragment {
                     ft.addToBackStack(null);
 
                     // Create and show the dialog.
-                    UpdateStatusDialog statusFragment = UpdateStatusDialog.newInstance("Passenger");
+                    RoleDetailsDialog statusFragment = RoleDetailsDialog.newInstance("Passenger");
                     statusFragment.show(ft, "status_dialog2");
                 }
             });
@@ -162,11 +146,7 @@ public class ChangeStatusDialog extends DialogFragment {
         alert.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-
-
                 CarpoolResolver.statusChange((CarpoolEventActivity)getActivity(), EventStatus.OBSERVER, 0, null);
-
-
             }
         });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

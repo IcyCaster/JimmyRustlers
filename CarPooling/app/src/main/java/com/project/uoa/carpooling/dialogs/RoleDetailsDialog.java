@@ -1,6 +1,5 @@
 package com.project.uoa.carpooling.dialogs;
 
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,31 +27,31 @@ import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Dialog used by the user to enter their details when
+ * they decide to become a Passenger or a Driver.
+ *
+ * Created by Chester Booker and Angel Castro.
  */
-public class UpdateStatusDialog extends DialogFragment {
+public class RoleDetailsDialog extends DialogFragment {
     private static final String STATUS = "param1";
-    private static final String TAG = "UpdateStatusDialog";
+    private static final String TAG = "RoleDetailsDialog";
     private OnFragmentInteractionListener mListener;
     private View view;
     private NumberPicker np;
-    //EditText locationResult;
+
     private PlaceAutocompleteFragment locationAutoResult;
     private com.google.android.gms.location.places.Place locationSelected;
     private String status;
-    private String eventID;
-    private String userID;
     private EventStatus eventStatus;
 
     private double longitude = 0.0;
     private double latitude = 0.0;
 
-    public UpdateStatusDialog() {
-        // Required empty public constructor
+    public RoleDetailsDialog() {
     }
 
-    public static UpdateStatusDialog newInstance(String status) {
-        UpdateStatusDialog fragment = new UpdateStatusDialog();
+    public static RoleDetailsDialog newInstance(String status) {
+        RoleDetailsDialog fragment = new RoleDetailsDialog();
         Bundle args = new Bundle();
         args.putString(STATUS, status);
         fragment.setArguments(args);
@@ -70,19 +69,12 @@ public class UpdateStatusDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Set no title bar:
-        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-
-        // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_status_details, container, false);
 
-        userID = ((CarpoolEventActivity) getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
         eventStatus = ((CarpoolEventActivity) getActivity()).getEventStatus();
 
         TextView statusText = (TextView) view.findViewById(R.id.status_text_popup2);
 
-        //locationResult = (EditText) view.findViewById(R.id.locationTextResult);
         locationAutoResult = (PlaceAutocompleteFragment) getActivity().getFragmentManager().findFragmentById(R.id.locationTextResult);
 
         locationAutoResult.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -130,12 +122,9 @@ public class UpdateStatusDialog extends DialogFragment {
         Button confirmButton = (Button) view.findViewById(R.id.confirm_button);
         confirmButton.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-
                 if (locationSelected == null) {
                     Log.d("TODO:", "Warn user they have not put a location");
                 } else {
-
-
                     try {
                         longitude = locationSelected.getLatLng().longitude;
                         latitude = locationSelected.getLatLng().latitude;
@@ -143,10 +132,7 @@ public class UpdateStatusDialog extends DialogFragment {
                         Log.d("TODO:", "Only accepts numbers atm");
                     }
 
-
                     if(eventStatus!=eventStatus.OBSERVER) {
-
-
                         AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                         alert.setTitle("Are you sure?");
                         alert.setMessage("Do you want to no longer be a " + eventStatus.toString() + "? " + "Everything organised will be removed and those affected will be notified!");
@@ -154,7 +140,6 @@ public class UpdateStatusDialog extends DialogFragment {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
                                 makeChange();
-
                             }
                         });
                         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -165,16 +150,13 @@ public class UpdateStatusDialog extends DialogFragment {
                         });
                         Dialog dialog = alert.create();
                         dialog.show();
-
                     }
                     else {
                         makeChange();
                     }
-
                 }
             }
         });
-
         return view;
     }
 

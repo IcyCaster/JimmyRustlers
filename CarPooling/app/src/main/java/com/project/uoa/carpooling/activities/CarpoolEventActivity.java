@@ -29,10 +29,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ComplexEvent_Parser;
-import com.project.uoa.carpooling.dialogs.ChangeStatusDialog;
-import com.project.uoa.carpooling.dialogs.UpdateStatusDialog;
+import com.project.uoa.carpooling.dialogs.ChangeRoleDialog;
+import com.project.uoa.carpooling.dialogs.RoleDetailsDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
-import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
 import com.project.uoa.carpooling.fragments.carpool.Event_Map;
@@ -56,7 +55,7 @@ import toan.android.floatingactionmenu.FloatingActionsMenu;
  * <p/>
  * * Created by Angel and Chester
  */
-public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+public class CarpoolEventActivity extends AppCompatActivity implements RoleDetailsDialog.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
 
     // Unique to the event instance
     private String userID;
@@ -76,7 +75,7 @@ public class CarpoolEventActivity extends AppCompatActivity implements UpdateSta
         @Override
         public void onClick(View view) {
             // Create and show the dialog.
-            ChangeStatusDialog newFragment = new ChangeStatusDialog();
+            ChangeRoleDialog newFragment = new ChangeRoleDialog();
             newFragment.show(getSupportFragmentManager(), "status_dialog");
         }
     };

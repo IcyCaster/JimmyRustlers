@@ -1,7 +1,6 @@
 package com.project.uoa.carpooling.dialogs;
 
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,7 +9,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -19,16 +17,14 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphRequestBatch;
 import com.facebook.GraphResponse;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.MainActivity;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ID_Parser;
+import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
 import com.project.uoa.carpooling.adapters.recyclers.ExploreCarpoolEventAdapter;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Parser;
-import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_ID_Parser;
 import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -38,7 +34,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Created by Chester on 30/06/2016.
+ * Dialog which is used in the Main Activity, which displays
+ * the Facebook events which the user belongs to.
+ *
+ * Created by Chester Booker and Angel Castro on 30/06/2016.
  */
 public class JoinEventDialog extends DialogFragment {
 
@@ -52,13 +51,10 @@ public class JoinEventDialog extends DialogFragment {
     private ExploreCarpoolEventAdapter adapter;
     private DatabaseReference fireBaseReference;
 
-    private SharedPreferences sharedPreferences;
     private String userId;
-
     private int subbedEvents;
 
     public JoinEventDialog() {
-
     }
 
     @Override
@@ -71,9 +67,6 @@ public class JoinEventDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        // Set no title bar:
-//        getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 
         getDialog().setTitle("Join an Event's carpool:");
         view = inflater.inflate(R.layout.dialog__explore_carpool_events, container, false);
@@ -94,7 +87,7 @@ public class JoinEventDialog extends DialogFragment {
 
     public void PopulateViewWithSubscribedEvents() {
 
-        // Gets the current time
+        // Get the current time
         long unixTime = System.currentTimeMillis() / 1000L;
 
         GraphRequest request = GraphRequest.newGraphPathRequest(
@@ -103,7 +96,6 @@ public class JoinEventDialog extends DialogFragment {
                 new GraphRequest.Callback() {
                     @Override
                     public void onCompleted(GraphResponse response) {
-
                         listOfSubscribedEvents = Facebook_ID_Parser.parse(response.getJSONObject());
 
                         fireBaseReference.child("users").child(userId).child("events").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
@@ -129,7 +121,6 @@ public class JoinEventDialog extends DialogFragment {
                 });
 
         // Facebook parameters for getting events which haven't expired.
-        // TODO: Events should not be expired if less than 24h past their start time
         Bundle parameters = new Bundle();
         parameters.putString("fields", "id");
         parameters.putString("since", Long.toString(unixTime));
@@ -138,13 +129,10 @@ public class JoinEventDialog extends DialogFragment {
     }
 
     public void GetEventDetails() {
-
         listOfEventCardEntities.clear();
-
         subbedEvents = listOfSubscribedEvents.size();
 
         for (int i = 0; i < listOfSubscribedEvents.size(); i++) {
-
             GraphRequest request = GraphRequest.newGraphPathRequest(
                     AccessToken.getCurrentAccessToken(),
                     "/" + listOfSubscribedEvents.get(i),
@@ -152,9 +140,7 @@ public class JoinEventDialog extends DialogFragment {
                         @Override
                         public void onCompleted(GraphResponse response) {
                             try {
-
                                 listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
-
 
                                 final String id = response.getJSONObject().getString("id");
 
@@ -165,9 +151,7 @@ public class JoinEventDialog extends DialogFragment {
 
                                             @Override
                                             public void onCompleted(GraphResponse response) {
-
                                                 try {
-
                                                     String url = "";
                                                     url = response.getJSONObject().getJSONObject("data").getString("url");
 
@@ -176,11 +160,9 @@ public class JoinEventDialog extends DialogFragment {
                                                             listOfEventCardEntities.get(listOfEventCardEntities.indexOf(e)).setImage(url);
                                                         }
                                                     }
-
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
                                                 }
-
                                                 callback();
                                             }
                                         });
@@ -218,9 +200,7 @@ public class JoinEventDialog extends DialogFragment {
     public synchronized void callback() {
         subbedEvents--;
         if (subbedEvents == 0) {
-
             Collections.sort(listOfEventCardEntities, new SimpleEventComparator());
-
             adapter = new ExploreCarpoolEventAdapter(listOfEventCardEntities, getActivity());
             recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
             recyclerView.setAdapter(adapter);
@@ -230,6 +210,3 @@ public class JoinEventDialog extends DialogFragment {
         mProgressBar.setVisibility(ProgressBar.INVISIBLE);
     }
 }
-
-
-
