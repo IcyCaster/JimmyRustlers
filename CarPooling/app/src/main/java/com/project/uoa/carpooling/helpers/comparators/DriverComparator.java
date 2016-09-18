@@ -5,7 +5,9 @@ import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
 import java.util.Comparator;
 
 /**
- * Created by Chester on 24/07/2016.
+ * Comparator for driver entities.
+ *
+ * Created by Chester Booker and Angel Castro on 24/07/2016.
  */
 public class DriverComparator implements Comparator<DriverEntity> {
 

@@ -12,7 +12,7 @@ import com.project.uoa.carpooling.activities.LoginActivity;
 
 /**
  * This connector abstracts the Facebook callback away from the LoginActivity.
- * Created by Chester on 2/07/2016.
+ * Created by Chester Booker and Angel Castro on 02/07/2016.
  */
 public class FacebookConnector {
 

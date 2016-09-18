@@ -5,7 +5,9 @@ import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
 import java.util.Comparator;
 
 /**
- * Created by Chester on 18/07/2016.
+ * Comparator for SimpleEventEntities.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class SimpleEventComparator implements Comparator<SimpleEventEntity> {
 

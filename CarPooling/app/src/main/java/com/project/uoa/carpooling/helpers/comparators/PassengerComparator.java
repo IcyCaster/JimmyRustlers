@@ -5,7 +5,9 @@ import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
 import java.util.Comparator;
 
 /**
- * Created by Chester on 18/07/2016.
+ * Comparator for passenger entities.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class PassengerComparator implements Comparator<PassengerEntity> {
 
