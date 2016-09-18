@@ -8,7 +8,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by Chester on 12/07/2016.
+ * Facebook_ComplexEvent_Parser is created to convert the Facebook response JSON objects to complex objects.
+ *
+ * * Created by Angel and Chester on 12/07/2016.
  */
 public class Facebook_ComplexEvent_Parser {
 
@@ -56,12 +58,11 @@ public class Facebook_ComplexEvent_Parser {
                 }
             }
 
-            ComplexEventEntity entity = new ComplexEventEntity(ID, name, description, longitude, latitude, placeName, startTime, endTime);
-
-            return entity;
+            // Return a Complex Event Entity
+            return new ComplexEventEntity(ID, name, description, longitude, latitude, placeName, startTime, endTime);
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("ComplexEventParse", e.getMessage());
             return null;
         }
     }
