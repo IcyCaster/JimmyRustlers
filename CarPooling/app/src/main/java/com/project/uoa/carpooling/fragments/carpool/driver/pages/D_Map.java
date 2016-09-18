@@ -50,7 +50,6 @@ public class D_Map extends MapsFragment {
 
     private FirebaseValueEventListener driverFirebaseListener;
 
-
     public void pushLocationForPassengers() {
         locationListener = new MyLocationListener();
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
