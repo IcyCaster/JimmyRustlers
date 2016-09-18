@@ -18,15 +18,12 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.helpers.comparators.FacebookConnector;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
@@ -34,6 +31,13 @@ import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * LoginActivity is created to provide a way for the user to login to ePool.
+ *
+ * This system provides a way for the user to log in once and then saves the user's accessToken and app-specific-ID so that they are automatically logged in on return visits to ePool.
+ *
+ * * Created by Angel and Chester
+ */
 public class LoginActivity extends AppCompatActivity {
 
     public static AccessTokenTracker accessTokenTracker; // Facebook AccessToken Tracker
@@ -216,6 +220,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // BELOW is included when implementing Firebase authentication protocols.
+    // This was never completed as we dedicated time to alternative functionality.
+
     @Override
     public void onStart() {
         super.onStart();
@@ -229,5 +236,4 @@ public class LoginActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
 }

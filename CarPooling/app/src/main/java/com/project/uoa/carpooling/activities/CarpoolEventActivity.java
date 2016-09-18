@@ -54,10 +54,9 @@ import toan.android.floatingactionmenu.FloatingActionsMenu;
  * Or leave the carpool altogether.
  * - A map of the route to the location
  * <p/>
- * * Created by Angel and Chester on 18/03/2016.
+ * * Created by Angel and Chester
  */
 public class CarpoolEventActivity extends AppCompatActivity implements UpdateStatusDialog.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
-
 
     // Unique to the event instance
     private String userID;
