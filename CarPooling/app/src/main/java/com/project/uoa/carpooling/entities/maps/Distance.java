@@ -1,7 +1,10 @@
 package com.project.uoa.carpooling.entities.maps;
 
 /**
- * Credits to: Mai Thanh Hiep.
+ * Entity which represents the distance of a single leg.
+ * Used within the Leg entity.
+ *
+ * Created by Chester Booker and Angel Castro.
  */
 public class Distance {
     public String text;

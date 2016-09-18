@@ -7,7 +7,10 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Created by Chester on 13/06/2016.
+ * Entity used to represent an event. Used to hold the extracted
+ * event data from the users' Facebook accounts.
+ *
+ * Created by Chester Booker and Angel Castro on 13/06/2016.
  */
 public class SimpleEventEntity {
 

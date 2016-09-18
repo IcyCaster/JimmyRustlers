@@ -13,7 +13,12 @@ import java.util.Calendar;
 import java.util.Locale;
 
 /**
- * Created by Chester on 13/08/2016.
+ * Entity used to represent an event. Used to hold the extracted
+ * event data from the users' Facebook accounts. A more complex
+ * version of SimpleEventEntity which was implemented to be sent
+ * within Android intents as a Parcelable.
+ *
+ * Created by Chester Booker and Angel Castro on 13/08/2016.
  */
 public class ComplexEventEntity implements Parcelable {
 
