@@ -16,8 +16,11 @@ import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 /**
  * D_Details is the first tab.
- * Shows both the event information, as well as the information specific to the user for their carpool (capacity, starting location and current passengers).
- * * Created by Angel and Chester
+ * Shows both the event information, as well as the information
+ * specific to the user for their carpool (capacity, starting
+ * location and current passengers).
+ *
+ * Created by Chester Booker and Angel Castro.
  */
 public class D_Details extends DetailsFragment {
 

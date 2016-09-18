@@ -22,7 +22,9 @@ import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 import java.io.UnsupportedEncodingException;
 
 /**
- * Created by Chester on 18/07/2016.
+ * Passenger fragment for showing optimized route of carpool.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class P_Map extends MapsFragment {
     private static final String TAG = "P_Map";

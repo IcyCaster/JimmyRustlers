@@ -7,7 +7,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.project.uoa.carpooling.fragments.carpool.MapsFragment;
 
 /**
- * Created by Chester on 18/07/2016.
+ * Observer fragment for showing location of event.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class O_Map extends MapsFragment implements OnMapReadyCallback {
     private static final String TAG = "O_Map";

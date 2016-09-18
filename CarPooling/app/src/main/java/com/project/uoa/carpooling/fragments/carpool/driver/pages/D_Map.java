@@ -36,7 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Chester on 18/07/2016.
+ * Driver fragment for showing optimized route of carpool.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class D_Map extends MapsFragment {
     private static final String TAG = "D_Map";

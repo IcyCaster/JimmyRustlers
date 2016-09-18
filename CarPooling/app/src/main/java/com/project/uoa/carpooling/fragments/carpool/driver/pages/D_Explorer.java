@@ -12,7 +12,9 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.fragments.carpool.driver.D_PagerAdapter;
 
 /**
- * Created by Chester on 18/07/2016.
+ * Driver fragment for showing passenger requests and offers.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class D_Explorer extends Fragment{
 

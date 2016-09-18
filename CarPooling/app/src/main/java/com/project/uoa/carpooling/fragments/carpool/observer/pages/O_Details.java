@@ -12,9 +12,9 @@ import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 
 /**
- * O_Details is the first tab.
- * Shows only the event information.
- * * Created by Angel and Chester
+ * Observer fragment for showing event information.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
  */
 public class O_Details extends DetailsFragment {
 

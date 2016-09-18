@@ -15,6 +15,9 @@ import com.project.uoa.carpooling.fragments.carpool.ExplorerFragment;
 import com.project.uoa.carpooling.fragments.carpool.observer.O_PagerAdapter;
 
 /**
+ * Observer fragment for showing current passengers
+ * and drivers for the event.
+ *
  * Created by Chester on 18/07/2016.
  */
 public class O_Explorer extends ExplorerFragment{

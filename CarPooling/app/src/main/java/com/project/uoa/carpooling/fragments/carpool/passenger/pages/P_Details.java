@@ -16,7 +16,11 @@ import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
-
+/**
+ * Passenger fragment for showing event information.
+ *
+ * Created by Chester Booker and Angel Castro on 18/07/2016.
+ */
 public class P_Details extends DetailsFragment {
 
     private DatabaseReference fireBaseReference;
