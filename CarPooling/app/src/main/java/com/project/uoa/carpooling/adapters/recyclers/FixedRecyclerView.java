@@ -30,6 +30,5 @@ public class FixedRecyclerView extends RecyclerView {
             return !original && getChildAt(0) != null && getChildAt(0).getTop() < 0 || original;
         }
         return super.canScrollVertically(direction);
-
     }
 }

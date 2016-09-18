@@ -24,7 +24,14 @@ import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
-
+/**
+ * D_E_Requests stands for:
+ * Driver status, Explorer tab, List of requests
+ * <p/>
+ * From this fragment a driver can view all of the current passengers that have requested a ride from them.
+ * <p/>
+ * * Created by Angel and Chester
+ */
 public class D_E_Requests extends Fragment {
 
     private View view;
@@ -142,11 +149,9 @@ public class D_E_Requests extends Fragment {
                         }
                     }
                 } else {
-                    // TODO: Add message to say that there are no requests
                     requestNumber = 0;
                     callback();
                 }
-
             }
         });
     }

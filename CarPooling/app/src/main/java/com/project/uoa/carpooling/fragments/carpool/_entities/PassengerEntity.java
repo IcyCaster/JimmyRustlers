@@ -1,10 +1,10 @@
 package com.project.uoa.carpooling.fragments.carpool._entities;
 
-import com.google.firebase.database.DatabaseReference;
 import com.project.uoa.carpooling.entities.shared.Place;
 
 /**
- * Created by Chester on 18/07/2016.
+ * PassengerEntity is an object used when displaying the user's with an overview of a particular passenger in the carpoolevent
+ * Created by Chester and Angel on 18/07/2016.
  */
 public class PassengerEntity {
 
@@ -15,8 +15,6 @@ public class PassengerEntity {
 
     private boolean isPending;
     private int stopNumber;
-
-    private DatabaseReference fireBaseReference;
 
     public PassengerEntity(String ID, String name, Place pickupLocation, int passengerCount, boolean isPending) {
         this.ID = ID;

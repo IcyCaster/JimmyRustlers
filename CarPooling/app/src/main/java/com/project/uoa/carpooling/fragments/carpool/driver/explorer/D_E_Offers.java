@@ -19,14 +19,20 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool._entities.PassengerEntity;
-import com.project.uoa.carpooling.fragments.carpool.passenger.explorer.P_E_RequestsRecycler;
 import com.project.uoa.carpooling.helpers.comparators.PassengerComparator;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-
+/**
+ * D_E_Offers stands for:
+ * Driver status, Explorer tab, List of offers
+ * <p/>
+ * From this fragment a driver can view all of the current passengers they can offer a ride to.
+ * <p/>
+ * * Created by Angel and Chester
+ */
 public class D_E_Offers extends Fragment {
 
     private View view;
@@ -71,6 +77,8 @@ public class D_E_Offers extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
+
+        // Show text if there are no passengers avaliable in the carpool to offer a ride to
         noOffersText = (TextView) view.findViewById(R.id.emptylist_text);
         noOffersText.setText("No Passengers Available!");
 
@@ -121,15 +129,13 @@ public class D_E_Offers extends Fragment {
                 listOfAvailablePassengers.clear();
 
                 // Calculate the number of spaces left in the drivers car
-                int passengerSpaceAvailable = (int)(long)snapshot.child(userID).child("Passengers").child("PassengerCapacity").getValue();
+                int passengerSpaceAvailable = (int) (long) snapshot.child(userID).child("Passengers").child("PassengerCapacity").getValue();
                 for (DataSnapshot child : snapshot.child(userID).child("Passengers").getChildren()) {
-                    if(child.getValue().equals("abandoned")) {
-                        // TODO send notification + remove
-                        Log.d("Notification", "TODO: PASSENGER HAS LEFT");
+                    if (child.getValue().equals("abandoned")) {
+                        Log.d("TODO", "Notify the passenger has left");
                         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").child(child.getKey()).removeValue();
-                    }
-                    else if (!child.getKey().equals("PassengerCapacity")) {
-                        int passengerCount = (int)(long) child.getValue();
+                    } else if (!child.getKey().equals("PassengerCapacity")) {
+                        int passengerCount = (int) (long) child.getValue();
                         passengerSpaceAvailable -= passengerCount;
                     }
                 }
@@ -140,7 +146,7 @@ public class D_E_Offers extends Fragment {
                     if (child.child("Status").getValue().equals("Passenger") && (boolean) child.child("isPublic").getValue()) {
 
                         // Make sure that the driver can actually carry this person + additions in car
-                        int passengerCount = (int)(long)child.child("PassengerCount").getValue();
+                        int passengerCount = (int) (long) child.child("PassengerCount").getValue();
                         if (passengerSpaceAvailable - passengerCount >= 0) {
 
                             // Fetch the passengers details
@@ -178,11 +184,10 @@ public class D_E_Offers extends Fragment {
 
     public synchronized void PopulateOffers() {
 
-        if(listOfAvailablePassengers.size() == 0) {
+        if (listOfAvailablePassengers.size() == 0) {
             noOffersText.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             noOffersText.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
             // Sort them alphabetically first

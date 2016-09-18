@@ -19,7 +19,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Chester on 18/07/2016.
+ * D_E_RequestsRecycler is created to display Passengers who have requested a ride from a driver.
+ *
+ * * Created by Angel and Chester
  */
 public class D_E_RequestsRecycler extends RecyclerView.Adapter<D_E_RequestsViewHolder> {
 

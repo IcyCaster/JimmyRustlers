@@ -1,9 +1,8 @@
 package com.project.uoa.carpooling.fragments.carpool._entities;
 
-import android.util.Log;
-
 /**
- * Created by Chester on 18/07/2016.
+ * DriverEntity is an object used when displaying the user's with an overview of a particular driver in the carpoolevent
+ * Created by Chester and Angel on 18/07/2016.
  */
 public class DriverEntity {
 

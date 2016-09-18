@@ -21,7 +21,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Chester on 18/07/2016.
+ * D_E_OffersRecycler is created to display Passengers for the driver so that could offer a ride to them.
+ *
+ * * Created by Angel and Chester
  */
 public class D_E_OffersRecycler extends RecyclerView.Adapter<D_E_OffersViewHolder> {
 
@@ -114,13 +116,9 @@ class D_E_OffersViewHolder extends RecyclerView.ViewHolder {
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                // TODO: OPEN UP MAP, SHOW WHAT THE NEW ROUTE WILL LOOK LIKE WITH THE NEW PASSENGER + TOTAL TIME + TOTAL DISTANCE
-
+                // TODO: Future work for showing a map of what it would look like if this passenger was added to their route
             }
         });
-
-
     }
 
     // Shows cancel button
