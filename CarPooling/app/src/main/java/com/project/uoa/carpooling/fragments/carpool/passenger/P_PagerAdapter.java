@@ -4,8 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.project.uoa.carpooling.fragments.carpool.passenger.explorer.P_E_Requests;
 import com.project.uoa.carpooling.fragments.carpool.passenger.explorer.P_E_Offers;
+import com.project.uoa.carpooling.fragments.carpool.passenger.explorer.P_E_Requests;
 
 /**
  * Created by Chester on 18/07/2016.

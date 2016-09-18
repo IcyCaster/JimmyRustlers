@@ -8,11 +8,9 @@ import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
-import com.project.uoa.carpooling.entities.shared.Place;
 
 import java.io.IOException;
 import java.util.List;

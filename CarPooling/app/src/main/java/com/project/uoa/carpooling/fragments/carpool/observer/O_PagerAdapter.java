@@ -1,20 +1,9 @@
 package com.project.uoa.carpooling.fragments.carpool.observer;
 
-import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.PagerAdapter;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
-import android.util.Log;
 
-import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.fragments.carpool.observer.explorer.O_E_Drivers;
 import com.project.uoa.carpooling.fragments.carpool.observer.explorer.O_E_Passengers;
 

@@ -1,8 +1,8 @@
 package com.project.uoa.carpooling.entities.facebook;
 
-import android.util.Log;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.project.uoa.carpooling.entities.shared.Place;
 

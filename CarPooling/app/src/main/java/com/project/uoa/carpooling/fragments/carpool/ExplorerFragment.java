@@ -5,10 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.widget.TextView;
 
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 
 /**
  * Created by Chester Booker and Angel Castro on 10/08/2016.
