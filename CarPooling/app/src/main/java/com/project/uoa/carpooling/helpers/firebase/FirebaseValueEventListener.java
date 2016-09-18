@@ -7,10 +7,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 /**
- * Created by Chester on 6/08/2016.
- *
- * This was created so that we didn't have to keep repeating the "onCancelled" method.
- *
+ * FirebaseValueEventListener is used so that our classes look better.
+ * Rather than overriding all these methods each time we want to use a ValueEventListener for Firebase
+ * We just call this.
+ * Created by Chester and Angel on 14/08/2016.
  */
 public class FirebaseValueEventListener implements ValueEventListener {
     @Override

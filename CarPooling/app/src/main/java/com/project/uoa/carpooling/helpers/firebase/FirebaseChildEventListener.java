@@ -7,7 +7,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 /**
- * Created by Chester on 14/08/2016.
+ * FirebaseChildEventListener is used so that our classes look better.
+ * Rather than overriding all these methods each time we want to use a ChildEventListener for Firebase
+ * We just call this.
+ * Created by Chester and Angel on 14/08/2016.
  */
 public class FirebaseChildEventListener implements ChildEventListener {
     @Override
