@@ -115,8 +115,6 @@ class P_E_RequestsViewHolder extends RecyclerView.ViewHolder {
 
             }
         });
-
-
     }
 
     // Shows cancel button

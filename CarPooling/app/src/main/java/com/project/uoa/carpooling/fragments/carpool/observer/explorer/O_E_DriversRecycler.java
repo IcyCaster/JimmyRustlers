@@ -89,15 +89,6 @@ class O_E_DriversViewHolder extends RecyclerView.ViewHolder {
             public void onClick(View v) {
 
 
-
-                // TODO: Make the observer map do stuff
-                // Link to what the map should do:
-                // http://puu.sh/qv6Sr/6a9b77bc2a.png
-
-
-
-
-
             }
         });
     }

@@ -13,7 +13,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
-import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
@@ -71,8 +70,6 @@ public class P_Details extends DetailsFragment {
                     //TODO: Set route details
                 }
 
-                // TODO: Starting Route Time AND Estimated Arrival Time will need to be calculated based on start destination, passengers destination and the event's start time.
-
                 TextView countText = (TextView) view.findViewById(R.id.passenger_number_text);
                 countText.setText(userSnapshot.child("PassengerCount").getValue().toString());
 
@@ -84,8 +81,6 @@ public class P_Details extends DetailsFragment {
 
 
         });
-
-
         return view;
     }
 }

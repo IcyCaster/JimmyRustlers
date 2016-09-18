@@ -112,9 +112,6 @@ public class O_E_Drivers extends Fragment {
                         String driverID = child.getKey();
                         String driverName = child.child("Name").getValue().toString();
 
-                        // Location CURRENTLY NOT USED in driverEntity constructor
-                        // Place startLocation = child.child("StartLocation").getValue(Place.class);
-
                         // Calculates the amount of spaces left in the driver's car
                         int passengerSpaceAvailable = (int) (long) child.child("Passengers").child("PassengerCapacity").getValue();
                         for (DataSnapshot passengers : child.child("Passengers").getChildren()) {

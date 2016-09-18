@@ -11,31 +11,20 @@ import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool.DetailsFragment;
 
-
+/**
+ * O_Details is the first tab.
+ * Shows only the event information.
+ * * Created by Angel and Chester
+ */
 public class O_Details extends DetailsFragment {
-
-    private DatabaseReference fireBaseReference;
-
-    private String eventID;
-    private String userID;
-
 
     private View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.carpool_details_observer, container, false);
-
-        userID = ((CarpoolEventActivity) getActivity()).getUserID();
-        eventID = ((CarpoolEventActivity) getActivity()).getEventID();
-
         super.addEventDetails(view);
-
-
-        fireBaseReference = FirebaseDatabase.getInstance().getReference();
-
         return view;
     }
 }

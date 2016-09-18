@@ -50,16 +50,10 @@ public class D_Map extends MapsFragment {
 
     private FirebaseValueEventListener driverFirebaseListener;
 
+    // Push the driver's current location to Firebase when they press the driver button.
     public void pushLocationForPassengers() {
         locationListener = new MyLocationListener();
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
@@ -88,24 +82,16 @@ public class D_Map extends MapsFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        // Remove Listener for Driver map.
+        // Remove Listener for Driver map, makes sure that they aren't being tracked 24/7/
+        // Remove last known current location for further precautions
         Log.d(TAG, "Cleaning up current location tracking");
         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue(false);
         fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").setValue(new Place(null, 0, 0));
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
         }
         if(locationListener != null) {
             locationManager.removeUpdates(locationListener);
         }
-//        service.cancelUpdates();
         fireBaseReference.child("events").child(eventID).child("users").removeEventListener(driverFirebaseListener);
     }
 
@@ -125,13 +111,6 @@ public class D_Map extends MapsFragment {
                     Log.d(TAG, "Status:" + dataSnapshot.child(userID).child("Status").getValue().toString());
                     if (dataSnapshot.child(userID).child("Status").getValue().toString().equals("Driver")) {
                         try {
-                            /*
-                            TODO - Get positions (Latlng or address) of all passengers and driver.
-                            TODO - Then save that data for both the map and drive intent later on.
-                            TODO - Use that data to populate optimized route on map.
-                            TODO - Can probably use this logic for passenger side as well.
-                             */
-
                             // Get driver starting location.
                             DataSnapshot driverDetails = dataSnapshot.child(userID);
 
@@ -209,54 +188,15 @@ public class D_Map extends MapsFragment {
         }
     }
 
-
-//    @Override
-//    // Pass optimized order as new argument?
-//    public void onDirectionFinderSuccess(List<Route> routes) {
-//        Route route = null;
-//        if (!routes.isEmpty()) {
-//            route = routes.get(0);
-//        }
-//        if (route != null) {
-//            //Save waypoint order.
-//            waypointOrder = route.waypointOrder;
-//
-//            for (Leg leg : route.legs) {
-//                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(leg.startLocation, 11));
-//
-//                originMarkers.add(mMap.addMarker(new MarkerOptions()
-//                        .title(leg.startAddress)
-//                        .position(leg.startLocation)));
-//                destinationMarkers.add(mMap.addMarker(new MarkerOptions()
-//                        .title(leg.endAddress)
-//                        .position(leg.endLocation)));
-//            }
-//
-//            // Options specify line graphic details and path of line.
-//            PolylineOptions polylineOptions = new PolylineOptions().
-//                    geodesic(true).
-//                    color(Color.rgb(101, 156, 239));
-//
-//            for (int i = 0; i < route.points.size(); i++)
-//                polylineOptions.add(route.points.get(i));
-//
-//            polylinePaths.add(mMap.addPolyline(polylineOptions));
-//        }
-//    }
-
+    // Updates Firebase when the driver's location changes
     private class MyLocationListener implements LocationListener {
 
         @Override
         public void onLocationChanged(Location loc) {
-//            Toast.makeText(
-//                    getActivity().getBaseContext(),
-//                    "Location changed: Lat: " + loc.getLatitude() + " Lng: "
-//                            + loc.getLongitude(), Toast.LENGTH_SHORT).show();
             String longitude = "Longitude: " + loc.getLongitude();
             Log.v(TAG, longitude);
             String latitude = "Latitude: " + loc.getLatitude();
             Log.v(TAG, latitude);
-
 
             Place currentLocation = new Place(null, loc.getLongitude(), loc.getLatitude());
             fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue(true);

@@ -34,6 +34,29 @@ public class P_Map extends MapsFragment {
     private String driverID;
 
     private Marker driverLocationIcon;
+    FirebaseChildEventListener DriverLocationListener = new FirebaseChildEventListener() {
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+            // Only care about current location changes
+            if (dataSnapshot.getKey().equals("CurrentLocation")) {
+                // Detect location update, broadcast to map
+                Place driverLocation = dataSnapshot.getValue(Place.class);
+                Log.d("Broadcast", "Driver is now at: latitude: " + driverLocation.getLatitude() + "; longitude: " + driverLocation.getLongitude());
+
+                //Remove driver lcoation if exists
+                if (driverLocationIcon != null) {
+                    driverLocationIcon.remove();
+                }
+
+                //Draw driver location on map
+                Log.d(TAG, "Driver Location Updated");
+                LatLng driverLatLng = new LatLng(driverLocation.getLatitude(), driverLocation.getLongitude());
+                driverLocationIcon = mMap.addMarker(new MarkerOptions()
+                        .position(driverLatLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_car)));
+            }
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,6 +69,7 @@ public class P_Map extends MapsFragment {
         displayPassengerRoute();
     }
 
+    // Display the route containing all the passengers, starting and destination locations
     private void displayPassengerRoute() {
         fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
 
@@ -73,28 +97,20 @@ public class P_Map extends MapsFragment {
         });
     }
 
+    // If the driver has begun driver, display an icon on the passenger's map
     public void monitorDriverCurrentLocation() {
-
-        Log.d("test1", eventID);
-
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                Log.d("test2", eventID);
-
                 // Check if they are a passenger for this event
                 if (dataSnapshot.child(userID).child("Status").getValue().toString().equals("Passenger")) {
-
-                    Log.d("test2.5", eventID);
 
                     driverID = dataSnapshot.child(userID).child("Driver").getValue().toString();
                     currentLocationRef = fireBaseReference.child("events").child(eventID).child("users").child(driverID);
 
                     // Check if passenger has a specified driver
                     if (!driverID.equals("null")) {
-
-                        Log.d("test3", eventID);
 
                         final String driverName = dataSnapshot.child(driverID).child("Name").getValue().toString();
 
@@ -162,26 +178,19 @@ public class P_Map extends MapsFragment {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                Log.d("test4", eventID);
-
                                 // Detect that the driver is driving, trigger notification and
                                 if ((boolean) dataSnapshot.getValue()) {
-
 
                                     Log.d("Driver", "Now listening for " + driverName + "'s current location!");
                                     try {
                                         currentLocationRef.removeEventListener(DriverLocationListener);
-                                    }
-                                    catch(Exception e) {
+                                    } catch (Exception e) {
                                         Log.e(TAG, e.getMessage());
                                     }
                                     currentLocationRef.addChildEventListener(DriverLocationListener);
-
                                 } else {
-
                                     // Detach as the driver is no longer driving
                                     currentLocationRef.removeEventListener(DriverLocationListener);
-
                                 }
                             }
                         });
@@ -190,30 +199,6 @@ public class P_Map extends MapsFragment {
             }
         });
     }
-
-    FirebaseChildEventListener DriverLocationListener = new FirebaseChildEventListener() {
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-            // Only care about current location changes
-            if (dataSnapshot.getKey().equals("CurrentLocation")) {
-                // Detect location update, broadcast to map
-                Place driverLocation = dataSnapshot.getValue(Place.class);
-                Log.d("Broadcast", "Driver is now at: latitude: " + driverLocation.getLatitude() + "; longitude: " + driverLocation.getLongitude());
-
-                //Remove driver lcoation if exists
-                if (driverLocationIcon != null) {
-                    driverLocationIcon.remove();
-                }
-
-                //Draw driver location on map
-                Log.d(TAG, "Driver Location Updated");
-                LatLng driverLatLng = new LatLng(driverLocation.getLatitude(), driverLocation.getLongitude());
-                driverLocationIcon = mMap.addMarker(new MarkerOptions()
-                        .position(driverLatLng)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_maps_car)));
-            }
-        }
-    };
 
     @Override
     public void onResume() {

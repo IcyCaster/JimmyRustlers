@@ -47,7 +47,6 @@ public class P_E_OffersRecycler extends RecyclerView.Adapter<P_E_OffersViewHolde
         holder.driverID = list.get(position).getID();
         holder.driverName.setText(list.get(position).getName());
 
-        // TODO: Calculate estimated pickup time or display something else
         holder.estimatedPickupTime.setText("TODO:");
 
         holder.acceptButton.setText("Approve");
@@ -116,7 +115,5 @@ class P_E_OffersViewHolder extends RecyclerView.ViewHolder {
 
             }
         });
-
-
     }
 }

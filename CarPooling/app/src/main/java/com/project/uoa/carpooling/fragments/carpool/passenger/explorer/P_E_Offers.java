@@ -6,17 +6,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.fragments.carpool._entities.DriverEntity;
@@ -125,9 +122,7 @@ public class P_E_Offers extends Fragment {
                                     String driverID = snapshot.getKey();
                                     String driverName = snapshot.child("Name").getValue().toString();
 
-
-                                    int carCapacity = (int)(long)snapshot.child("Passengers").child("PassengerCapacity").getValue();
-                                    //TODO: Calculate total space and compare it with number of passengers
+                                    int carCapacity = (int) (long) snapshot.child("Passengers").child("PassengerCapacity").getValue();
 
                                     boolean isPending = true;
 
@@ -136,17 +131,14 @@ public class P_E_Offers extends Fragment {
                                     listOfOffersFromDrivers.add(driver);
 
                                     callback();
-
                                 }
                             });
                         }
                     }
                 } else {
-                    // TODO: Add message to say that there are no requests
                     requestNumber = 0;
                     callback();
                 }
-
             }
         });
     }
@@ -155,11 +147,10 @@ public class P_E_Offers extends Fragment {
         requestNumber--;
         if (requestNumber <= 0) {
 
-            if(listOfOffersFromDrivers.size() == 0) {
+            if (listOfOffersFromDrivers.size() == 0) {
                 recyclerView.setVisibility(View.GONE);
                 noOffersText.setVisibility(View.VISIBLE);
-            }
-            else {
+            } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 noOffersText.setVisibility(View.GONE);
                 Collections.sort(listOfOffersFromDrivers, new DriverComparator());

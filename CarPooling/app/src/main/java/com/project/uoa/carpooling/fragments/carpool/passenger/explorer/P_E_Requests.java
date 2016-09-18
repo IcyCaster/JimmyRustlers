@@ -50,7 +50,6 @@ public class P_E_Requests extends Fragment {
         }
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -116,9 +115,6 @@ public class P_E_Requests extends Fragment {
 
                             String driverID = child.getKey();
                             String driverName = child.child("Name").getValue().toString();
-
-                            // Location CURRENTLY NOT USED in driverEntity constructor
-                            // Place startLocation = child.child("StartLocation").getValue(Place.class);
 
                             int carCapacity = (int) (long) child.child("Passengers").child("PassengerCapacity").getValue();
                             //TODO: Calculate total space and compare it with number of passengers

@@ -8,7 +8,8 @@ import com.project.uoa.carpooling.fragments.carpool.driver.explorer.D_E_Offers;
 import com.project.uoa.carpooling.fragments.carpool.driver.explorer.D_E_Requests;
 
 /**
- * Created by Chester on 18/07/2016.
+ * D_PagerAdapter produces a tabAdapter for navigation between offers and requests for the Driver.
+ * Created by Chester and Angel on 18/07/2016.
  */
 public class D_PagerAdapter extends FragmentPagerAdapter {
 

@@ -66,7 +66,6 @@ public class O_PagerAdapter extends FragmentPagerAdapter {
                 return dText;
             case 1:
                 return pText;
-
             default:
                 return null;
         }
