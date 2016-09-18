@@ -21,13 +21,16 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Credits to: Mai Thanh Hiep.
- * Code below adapted from: https://github.com/hiepxuan2008/GoogleMapDirectionSimple/
+ * Helper class used to send and receive HTTP requests to the
+ * Google Maps Directions API.
+ *
+ * Created by Chester Booker and Angel Castro.
+ * Adapted from the work of: Mai Thanh Hiep.
+ * Code available at: https://github.com/hiepxuan2008/GoogleMapDirectionSimple/
  */
 public class DirectionFinder {
     private static final String DIRECTION_URL_API = "https://maps.googleapis.com/maps/api/directions/json?";
@@ -62,8 +65,6 @@ public class DirectionFinder {
 
     // Creates URL string for Google Directions Web API HTTP request.
     private String createUrl() throws UnsupportedEncodingException {
-//        String urlOrigin = URLEncoder.encode(origin, "utf-8");
-//        String urlDestination = URLEncoder.encode(destination, "utf-8");
 
         // Construct URL
         String requestURL = DIRECTION_URL_API + "origin=" + origin + "&destination=" + destination;
@@ -129,7 +130,6 @@ public class DirectionFinder {
 
         JSONArray jsonRoutes = jsonData.getJSONArray("routes");
         for (int i = 0; i < jsonRoutes.length(); i++) {
-            Log.d("TEST", "parseJSON: route " + i);
             JSONObject jsonRoute = jsonRoutes.getJSONObject(i);
             Route route = new Route();
             route.legs = new ArrayList<>();

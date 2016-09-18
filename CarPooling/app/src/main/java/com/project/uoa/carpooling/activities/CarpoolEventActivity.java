@@ -34,7 +34,6 @@ import com.project.uoa.carpooling.dialogs.RoleDetailsDialog;
 import com.project.uoa.carpooling.entities.facebook.ComplexEventEntity;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.fragments.carpool.CarpoolEventPagerAdapter;
-import com.project.uoa.carpooling.fragments.carpool.Event_Map;
 import com.project.uoa.carpooling.fragments.main.SimpleMessenger;
 import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
@@ -55,7 +54,7 @@ import toan.android.floatingactionmenu.FloatingActionsMenu;
  * <p/>
  * * Created by Angel and Chester
  */
-public class CarpoolEventActivity extends AppCompatActivity implements RoleDetailsDialog.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+public class CarpoolEventActivity extends AppCompatActivity implements RoleDetailsDialog.OnFragmentInteractionListener {
 
     // Unique to the event instance
     private String userID;

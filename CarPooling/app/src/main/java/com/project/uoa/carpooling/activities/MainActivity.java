@@ -25,7 +25,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
-import com.project.uoa.carpooling.fragments.carpool.Event_Map;
 import com.project.uoa.carpooling.fragments.main.ArchivedCarpools;
 import com.project.uoa.carpooling.fragments.main.CurrentCarpools;
 import com.project.uoa.carpooling.fragments.main.FriendGroups;
@@ -40,7 +39,7 @@ import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
  * * Created by Angel and Chester
  */
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener, Event_Map.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ArchivedCarpools.OnFragmentInteractionListener, FriendGroups.OnFragmentInteractionListener {
 
     private String userID;
 
