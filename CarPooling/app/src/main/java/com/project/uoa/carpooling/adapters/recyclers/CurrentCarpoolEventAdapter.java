@@ -25,7 +25,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Created by Chester on 13/06/2016.
+ * CurrentCarpoolEventAdapter is created to display SimpleEvents for the users which they can click to go to the associated CarpoolEventActivity.
+ *
+ * * Created by Angel and Chester
  */
 public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarpoolEventViewHolder> {
 
@@ -101,6 +103,7 @@ public class CurrentCarpoolEventAdapter extends RecyclerView.Adapter<CurrentCarp
     }
 }
 
+// Viewholder is needed to inflate multiple CardViews on the fly for displaying in the RecyclerView
 class CurrentCarpoolEventViewHolder extends RecyclerView.ViewHolder {
     protected String eventId;
     protected ImageView eventThumbnail;
@@ -117,6 +120,7 @@ class CurrentCarpoolEventViewHolder extends RecyclerView.ViewHolder {
         eventName = (TextView) itemView.findViewById(R.id.event_name);
         eventStartDate = (TextView) itemView.findViewById(R.id.event_start_date);
 
+        // Ability to click and go to the associated carpoolEventActivity
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
