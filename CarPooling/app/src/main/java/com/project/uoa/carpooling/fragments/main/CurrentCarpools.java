@@ -34,9 +34,7 @@ import com.project.uoa.carpooling.adapters.jsonparsers.Facebook_SimpleEvent_Pars
 import com.project.uoa.carpooling.adapters.recyclers.CurrentCarpoolEventAdapter;
 import com.project.uoa.carpooling.dialogs.JoinEventDialog;
 import com.project.uoa.carpooling.entities.facebook.SimpleEventEntity;
-import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.helpers.comparators.SimpleEventComparator;
-import com.project.uoa.carpooling.helpers.firebase.FirebaseChildEventListener;
 import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 import org.json.JSONException;
@@ -45,13 +43,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
-
+/**
+ * Class used to show the carpools which the user has
+ * subscribed to.
+ *
+ * Created by Chester Booker and Angel Castro.
+ */
 public class CurrentCarpools extends Fragment {
-
-    // boolean to populate the list onResume()
     boolean shouldExecuteOnResume;
 
-    // Fields for the view components
+    //Fields for the view components
     private View view;
     private TextView emptyListText;
     private ProgressBar mProgressBar;
@@ -59,7 +60,7 @@ public class CurrentCarpools extends Fragment {
     private RecyclerView recyclerView;
     private CurrentCarpoolEventAdapter adapter;
 
-    // Fields related to the list of subscribed events
+    //Fields related to the list of subscribed events
     private int numberOfSubscribedEvents;
     private ArrayList<String> listOfSubscribedEvents = new ArrayList<>();
     private ArrayList<SimpleEventEntity> listOfEventCardEntities = new ArrayList<>();
@@ -67,10 +68,9 @@ public class CurrentCarpools extends Fragment {
     private DatabaseReference fireBaseReference;
     private String userID;
 
-    // HashMap for registering the isDriving notifications/broadcasts
+    //HashMap for registering the isDriving notifications/broadcasts
     private HashMap<String, ChildEventListener> isDrivingRefMap = new HashMap<>();
 
-    // Required empty public constructor
     public CurrentCarpools() {
     }
 
@@ -79,7 +79,6 @@ public class CurrentCarpools extends Fragment {
         super.onResume();
         // This allows the list to repopulate when the user resumes
         if (shouldExecuteOnResume) {
-            Log.d("resuming", "CurrentCarpools");
             PopulateViewWithSubscribedEvents();
         } else {
             shouldExecuteOnResume = true;
@@ -215,19 +214,15 @@ public class CurrentCarpools extends Fragment {
                             if (!driverID.equals("null")) {
 
                                 if (driverID.equals("abandoned")) {
-                                    // TODO send notification + set abandoned to null
                                     Log.d("Notification", "TODO: DRIVER HAS LEFT");
                                     fireBaseReference.child("events").child(dataSnapshot.getKey()).child("users").child(userID).child("Driver").setValue("null");
                                 } else {
-
-
                                     final String driverName = dataSnapshot.child("users").child(driverID).child("Name").getValue().toString();
 
                                     // Attach valueListener
                                     fireBaseReference.child("events").child(dataSnapshot.getKey()).child("users").child(driverID).child("isDriving").addValueEventListener(new FirebaseValueEventListener() {
                                         @Override
                                         public void onDataChange(DataSnapshot dataSnapshot) {
-
                                             DatabaseReference currentLocationRef = fireBaseReference.child("events").child(eventID).child("users").child(driverID);
 
                                             if (dataSnapshot.exists()) {
@@ -239,7 +234,6 @@ public class CurrentCarpools extends Fragment {
                                                     }
                                                 }
                                             } else {
-                                                // TODO send notification + set abandoned to null
                                                 Log.d("Notification", "TODO: DRIVER HAS LEFT");
                                             }
                                         }
@@ -257,7 +251,6 @@ public class CurrentCarpools extends Fragment {
                             @Override
                             public void onCompleted(GraphResponse response) {
                                 try {
-
                                     listOfEventCardEntities.add(Facebook_SimpleEvent_Parser.parse(response.getJSONObject()));
                                     final String id = response.getJSONObject().getString("id");
 
@@ -284,7 +277,6 @@ public class CurrentCarpools extends Fragment {
                                                     callback();
                                                 }
                                             });
-
                                     Bundle parameters = new Bundle();
                                     parameters.putString("type", "large");
                                     parameters.putBoolean("redirect", false);
@@ -318,7 +310,6 @@ public class CurrentCarpools extends Fragment {
     }
 
     private void showNotification(String driverName) {
-
         // Reference: http://stackoverflow.com/questions/13902115/how-to-create-a-notification-with-notificationcompat-builder
         int requestID = (int) System.currentTimeMillis();
 
@@ -332,8 +323,6 @@ public class CurrentCarpools extends Fragment {
                         .setContentTitle(driverName + " is Driving!")
                         .setContentText("Touch to see how far away he is from you!")
                         .setContentIntent(pendingIntent); //Required on Gingerbread and below
-
-        //TODO: Add click to launch carpool event on map page.
 
         mBuilder.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
         NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);

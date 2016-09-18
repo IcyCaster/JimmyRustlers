@@ -1,10 +1,7 @@
 package com.project.uoa.carpooling.fragments.main;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -23,12 +20,18 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.entities.firebase.SimpleMessageEntity;
 
-
+/**
+ * Class used to implement the messaging feature within the
+ * application.
+ *
+ * Created by Chester Booker and Angel Castro.
+ */
 public class SimpleMessenger extends DialogFragment {
 
-    //TODO Will move later.
-    // Class for defining the ViewHolder of the RecyclerView.
-    // Specifies the contents of an item in the RecyclerView.
+    /*
+     * Class for defining the ViewHolder of the RecyclerView.
+     * Specifies the contents of an item in the RecyclerView.
+    */
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
         public TextView messageTextView;
         public TextView userTextView;
@@ -40,12 +43,9 @@ public class SimpleMessenger extends DialogFragment {
         }
     }
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -62,18 +62,8 @@ public class SimpleMessenger extends DialogFragment {
             mFirebaseAdapter;
 
     public SimpleMessenger() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SimpleMessenger.
-     */
-    // TODO: Rename and change types and number of parameters
     public static SimpleMessenger newInstance(String param1, String param2) {
         SimpleMessenger fragment = new SimpleMessenger();
         Bundle args = new Bundle();
@@ -99,20 +89,16 @@ public class SimpleMessenger extends DialogFragment {
         View rootView = inflater.inflate(R.layout.fragment_simple_messenger, container, false);
 
         // Initialize ProgressBar and RecyclerView.
-        // For more info on a RecyclerView: https://developer.android.com/training/material/lists-cards.html
         mProgressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         mMessageRecyclerView = (RecyclerView) rootView.findViewById(R.id.messageRecyclerView);
         mLinearLayoutManager = new LinearLayoutManager(getActivity());
         mLinearLayoutManager.setStackFromEnd(true);
         mMessageRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        // Get child entries in Database and Populate UI
-
         // Get Reference to Firebase Database
         mFirebaseDatabaseReference = FirebaseDatabase.getInstance().getReference();
 
         // Set up Adapter for RecyclerView
-        // Note that the adapter requires the new SimpleMessageEntity and ItemViewHolder classes.
         mFirebaseAdapter = new FirebaseRecyclerAdapter<SimpleMessageEntity,
                 ItemViewHolder>(
                 SimpleMessageEntity.class,
@@ -133,14 +119,9 @@ public class SimpleMessenger extends DialogFragment {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
-
-                // All code below is kind of optional, just for convenience.
                 int friendlyMessageCount = mFirebaseAdapter.getItemCount();
                 int lastVisiblePosition =
                         mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
-                // If the recycler view is initially being loaded or the
-                // user is at the bottom of the list, scroll to the bottom
-                // of the list to show the newly added message.
                 if (lastVisiblePosition == -1 ||
                         (positionStart >= (friendlyMessageCount - 1) &&
                                 lastVisiblePosition == (positionStart - 1))) {
@@ -190,7 +171,4 @@ public class SimpleMessenger extends DialogFragment {
 
         return rootView;
     }
-
-
-
 }

@@ -10,40 +10,28 @@ import android.view.ViewGroup;
 
 import com.project.uoa.carpooling.R;
 
-
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FriendGroups.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FriendGroups#newInstance} factory method to
- * create an instance of this fragment.
+ * Class was intended to allow users to create their own friend groups
+ * and events natively within the application.
+ *
+ * Due to time constraints, this class has not been implemented.
+ * Most of the code here is default and was automatically
+ * generated on creation.
+ *
+ * Created by Chester Booker and Angel Castro.
  */
 public class FriendGroups extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
     public FriendGroups() {
-        // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FriendGroups.
-     */
-    // TODO: Rename and change types and number of parameters
     public static FriendGroups newInstance(String param1, String param2) {
         FriendGroups fragment = new FriendGroups();
         Bundle args = new Bundle();
@@ -65,11 +53,9 @@ public class FriendGroups extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_friend_groups, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -93,18 +79,7 @@ public class FriendGroups extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
