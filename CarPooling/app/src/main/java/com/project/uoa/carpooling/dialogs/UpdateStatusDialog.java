@@ -181,10 +181,10 @@ public class UpdateStatusDialog extends DialogFragment {
     public void makeChange() {
         if (status.equals("Driver")) {
             Place startLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
-            CarpoolResolver.statusChange((CarpoolEventActivity) getActivity(), eventStatus.DRIVER, np.getValue(), startLocation);
+            CarpoolResolver.changeStatus((CarpoolEventActivity) getActivity(), eventStatus.DRIVER, np.getValue(), startLocation);
         } else if (status.equals("Passenger")) {
             Place pickupLocation = new Place("TODO: PLACE PICKER", longitude, latitude);
-            CarpoolResolver.statusChange((CarpoolEventActivity) getActivity(), eventStatus.PASSENGER, np.getValue(), pickupLocation);
+            CarpoolResolver.changeStatus((CarpoolEventActivity) getActivity(), eventStatus.PASSENGER, np.getValue(), pickupLocation);
         }
     }
 

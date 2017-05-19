@@ -2,7 +2,6 @@ package com.project.uoa.carpooling.dialogs;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -14,14 +13,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.project.uoa.carpooling.R;
 import com.project.uoa.carpooling.activities.CarpoolEventActivity;
 import com.project.uoa.carpooling.enums.EventStatus;
 import com.project.uoa.carpooling.helpers.firebase.CarpoolResolver;
-import com.project.uoa.carpooling.helpers.firebase.FirebaseValueEventListener;
 
 /**
  * Created by Chester on 12/07/2016.
@@ -164,7 +161,7 @@ public class ChangeStatusDialog extends DialogFragment {
             public void onClick(DialogInterface dialog, int id) {
 
 
-                CarpoolResolver.statusChange((CarpoolEventActivity)getActivity(), EventStatus.OBSERVER, 0, null);
+                CarpoolResolver.changeStatus((CarpoolEventActivity)getActivity(), EventStatus.OBSERVER, 0, null);
 
 
             }

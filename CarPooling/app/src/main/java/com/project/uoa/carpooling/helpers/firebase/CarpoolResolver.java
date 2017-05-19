@@ -16,6 +16,7 @@ import com.project.uoa.carpooling.enums.EventStatus;
  */
 public class CarpoolResolver {
     private static DatabaseReference fireBaseReference;
+    private static DatabaseReference usersFirebaseRef;
     private static EventStatus eventStatus;
     private static String userID;
     private static String eventID;
@@ -23,7 +24,7 @@ public class CarpoolResolver {
     private static Place place;
     private static CarpoolEventActivity context;
 
-    public static void statusChange(CarpoolEventActivity context, EventStatus goToStatus, int passengerAmount, Place place) {
+    public static void changeStatus(CarpoolEventActivity context, EventStatus goToStatus, int passengerAmount, Place place) {
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
         eventStatus = context.getEventStatus();
         eventID = context.getEventID();
@@ -31,6 +32,9 @@ public class CarpoolResolver {
         CarpoolResolver.context = context;
         CarpoolResolver.place = place;
         CarpoolResolver.passengerAmount = passengerAmount;
+
+        // locate user in firebase
+        usersFirebaseRef = fireBaseReference.child("events").child(eventID).child("users").child(userID);
 
         if(eventStatus==EventStatus.DRIVER && goToStatus==EventStatus.PASSENGER) {
             Log.d("StatusChange", "Driver to Passenger");
@@ -90,13 +94,15 @@ public class CarpoolResolver {
         }
     }
 
+    // When a user becomes a driver, add these components to firebase.
+    // Starting Location || Current Location || Passengers + Passenger Capacity || Set status to Driver || Set isPublic to true || Set isDriving to false
     private static void addDriverComponents() {
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("StartLocation").setValue(place);
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").setValue(new Place(null, 0,0));
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").child("PassengerCapacity").setValue(passengerAmount);
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Driver");
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(true);
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").setValue(false);
+        usersFirebaseRef.child("StartLocation").setValue(place);
+        usersFirebaseRef.child("CurrentLocation").setValue(new Place(null, 0,0));
+        usersFirebaseRef.child("Passengers").child("PassengerCapacity").setValue(passengerAmount);
+        usersFirebaseRef.child("Status").setValue("Driver");
+        usersFirebaseRef.child("isPublic").setValue(true);
+        usersFirebaseRef.child("isDriving").setValue(false);
         reloadActivity(false);
     }
 
@@ -220,6 +226,7 @@ public class CarpoolResolver {
 
         context.finish();
 
+        // Is the users isn't leaving the carpool then refresh the activity for updated information
         if(!isLeaving) {
             context.startActivity(i);
         }
