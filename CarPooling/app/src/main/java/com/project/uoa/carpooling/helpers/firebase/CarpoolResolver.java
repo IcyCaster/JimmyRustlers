@@ -39,39 +39,32 @@ public class CarpoolResolver {
         // locate user in firebase
         usersFirebaseRef = fireBaseReference.child("events").child(eventID).child("users").child(userID);
 
+        // Log the status changes
         Log.d("StatusChange", currentStatus.toString() + " to " + desiredStatus.toString());
 
-        // Driver to Passenger
-        if (currentStatus == EventStatus.DRIVER && desiredStatus == EventStatus.PASSENGER) {
-
-            removeDriverComponents(false);
-            addPassengerComponents();
-        } else if (currentStatus == EventStatus.PASSENGER && desiredStatus == EventStatus.DRIVER) {
-            removePassengerComponents(false);
-            addDriverComponents();
-        } else if (desiredStatus == EventStatus.OBSERVER) {
-
-            if (currentStatus == EventStatus.DRIVER) {
+        // remove the components associated with the current status
+        switch(currentStatus) {
+            case DRIVER:
                 removeDriverComponents(false);
-            }
-
-            if (currentStatus == EventStatus.PASSENGER) {
+                break;
+            case PASSENGER:
                 removePassengerComponents(false);
-            }
-            usersFirebaseRef.child("Status").setValue("Observer");
-            reloadActivity(false);
-        } else if (currentStatus == EventStatus.OBSERVER) {
-
-            if (desiredStatus == EventStatus.DRIVER) {
-                addDriverComponents();
-            }
-
-            if (desiredStatus == EventStatus.PASSENGER) {
-                addPassengerComponents();
-            }
-
+                break;
         }
 
+        // add the components associated with the desired status
+        switch(desiredStatus) {
+            case DRIVER:
+                addDriverComponents();
+                break;
+            case PASSENGER:
+                addPassengerComponents();
+                break;
+            case OBSERVER:
+                usersFirebaseRef.child("Status").setValue("Observer");
+                reloadActivity(false);
+                break;
+        }
         // Changes user's record of status
         fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue(desiredStatus.toString());
     }
@@ -83,16 +76,16 @@ public class CarpoolResolver {
         userID = context.getUserID();
         CarpoolResolver.context = context;
 
-        if (currentStatus == EventStatus.DRIVER) {
-            removeDriverComponents(true);
-        }
-
-        if (currentStatus == EventStatus.PASSENGER) {
-            removePassengerComponents(true);
-        }
-
-        if (currentStatus == EventStatus.OBSERVER) {
-            leaving();
+        switch(currentStatus) {
+            case DRIVER:
+                removeDriverComponents(true);
+                break;
+            case PASSENGER:
+                removePassengerComponents(true);
+                break;
+            case OBSERVER:
+                leaving();
+                break;
         }
     }
 
@@ -216,13 +209,13 @@ public class CarpoolResolver {
         });
     }
 
+    // Reload the activity so the user's UI is refreshed with the changes
     private static void reloadActivity(boolean isLeaving) {
         Intent i = new Intent(context, CarpoolEventActivity.class);
         Bundle b = new Bundle();
         b.putString("userID", userID);
         b.putString("eventID", eventID);
         i.putExtras(b);
-
         context.finish();
 
         // Is the users isn't leaving the carpool then refresh the activity for updated information
