@@ -39,16 +39,18 @@ public class CarpoolResolver {
         // locate user in firebase
         usersFirebaseRef = fireBaseReference.child("events").child(eventID).child("users").child(userID);
 
+        Log.d("StatusChange", currentStatus.toString() + " to " + desiredStatus.toString());
+
+        // Driver to Passenger
         if (currentStatus == EventStatus.DRIVER && desiredStatus == EventStatus.PASSENGER) {
-            Log.d("StatusChange", "Driver to Passenger");
+
             removeDriverComponents(false);
             addPassengerComponents();
         } else if (currentStatus == EventStatus.PASSENGER && desiredStatus == EventStatus.DRIVER) {
-            Log.d("StatusChange", "Passenger to Driver");
             removePassengerComponents(false);
             addDriverComponents();
         } else if (desiredStatus == EventStatus.OBSERVER) {
-            Log.d("StatusChange", "Something to observer");
+
             if (currentStatus == EventStatus.DRIVER) {
                 removeDriverComponents(false);
             }
@@ -59,7 +61,7 @@ public class CarpoolResolver {
             usersFirebaseRef.child("Status").setValue("Observer");
             reloadActivity(false);
         } else if (currentStatus == EventStatus.OBSERVER) {
-            Log.d("StatusChange", "Observer to something");
+
             if (desiredStatus == EventStatus.DRIVER) {
                 addDriverComponents();
             }
