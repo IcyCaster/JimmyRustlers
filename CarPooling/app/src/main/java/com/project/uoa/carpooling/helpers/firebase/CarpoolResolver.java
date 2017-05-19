@@ -12,7 +12,7 @@ import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
 
 /**
- * The Carpool Resolver takes the user's current status and the status they are changing to and resolves the backend Firebase updating.
+ * The Carpool Resolver takes the user's current status and desired status, then resolves the backend Firebase updating.
  * Created by Chester on 21/08/2016.
  */
 public class CarpoolResolver {
@@ -25,14 +25,16 @@ public class CarpoolResolver {
     private static Place place;
     private static CarpoolEventActivity context;
 
-    public static void changeStatus(CarpoolEventActivity context, EventStatus desiredStatus, int passengerAmount, Place place) {
-
-        // load firebase reference and values from the activity
+    private static void loadContextValues(CarpoolEventActivity context){
         fireBaseReference = FirebaseDatabase.getInstance().getReference();
         currentStatus = context.getEventStatus();
         eventID = context.getEventID();
         userID = context.getUserID();
         CarpoolResolver.context = context;
+    }
+
+    public static void changeStatus(CarpoolEventActivity context, EventStatus desiredStatus, int passengerAmount, Place place) {
+        loadContextValues(context);
         CarpoolResolver.place = place;
         CarpoolResolver.passengerAmount = passengerAmount;
 
@@ -70,12 +72,7 @@ public class CarpoolResolver {
     }
 
     public static void leaveCarpool(CarpoolEventActivity context) {
-        fireBaseReference = FirebaseDatabase.getInstance().getReference();
-        currentStatus = context.getEventStatus();
-        eventID = context.getEventID();
-        userID = context.getUserID();
-        CarpoolResolver.context = context;
-
+        loadContextValues(context);
         switch(currentStatus) {
             case DRIVER:
                 removeDriverComponents(true);
@@ -182,10 +179,9 @@ public class CarpoolResolver {
 
     private static void leaving() {
         //remove from users
-        usersFirebaseRef.removeValue();
+        fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
         //remove from events
         usersFirebaseRef.removeValue();
-
         reloadActivity(true);
     }
 
