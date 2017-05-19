@@ -12,6 +12,7 @@ import com.project.uoa.carpooling.entities.shared.Place;
 import com.project.uoa.carpooling.enums.EventStatus;
 
 /**
+ * The Carpool Resolver takes the user's current status and the status they are changing to and resolves the backend Firebase updating.
  * Created by Chester on 21/08/2016.
  */
 public class CarpoolResolver {
@@ -55,7 +56,7 @@ public class CarpoolResolver {
             if(eventStatus==EventStatus.PASSENGER) {
                 removePassengerComponents(false);
             }
-            fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
+            usersFirebaseRef.child("Status").setValue("Observer");
             reloadActivity(false);
         }
         else if(eventStatus==EventStatus.OBSERVER) {
@@ -94,8 +95,8 @@ public class CarpoolResolver {
         }
     }
 
-    // When a user becomes a driver, add these components to firebase.
-    // Starting Location || Current Location || Passengers + Passenger Capacity || Set status to Driver || Set isPublic to true || Set isDriving to false
+    // When a user becomes a driver, add these components to firebase
+    // Blank starting Location || Blank current Location || No passengers + Passenger Capacity || Set status to Driver || Set isPublic to true || Set isDriving to false
     private static void addDriverComponents() {
         usersFirebaseRef.child("StartLocation").setValue(place);
         usersFirebaseRef.child("CurrentLocation").setValue(new Place(null, 0,0));
@@ -106,12 +107,14 @@ public class CarpoolResolver {
         reloadActivity(false);
     }
 
+    // When a user becomes a passenger, add these components to firebase
+    // Blank associated Driver || Blank pickup location || Passengers amount || Set status to Passenger || Set isPublic to true
     private static void addPassengerComponents() {
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Driver").setValue("null");
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PickupLocation").setValue(place);
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PassengerCount").setValue(passengerAmount);
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Passenger");
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(true);
+        usersFirebaseRef.child("Driver").setValue("null");
+        usersFirebaseRef.child("PickupLocation").setValue(place);
+        usersFirebaseRef.child("PassengerCount").setValue(passengerAmount);
+        usersFirebaseRef.child("Status").setValue("Passenger");
+        usersFirebaseRef.child("isPublic").setValue(true);
         reloadActivity(false);
     }
 
@@ -143,11 +146,12 @@ public class CarpoolResolver {
                     leaving();
                 }
                 else {
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("CurrentLocation").removeValue();
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Passengers").removeValue();
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("StartLocation").removeValue();
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isDriving").removeValue();
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Requests").removeValue();
+
+                    usersFirebaseRef.child("CurrentLocation").removeValue();
+                    usersFirebaseRef.child("Passengers").removeValue();
+                    usersFirebaseRef.child("StartLocation").removeValue();
+                    usersFirebaseRef.child("isDriving").removeValue();
+                    usersFirebaseRef.child("Requests").removeValue();
                 }
             }
         });
@@ -175,10 +179,10 @@ public class CarpoolResolver {
                     leaving();
                 }
                 else {
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PickupLocation").removeValue();
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Driver").removeValue();
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("PassengerCount").removeValue();
-                    fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Offers").removeValue();
+                    usersFirebaseRef.child("PickupLocation").removeValue();
+                    usersFirebaseRef.child("Driver").removeValue();
+                    usersFirebaseRef.child("PassengerCount").removeValue();
+                    usersFirebaseRef.child("Offers").removeValue();
                 }
             }
         });
@@ -186,9 +190,9 @@ public class CarpoolResolver {
 
     private static void leaving() {
         //remove from users
-        fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
+        usersFirebaseRef.removeValue();
         //remove from events
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).removeValue();
+        usersFirebaseRef.removeValue();
 
         reloadActivity(true);
     }
@@ -204,13 +208,10 @@ public class CarpoolResolver {
                 // Save username for re-adding
                 String usersName = snapshot.child("Name").getValue().toString();
 
-
-
-                fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue("Observer");
-
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Name").setValue(usersName);
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("Status").setValue("Observer");
-                fireBaseReference.child("events").child(eventID).child("users").child(userID).child("isPublic").setValue(false);
+                usersFirebaseRef.setValue("Observer");
+                usersFirebaseRef.child("Name").setValue(usersName);
+                usersFirebaseRef.child("Status").setValue("Observer");
+                usersFirebaseRef.child("isPublic").setValue(false);
 
                 reloadActivity(false);
             }
