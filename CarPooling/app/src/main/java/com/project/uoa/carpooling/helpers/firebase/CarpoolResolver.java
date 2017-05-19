@@ -52,6 +52,10 @@ public class CarpoolResolver {
             case PASSENGER:
                 removePassengerComponents(false);
                 break;
+            case OBSERVER:
+                break;
+            default:
+                Log.e("Status Change", "Invalid Current Status");
         }
 
         // add the components associated with the desired status
@@ -66,6 +70,8 @@ public class CarpoolResolver {
                 usersFirebaseRef.child("Status").setValue("Observer");
                 reloadActivity(false);
                 break;
+            default:
+                Log.e("Status Change", "Invalid Desired Status");
         }
         // Changes user's record of status
         fireBaseReference.child("users").child(userID).child("events").child(eventID).setValue(desiredStatus.toString());
