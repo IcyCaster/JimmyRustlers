@@ -109,22 +109,39 @@ public class CarpoolResolver {
         reloadActivity(false);
     }
 
+    private static void becomingObserver() {
+        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
+
+
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                // Save username for re-adding
+                String usersName = snapshot.child("Name").getValue().toString();
+                usersFirebaseRef.setValue("Observer");
+                usersFirebaseRef.child("Name").setValue(usersName);
+                usersFirebaseRef.child("Status").setValue("Observer");
+                usersFirebaseRef.child("isPublic").setValue(false);
+
+                reloadActivity(false);
+            }
+        });
+    }
 
     private static void removeDriverComponents(final boolean isLeaving) {
-
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+
+                // Remove any driver offers made by the user
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    // Remove any driver offers
                     if (child.child("Offers").child(userID).exists()) {
                         fireBaseReference.child("events").child(eventID).child("users").child(child.getKey()).child("Offers").child(userID).removeValue();
                     }
                 }
-
+                // Notify current passengers that the driver has left
                 for (DataSnapshot passengerID : snapshot.child(userID).child("Passengers").getChildren()) {
                     if (!passengerID.getKey().toString().equals("PassengerCapacity")) {
-                        // Notify current passengers that the driver has left
                         if (snapshot.child(passengerID.getKey().toString()).child("Driver").exists()) {
                             if (snapshot.child(passengerID.getKey().toString()).child("Driver").getValue().toString().equals(userID)) {
                                 fireBaseReference.child("events").child(eventID).child("users").child(passengerID.getKey().toString()).child("Driver").setValue("abandoned");
@@ -132,11 +149,10 @@ public class CarpoolResolver {
                         }
                     }
                 }
-                // Remove driver stuff
+                // Remove driver specific components
                 if (isLeaving) {
-                    leaving();
+                    leaving(); // Removes all components
                 } else {
-
                     usersFirebaseRef.child("CurrentLocation").removeValue();
                     usersFirebaseRef.child("Passengers").removeValue();
                     usersFirebaseRef.child("StartLocation").removeValue();
@@ -151,22 +167,23 @@ public class CarpoolResolver {
         fireBaseReference.child("events").child(eventID).child("users").addListenerForSingleValueEvent(new FirebaseValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
+
+                // Remove any passenger requests made
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    // Remove any passenger requests
                     if (child.child("Requests").child(userID).exists()) {
                         fireBaseReference.child("events").child(eventID).child("users").child(child.getKey()).child("Requests").child(userID).removeValue();
                     }
                 }
+
+                // Remove the associated driver if one exists
                 String driver = snapshot.child(userID).child("Driver").getValue().toString();
                 Log.d("driver", driver);
                 if (snapshot.child(driver).exists()) {
                     fireBaseReference.child("events").child(eventID).child("users").child(driver).child("Passengers").child(userID).setValue("abandoned");
                 }
-
-
-                // Remove passenger stuff
+                // Remove passenger components
                 if (isLeaving) {
-                    leaving();
+                    leaving(); // Removes all components
                 } else {
                     usersFirebaseRef.child("PickupLocation").removeValue();
                     usersFirebaseRef.child("Driver").removeValue();
@@ -178,31 +195,11 @@ public class CarpoolResolver {
     }
 
     private static void leaving() {
-        //remove from users
+        //remove event from users list
         fireBaseReference.child("users").child(userID).child("events").child(eventID).removeValue();
-        //remove from events
+        //remove user from events list
         usersFirebaseRef.removeValue();
         reloadActivity(true);
-    }
-
-    private static void becomingObserver() {
-        fireBaseReference.child("events").child(eventID).child("users").child(userID).addListenerForSingleValueEvent(new FirebaseValueEventListener() {
-
-
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-
-                // Save username for re-adding
-                String usersName = snapshot.child("Name").getValue().toString();
-
-                usersFirebaseRef.setValue("Observer");
-                usersFirebaseRef.child("Name").setValue(usersName);
-                usersFirebaseRef.child("Status").setValue("Observer");
-                usersFirebaseRef.child("isPublic").setValue(false);
-
-                reloadActivity(false);
-            }
-        });
     }
 
     // Reload the activity so the user's UI is refreshed with the changes
